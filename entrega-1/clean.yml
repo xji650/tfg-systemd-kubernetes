@@ -1,0 +1,36 @@
+---
+- name: Limpieza total de Quadlets y Contenedores
+  hosts: all
+  tasks:
+    - name: Detener y eliminar servicios de usuario
+      systemd:
+        name: "{{ item }}"
+        scope: user
+        state: stopped
+        enabled: no
+      loop:
+        - balancer.service
+        - web.service
+      ignore_errors: yes
+
+    - name: Eliminar archivos Quadlet y configuraciones
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "~/.config/containers/systemd/web.container"
+        - "~/.config/containers/systemd/balancer.container"
+        - "~/.config/containers/systemd/edge.network"
+        - "/tmp/nginx-lb.conf"
+        - "~/html_app"
+
+    - name: Forzar borrado de contenedores y redes en Podman
+      shell: |
+        podman rm -f lb-edge web-{{ inventory_hostname }} || true
+        podman network rm red-privada || true
+      ignore_errors: yes
+
+    - name: Reload de systemd usuario
+      systemd: # <-- Corregido: antes decía systemctl
+        scope: user
+        daemon_reload: yes

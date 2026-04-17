@@ -26,7 +26,7 @@ Crear un ansible que aixequi un Sistema amb N nodes (parametritzable) de systemd
     ├── templates/                # Plantillas dinámicas (Jinja2)
     │   ├── edge.network.j2       # Red virtual Quadlet
     │   ├── web.container.j2      # Contenedores para los N nodos workers
-    │   ├── balancer.container.j2 # Contenedor del balanceador
+    │   ├── lb.container.j2 # Contenedor del balanceador
     │   └── nginx-lb.conf.j2      # Configuración dinámica del balanceo
 
 ---
@@ -47,7 +47,7 @@ Para que el sistema sea dinámico, usaremos plantillas que Ansible rellenará au
 
 ---
 
-## 5. El Playbook Maestro (`playbook.yml`)
+## 5. Playbook Maestro (`playbook.yml`)
 Este script ejecuta la lógica en el orden correcto para garantizar la resiliencia y orquestación.
 
 ```yaml
@@ -204,7 +204,7 @@ Tus archivos deben vivir en el sistema de archivos de Linux (la "casita" `~`).
 
 ---
 
-### Fase 4: El Momento de la Verdad
+### Fase 4: Ejecución de prueba
 
 Ya tienes a tu Director de Orquesta con acceso VIP a los nodos y tu partitura (los archivos YAML y plantillas) en el lugar seguro de Linux.
 
@@ -215,12 +215,19 @@ cd ~/tfg-ansible
 
 Y lanza el misil de la automatización:
 ```bash
-ansible-playbook -i inventory.ini playbook.yml
+ansible-playbook -i inventory.ini playbook.yml -K
 ```
 
 Verás cómo Ansible se conecta, crea las redes, levanta los workers, configura el Nginx temporal, lanza el balanceador y deja todo listo en cuestión de segundos. Cuando termine, abre tu navegador en Windows y entra a `http://192.168.1.101` para ver tu clúster balanceando el tráfico.
 
 **Prueba de Resiliencia**: Apaga el **Nodo B** (`sudo reboot`). Vuelve a hacer `curl` al balanceador. El sistema debe seguir respondiendo a través del **Nodo A** sin intervención manual.
+
+---
+
+## 7. Playbook de Limpieza (`clean.yml`)
+```bash
+ansible-playbook -i inventory.ini clean.yml -K
+```
 
 ---
 

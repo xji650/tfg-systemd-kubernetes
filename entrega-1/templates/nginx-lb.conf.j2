@@ -1,6 +1,6 @@
 upstream edge_cluster {
 {% for host in groups['workers'] %}
-    server {{ hostvars[host].ansible_host }}:8080;
+    server {{ hostvars[host].ansible_host }}:{{ web_port }} max_fails=0;
 {% endfor %}
 }
 
@@ -8,5 +8,6 @@ server {
     listen 80;
     location / {
         proxy_pass http://edge_cluster;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
     }
 }

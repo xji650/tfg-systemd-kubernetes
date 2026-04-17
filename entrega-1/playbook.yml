@@ -58,6 +58,7 @@
       template:
         src: templates/nginx-lb.conf.j2
         dest: "/tmp/nginx-lb.conf"
+        mode: '0644'
       when: "'balancer' in group_names"
 
     - name: Desplegar Quadlet del Balanceador
