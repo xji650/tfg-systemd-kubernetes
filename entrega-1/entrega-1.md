@@ -55,6 +55,9 @@ Este script ejecuta la lógica en el orden correcto para garantizar la resilienc
 - name: "Hito: Sistema Proactivo de N nodos"
   hosts: all
   tasks:
+    # ---------------------------------------------------------
+    # 1. PERSISTENCIA Y PREPARACIÓN BASE
+    # ---------------------------------------------------------
     - name: Habilitar linger para persistencia rootless
       become: yes
       command: "loginctl enable-linger {{ ansible_user }}"
@@ -69,9 +72,24 @@ Este script ejecuta la lógica en el orden correcto para garantizar la resilienc
 
     - name: Desplegar Red Quadlet
       template:
-        src: "templates/edge.network.j2"
-        dest: "~/.config/containers/systemd/edge.network"
+        src: "templates/red.network.j2"
+        dest: "~/.config/containers/systemd/red.network"
+    
+    - name: Recargar systemd de usuario
+      systemd:
+        scope: user
+        daemon_reload: yes
 
+    - name: Arrancar red Quadlet
+      systemd:
+        scope: user
+        name: red-network.service
+        state: started
+        enabled: yes
+
+    # ---------------------------------------------------------
+    # 2. DESPLIEGUE DE LOS WORKERS (Aplicación Web)
+    # ---------------------------------------------------------
     - name: Crear carpeta para el volumen de la app
       file:
         path: "~/html_app"
@@ -98,10 +116,14 @@ Este script ejecuta la lógica en el orden correcto para garantizar la resilienc
         state: started
       when: "'workers' in group_names"
 
+    # ---------------------------------------------------------
+    # 3. DESPLIEGUE DEL BALANCEADOR DE CARGA
+    # ---------------------------------------------------------
     - name: Crear configuración de Nginx Balanceador
       template:
         src: templates/nginx-lb.conf.j2
-        dest: "/tmp/nginx-lb.conf"
+        dest: "~/nginx-lb.conf"
+        mode: '0644'
       when: "'balancer' in group_names"
 
     - name: Desplegar Quadlet del Balanceador
@@ -220,7 +242,36 @@ ansible-playbook -i inventory.ini playbook.yml -K
 
 Verás cómo Ansible se conecta, crea las redes, levanta los workers, configura el Nginx temporal, lanza el balanceador y deja todo listo en cuestión de segundos. Cuando termine, abre tu navegador en Windows y entra a `http://192.168.1.101` para ver tu clúster balanceando el tráfico.
 
+Ahora verifica que realmente funciona:
+
+```bash
+# ¿El balanceador responde?
+curl http://192.168.1.101:8888
+
+# Llámalo varias veces para ver el round-robin entre workers
+curl http://192.168.1.101:8888
+curl http://192.168.1.101:8888
+curl http://192.168.1.101:8888
+```
+
+Deberías ver alternar:
+```
+Hola! Estas siendo atendido por el worker: node-a
+Hola! Estas siendo atendido por el worker: node-b
+```
 **Prueba de Resiliencia**: Apaga el **Nodo B** (`sudo reboot`). Vuelve a hacer `curl` al balanceador. El sistema debe seguir respondiendo a través del **Nodo A** sin intervención manual.
+
+```bash
+# Apaga node-b
+ssh littledragon@192.168.1.102 "sudo reboot"
+
+# Sigue respondiendo solo con node-a?
+curl http://192.168.1.101:8888
+
+# Cuando node-b vuelva, ¿arranca solo el contenedor sin intervención?
+# (espera 1 min y prueba de nuevo)
+curl http://192.168.1.101:8888
+```
 
 ---
 
