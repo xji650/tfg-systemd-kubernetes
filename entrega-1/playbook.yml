@@ -19,8 +19,20 @@
 
     - name: Desplegar Red Quadlet
       template:
-        src: "templates/edge.network.j2"
-        dest: "~/.config/containers/systemd/edge.network"
+        src: "templates/red.network.j2"
+        dest: "~/.config/containers/systemd/red.network"
+    
+    - name: Recargar systemd de usuario
+      systemd:
+        scope: user
+        daemon_reload: yes
+
+    - name: Arrancar red Quadlet
+      systemd:
+        scope: user
+        name: red-network.service
+        state: started
+        enabled: yes
 
     # ---------------------------------------------------------
     # 2. DESPLIEGUE DE LOS WORKERS (Aplicación Web)
@@ -57,7 +69,7 @@
     - name: Crear configuración de Nginx Balanceador
       template:
         src: templates/nginx-lb.conf.j2
-        dest: "/tmp/nginx-lb.conf"
+        dest: "~/nginx-lb.conf"
         mode: '0644'
       when: "'balancer' in group_names"
 

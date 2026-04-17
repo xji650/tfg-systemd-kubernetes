@@ -11,6 +11,7 @@
       loop:
         - balancer.service
         - web.service
+        - red-network.service
       ignore_errors: yes
 
     - name: Eliminar archivos Quadlet y configuraciones
@@ -20,17 +21,17 @@
       loop:
         - "~/.config/containers/systemd/web.container"
         - "~/.config/containers/systemd/balancer.container"
-        - "~/.config/containers/systemd/edge.network"
-        - "/tmp/nginx-lb.conf"
+        - "~/.config/containers/systemd/red.network"
+        - "~/nginx-lb.conf"
         - "~/html_app"
 
     - name: Forzar borrado de contenedores y redes en Podman
       shell: |
         podman rm -f lb-edge web-{{ inventory_hostname }} || true
-        podman network rm red-privada || true
+        podman network rm red-interna || true
       ignore_errors: yes
 
     - name: Reload de systemd usuario
-      systemd: # <-- Corregido: antes decía systemctl
+      systemd:
         scope: user
         daemon_reload: yes

@@ -1,12 +1,13 @@
 [Unit]
 Description=Servidor Web del Nodo {{ inventory_hostname }}
-After=network-online.target
+After=network-online.target red-network.service
+Requires=red-network.service
 
 [Container]
 Image={{ web_image }}
 PublishPort={{ web_port }}:80
 ContainerName=web-{{ inventory_hostname }}
-Network=edge.network
+Network=red.network
 Volume=%h/html_app:/usr/share/nginx/html:Z
 
 [Service]

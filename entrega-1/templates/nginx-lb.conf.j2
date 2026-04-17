@@ -8,6 +8,7 @@ server {
     listen 80;
     location / {
         proxy_pass http://edge_cluster;
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2s;
+        proxy_read_timeout 2s;
     }
 }
