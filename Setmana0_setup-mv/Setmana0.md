@@ -138,13 +138,3 @@ Configuración de acceso SSH mediante **intercambio de claves RSA** para permiti
 Debe acceder **sin solicitar credenciales**.
 
 ---
-
-# 4. Checklist de Verificación Final
-
-- [x] Nodos con IPs estáticas diferentes
-- [x] Hostnames configurados (`nodo-a` y `nodo-b`)
-- [x] Conectividad bidireccional mediante `ping`
-- [x] Podman operativo en ambos nodos
-- [x] Confianza SSH bidireccional.
-
----
