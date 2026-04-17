@@ -1,0 +1,16 @@
+[Unit]
+Description=Balanceador de Carga Nginx
+After=network-online.target
+
+[Container]
+Image={{ web_image }}
+PublishPort={{ balancer_port }}:80
+ContainerName=lb-edge
+Network=edge.network
+Volume=/tmp/nginx-lb.conf:/etc/nginx/conf.d/default.conf:Z
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

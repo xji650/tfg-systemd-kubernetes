@@ -1,0 +1,10 @@
+---
+# Usuario para la conexión SSH y el Linger
+ansible_user: littledragon
+# Llave SSH para autenticación
+ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
+# Variables del servicio
+web_image: "docker.io/library/nginx:1.25.4-alpine"
+web_port: 8080
+balancer_port: 80

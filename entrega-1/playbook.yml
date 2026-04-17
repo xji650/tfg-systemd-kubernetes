@@ -1,0 +1,75 @@
+---
+- name: "Hito: Sistema Proactivo de N nodos"
+  hosts: all
+  tasks:
+    # ---------------------------------------------------------
+    # 1. PERSISTENCIA Y PREPARACIÓN BASE
+    # ---------------------------------------------------------
+    - name: Habilitar linger para persistencia rootless
+      become: yes
+      command: "loginctl enable-linger {{ ansible_user }}"
+      args:
+        creates: "/var/lib/systemd/linger/{{ ansible_user }}"
+
+    - name: Crear directorio de Quadlets
+      file:
+        path: "~/.config/containers/systemd"
+        state: directory
+        mode: '0755'
+
+    - name: Desplegar Red Quadlet
+      template:
+        src: "templates/edge.network.j2"
+        dest: "~/.config/containers/systemd/edge.network"
+
+    # ---------------------------------------------------------
+    # 2. DESPLIEGUE DE LOS WORKERS (Aplicación Web)
+    # ---------------------------------------------------------
+    - name: Crear carpeta para el volumen de la app
+      file:
+        path: "~/html_app"
+        state: directory
+      when: "'workers' in group_names"
+
+    - name: Crear index.html personalizado para verificar balanceo
+      copy:
+        dest: "~/html_app/index.html"
+        content: "<h1>Hola! Estas siendo atendido por el worker: {{ inventory_hostname }}</h1>\n"
+      when: "'workers' in group_names"
+
+    - name: Desplegar Quadlet del Worker
+      template:
+        src: templates/web.container.j2
+        dest: "~/.config/containers/systemd/web.container"
+      when: "'workers' in group_names"
+
+    - name: Arrancar servicio Worker
+      systemd:
+        scope: user
+        daemon_reload: yes
+        name: web.service
+        state: started
+      when: "'workers' in group_names"
+
+    # ---------------------------------------------------------
+    # 3. DESPLIEGUE DEL BALANCEADOR DE CARGA
+    # ---------------------------------------------------------
+    - name: Crear configuración de Nginx Balanceador
+      template:
+        src: templates/nginx-lb.conf.j2
+        dest: "/tmp/nginx-lb.conf"
+      when: "'balancer' in group_names"
+
+    - name: Desplegar Quadlet del Balanceador
+      template:
+        src: templates/lb.container.j2
+        dest: "~/.config/containers/systemd/balancer.container"
+      when: "'balancer' in group_names"
+
+    - name: Arrancar servicio Balanceador
+      systemd:
+        scope: user
+        daemon_reload: yes
+        name: balancer.service
+        state: started
+      when: "'balancer' in group_names"

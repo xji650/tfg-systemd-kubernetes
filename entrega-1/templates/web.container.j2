@@ -1,0 +1,17 @@
+[Unit]
+Description=Servidor Web del Nodo {{ inventory_hostname }}
+After=network-online.target
+
+[Container]
+Image={{ web_image }}
+PublishPort={{ web_port }}:80
+ContainerName=web-{{ inventory_hostname }}
+Network=edge.network
+Volume=%h/html_app:/usr/share/nginx/html:Z
+
+[Service]
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
