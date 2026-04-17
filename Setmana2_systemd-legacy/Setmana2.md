@@ -276,15 +276,4 @@ podman rm -fa 2>/dev/null
 # 4. Eliminar la red virtual de forma forzada
 podman network rm -f mi-red 2>/dev/null
 ```
-
----
-
-## PARTE 6: Preparación para Tutoría
-
-**Checklist y puntos de validación:**
-- [ ] Ejecutar `sudo reboot` en el **Nodo A**. Esperar 1 minuto, acceder por SSH y verificar con `podman ps` que los contenedores de Web y DB se levantaron solos.
-- [ ] Explicar al tutor por qué NO usamos `sudo` al crear contenedores (Aislamiento de seguridad Rootless).
-- [ ] Explicar al tutor la importancia del parámetro `--new` al generar el servicio.
-- [ ] Preguntar al tutor si en futuras iteraciones evolucionaremos de `podman generate systemd` hacia **Podman Quadlets** (el estándar más moderno).
-
 ---
