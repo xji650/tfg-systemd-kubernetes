@@ -1,0 +1,17 @@
+[Unit]
+Description=Worker MNIST en el Nodo {{ inventory_hostname }}
+After=network-online.target red-network.service
+Requires=red-network.service
+
+[Container]
+Image=localhost/worker-mnist:v1
+PublishPort=8000:8000
+ContainerName=worker-mnist-{{ inventory_hostname }}
+Network=red.network
+
+[Service]
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

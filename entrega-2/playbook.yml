@@ -1,0 +1,97 @@
+---
+- name: "Hito: Sistema Proactivo de N nodos"
+  hosts: all
+  tasks:
+    # ---------------------------------------------------------
+    # 1. PERSISTENCIA Y PREPARACIÓN BASE
+    # ---------------------------------------------------------
+    - name: Habilitar linger para persistencia rootless
+      become: yes
+      command: "loginctl enable-linger {{ ansible_user }}"
+      args:
+        creates: "/var/lib/systemd/linger/{{ ansible_user }}"
+
+    - name: Crear directorio de Quadlets
+      file:
+        path: "~/.config/containers/systemd"
+        state: directory
+        mode: '0755'
+
+    - name: Desplegar Red Quadlet
+      template:
+        src: "templates/red.network.j2"
+        dest: "~/.config/containers/systemd/red.network"
+    
+    - name: Recargar systemd de usuario
+      systemd:
+        scope: user
+        daemon_reload: yes
+
+    - name: Arrancar red Quadlet
+      systemd:
+        scope: user
+        name: red-network.service
+        state: started
+        enabled: yes
+
+    # ---------------------------------------------------------
+    # 2. CONSTRUCCIÓN Y DESPLIEGUE DEL WORKER MNIST
+    # ---------------------------------------------------------
+    - name: Crear carpeta temporal para construir la imagen
+      file:
+        path: "~/mnist-build"
+        state: directory
+      when: "'workers' in group_names"
+
+    - name: Copiar código fuente y Dockerfile a los workers
+      copy:
+        src: "files/{{ item }}"
+        dest: "~/mnist-build/{{ item }}"
+      loop:
+        - worker.py
+        - requirements.txt
+        - Dockerfile
+      when: "'workers' in group_names"
+
+    - name: Construir la imagen del Worker con Podman
+      command: "podman build -t worker-mnist:v1 ~/mnist-build/"
+      when: "'workers' in group_names"
+
+    - name: Desplegar Quadlet del Worker MNIST
+      template:
+        src: templates/worker.container.j2
+        dest: "~/.config/containers/systemd/worker.container"
+      when: "'workers' in group_names"
+
+    - name: Arrancar servicio Worker MNIST con systemd
+      systemd:
+        scope: user
+        daemon_reload: yes
+        name: worker.service
+        state: restarted
+        enabled: yes
+      when: "'workers' in group_names"
+
+    # ---------------------------------------------------------
+    # 3. DESPLIEGUE DEL BALANCEADOR DE CARGA
+    # ---------------------------------------------------------
+    - name: Crear configuración de Nginx Balanceador
+      template:
+        src: templates/nginx-lb.conf.j2
+        dest: "~/nginx-lb.conf"
+        mode: '0644'
+      when: "'balancer' in group_names"
+
+    - name: Desplegar Quadlet del Balanceador
+      template:
+        src: templates/lb.container.j2
+        dest: "~/.config/containers/systemd/balancer.container"
+      when: "'balancer' in group_names"
+
+    - name: Arrancar servicio Balanceador
+      systemd:
+        scope: user
+        daemon_reload: yes
+        name: balancer.service
+        state: started
+      when: "'balancer' in group_names"

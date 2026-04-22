@@ -1,0 +1,39 @@
+---
+- name: Limpieza total de Infraestructura MNIST (Hito 2)
+  hosts: all
+  tasks:
+    - name: Detener y eliminar servicios de usuario
+      systemd:
+        name: "{{ item }}"
+        scope: user
+        state: stopped
+        enabled: no
+      loop:
+        - worker.service         
+        - balancer.service       
+        - red-network.service    
+      ignore_errors: yes
+
+    - name: Eliminar archivos Quadlet y configuraciones del Hito 2
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "~/.config/containers/systemd/worker.container" 
+        - "~/.config/containers/systemd/balancer.container"
+        - "~/.config/containers/systemd/red.network"
+        - "~/mnist-build"        
+        - "~/nginx-lb.conf"
+      ignore_errors: yes
+
+    - name: Forzar borrado de contenedores y redes en Podman
+      shell: |
+        podman rm -f worker-mnist-{{ inventory_hostname }} lb-edge || true
+        podman network rm red-interna || true
+        podman rmi localhost/worker-mnist:v1 || true
+      ignore_errors: yes
+
+    - name: Reload de systemd usuario para limpiar memoria
+      systemd:
+        scope: user
+        daemon_reload: yes
