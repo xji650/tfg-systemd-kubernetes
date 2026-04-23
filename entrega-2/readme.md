@@ -86,3 +86,8 @@ Para auditoría técnica de los nodos en tiempo real, se utilizan las herramient
 * **Dataset Source:** [TensorFlow Datasets - MNIST](https://www.tensorflow.org/datasets/catalog/mnist)
 * **Documentación Quadlet:** [Podman Quadlet Guide](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
 * **Ansible Systemd Module:** [Community.General.Systemd](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html)
+
+
+```
+ansible all -i inventory.ini -m shell -a "ip route add default via 192.168.0.1" -b -K
+```

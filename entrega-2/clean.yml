@@ -1,5 +1,5 @@
 ---
-- name: Limpieza total de Infraestructura MNIST (Hito 2)
+- name: Limpieza total de Infraestructura MNIST
   hosts: all
   tasks:
     - name: Detener y eliminar servicios de usuario
@@ -37,3 +37,7 @@
       systemd:
         scope: user
         daemon_reload: yes
+
+    - name: Limpiar estados de unidades fallidas
+      command: "systemctl --user reset-failed"
+      ignore_errors: yes

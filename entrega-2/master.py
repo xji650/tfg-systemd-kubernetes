@@ -3,7 +3,7 @@ import numpy as np
 import requests
 
 # 1. Definimos nuestros N nodos (Parametrizable)
-NODOS_FILLS = ["192.168.1.101", "192.168.1.102"] 
+NODOS_FILLS = ["192.168.0.101", "192.168.0.102"] 
 N_NODOS = len(NODOS_FILLS)
 
 print("1. Conectando con TensorFlow Datasets para descargar MNIST...")
