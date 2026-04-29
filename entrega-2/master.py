@@ -3,7 +3,7 @@ import numpy as np
 import requests
 
 # 1. Definimos nuestros N nodos (Parametrizable)
-NODOS_FILLS = ["192.168.0.101", "192.168.0.102"] 
+NODOS_FILLS = ["192.168.1.101", "192.168.1.102"] 
 N_NODOS = len(NODOS_FILLS)
 
 print("1. Conectando con TensorFlow Datasets para descargar MNIST...")
@@ -12,7 +12,7 @@ dataset = tfds.load('mnist', split='train', as_supervised=True)
 print("2. Preparando datos (Solucionando el problema de JSON)...")
  
 # Cuando veas que funciona, quita el .take(1000) para enviar las 60.000
-imagenes_brutas = list(tfds.as_numpy(dataset.take(1000)))
+imagenes_brutas = list(tfds.as_numpy(dataset))
 
 lista_imagenes = [img.tolist() for img, label in imagenes_brutas]
 

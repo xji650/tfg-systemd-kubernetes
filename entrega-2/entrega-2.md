@@ -15,7 +15,7 @@ Edge environments challenge conventional cloud-native orchestration models due t
 ## 1. Resumen Ejecutivo
 Tras la consolidación de la infraestructura base del Systemd, esta segunda fase ha consistido en el despliegue de una carga de trabajo funcional sobre el clúster. Se ha implementado un sistema de **procesamiento distribuido** utilizando el dataset MNIST, migrando de un servicio estático (Nginx) a un servicio de computación activa (API Python). La orquestación se ha realizado íntegramente mediante **Ansible** y **Podman Quadlets**, validando la capacidad de systemd para gestionar servicios de cálculo intensivo.
 
-## 2. Objetivos Alcanzados
+## 2. Objetivos
 1.  **Ingesta y Partición de Datos:** Desarrollo de un Nodo Maestro capaz de descargar, preprocesar y segmentar un dataset de visión artificial en $N$ partes proporcionales al número de nodos activos.
 2.  **Computación Distribuida:** Implementación de Nodos Trabajadores (Fills) que ejecutan tareas de conteo de imágenes de forma aislada en contenedores rootless.
 3.  **Consolidación de Quadlets:** Transición completa hacia el despliegue declarativo, eliminando el uso de comandos imperativos en los nodos.

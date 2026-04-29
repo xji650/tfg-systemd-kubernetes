@@ -87,6 +87,57 @@ Para auditoría técnica de los nodos en tiempo real, se utilizan las herramient
 * **Documentación Quadlet:** [Podman Quadlet Guide](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
 * **Ansible Systemd Module:** [Community.General.Systemd](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html)
 
+---
+## 10. Demo
+
+### Paso 1: Mostrar que es "Declarativo" (El Blueprint)
+Antes de ejecutar nada, demuestra que estás usando systemd como un orquestador real y no lanzando contenedores a mano.
+* **En el Nodo A:**
+  ```bash
+  cat ~/.config/containers/systemd/worker.container
+  ```
+* **Qué decirle al tutor:** *"Como ves, no ejecuto comandos de Podman. Defino el estado deseado en este Quadlet, incluyendo la red virtual y las políticas de reinicio, y systemd se encarga de todo el ciclo de vida del contenedor en espacio de usuario (rootless)."*
+
+### Paso 2: Ejecutar el Sistema Distribuido (El flujo feliz)
+Aquí es donde demuestras el particionamiento del dataset.
+* **En el Nodo A (Terminal derecha):** Deja los logs del trabajador monitorizándose en tiempo real.
+  ```bash
+  journalctl --user -u worker.service -f
+  ```
+* **En el WSL (Terminal izquierda):** Ejecuta tu orquestador de datos.
+  ```bash
+  python master.py
+  ```
+* **Qué decirle al tutor:** *"Al ejecutar el maestro, vemos cómo descarga las 60.000 imágenes, calcula matemáticamente la división entre los nodos activos y despacha los paquetes. Si miramos la terminal de la derecha, vemos en tiempo real cómo el contenedor del Nodo A recibe y cuenta exactamente sus 30.000 imágenes, devolviendo un HTTP 200 OK."*
+
+### Paso 3: Demostrar la eficiencia energética (El argumento contra Kubernetes)
+Tu informe habla de un consumo de ~215 MB. Esto es una ventaja brutal frente a Kubernetes (que consume gigabytes solo para existir). Hay que mostrarlo.
+* **En el Nodo A:**
+  ```bash
+  podman stats --no-stream
+  ```
+  *(También puedes usar `systemd-cgtop` si lo prefieres).*
+* **Qué decirle al tutor:** *"Este es uno de los trade-offs principales del estudio. Al delegar la orquestación a systemd en lugar de instalar un agente pesado de Kubernetes (como Kubelet), el contenedor procesa miles de imágenes consumiendo apenas 200 MB de RAM. Casi el 100% del hardware del Edge se dedica a la carga útil, no a la gestión."*
+
+### Paso 4: La prueba del Caos (Demostrar la Resiliencia)
+Tu informe dice: *"Verificación de la auto-recuperación... ante fallos"*. Los tutores aman ver las cosas romperse y arreglarse solas. Vamos a "asesinar" a tu worker.
+* **En el Nodo A:**
+  1. Primero, mira el estado del servicio:
+     ```bash
+     systemctl --user status worker.service
+     ```
+  2. Ahora, mata el contenedor a lo bruto (simulando un fallo crítico de software o de memoria):
+     ```bash
+     podman stop worker-mnist-node-a -t 0
+     ```
+  3. Rápidamente, vuelve a mirar el estado y los logs:
+     ```bash
+     systemctl --user status worker.service
+     journalctl --user -u worker.service -n 10
+     ```
+* **Qué decirle al tutor:** *"Acabo de matar el contenedor forzosamente simulando un colapso en el Edge. Como la infraestructura es gestionada por systemd con la directiva `Restart=always`, el sistema ha detectado la caída y ha redesplegado el contenedor automáticamente en menos de 3 segundos, quedando listo para el siguiente paquete de datos sin que yo intervenga."*
+
+---
 
 ```
 ansible all -i inventory.ini -m shell -a "ip route add default via 192.168.0.1" -b -K
