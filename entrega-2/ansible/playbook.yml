@@ -45,7 +45,7 @@
 
     - name: Copiar código fuente y Dockerfile a los workers
       copy:
-        src: "files/{{ item }}"
+        src: "{{ experimento_path }}/{{ item }}"
         dest: "~/mnist-build/{{ item }}"
       loop:
         - worker.py
