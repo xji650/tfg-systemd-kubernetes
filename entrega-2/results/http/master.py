@@ -4,14 +4,13 @@ import time
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
-# Configuración del entorno[cite: 8, 12]
-NODOS_FILLS = ["192.168.1.101", "192.168.1.102"] 
-DATASET_SIZE = 1000  # Cambiar a 60000 para el test final
+# Configuración del entorno
+NODOS_FILLS = ["192.168.98.143", "192.168.98.144"] 
 
 print("Cargando MNIST...")
 dataset = tfds.load('mnist', split='train', as_supervised=True)
-imagenes_brutas = list(tfds.as_numpy(dataset.take(DATASET_SIZE)))
-lista_imagenes = [img.tolist() for img, label in imagenes_brutas][cite: 12]
+imagenes_brutas = list(tfds.as_numpy(dataset))
+lista_imagenes = [img.tolist() for img, label in imagenes_brutas]
 
 # Preparación de métricas y particiones
 tamano_particion = len(lista_imagenes) // len(NODOS_FILLS)
