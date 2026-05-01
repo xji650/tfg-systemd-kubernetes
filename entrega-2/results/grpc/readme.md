@@ -9,9 +9,20 @@ El sistema evoluciona hacia un modelo de comunicación basado en contratos estri
 ### 1. El Nodo Orquestador (Master)
 El script `master.py` actúa como cliente gRPC y distribuidor de la carga de visión artificial.
 *   **Conversión Binaria Nativa:** Carga el dataset MNIST y lo convierte a matrices `float32` de NumPy. En lugar de parsear a listas, inyecta los datos directamente en formato binario mediante `particion_np.tobytes()`.
-*   **Canales Inseguros Optimizados:** Establece conexiones concurrentes a través de `grpc.insecure_channel` mediante un `ThreadPoolExecutor`. Para soportar el envío de tensores masivos, se sobreescribe el límite nativo de gRPC, configurando `max_send_message_length` a 200 MB.
+*   **Configuración del Protocolo de Comunicación:** A diferencia de la implementación previa en HTTP/REST, gRPC impone por defecto un límite de 4 MB por mensaje por motivos de seguridad y eficiencia. Debido a que el dataset MNIST particionado para este experimento genera payloads de aproximadamente 94 MB, se procedió a la reconfiguración de los parámetros `max_send_message_length` y `max_receive_message_length` a 200 MB tanto en el Master como en los Workers. Esta decisión de diseño permite evaluar el rendimiento del protocolo mediante transferencias de grandes bloques binarios, minimizando el *overhead* de fragmentación.
 
-### 2. Los Nodos Perimetrales (Workers)
+### 2. Justificación de la Carga Útil (Payload)
+El dimensionamiento del payload enviado por la red responde a un cálculo estricto sobre la topología del dataset de visión artificial. 
+
+Considerando que se envían lotes de 30,000 imágenes (la mitad exacta del dataset de entrenamiento MNIST para un clúster de dos nodos Worker):
+*   Resolución dimensional por imagen: $28 \times 28 = 784$ píxeles.
+*   Profundidad de datos: Cada píxel se procesa como un `float32`, lo que equivale a 4 bytes.
+*   Peso unitario: $784 \times 4 = 3136$ bytes por imagen.
+
+Por tanto, la huella de memoria exacta para la transmisión de un lote en crudo es:
+$$30000 \times 3136 = 94080000 \text{ bytes} \approx 94 \text{ MB}$$
+
+### 3. Los Nodos Perimetrales (Workers)
 Los contenedores *rootless* ejecutan un servidor gRPC instanciado en el puerto 8000.
 *   **Servidor RPC:** La clase `MnistServicer` implementa el método `ProcessBatch` definido en el contrato Protobuf.
 *   **Zero-Parsing en Memoria:** El Worker recibe el payload binario (`request.image_data`) y lo mapea directamente a un array de NumPy utilizando `np.frombuffer`. Esta técnica elimina la sobrecarga computacional de decodificar texto a variables lógicas.
@@ -92,7 +103,6 @@ Una vez que los Workers están en `running` y escuchando en el puerto 8000, lanz
 ```bash
 python master.py
 ```
-
 
 ## Comandos de Mantenimiento
 
