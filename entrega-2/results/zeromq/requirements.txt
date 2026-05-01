@@ -1,0 +1,4 @@
+pyzmq
+grpcio-tools  # Lo seguimos necesitando para compilar el .proto
+numpy
+psutil
