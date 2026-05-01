@@ -1,5 +1,5 @@
 ---
-- name: "Hito: Sistema Proactivo de N nodos"
+- name: "Sistema Proactivo de N nodos"
   hosts: all
   tasks:
     # ---------------------------------------------------------
