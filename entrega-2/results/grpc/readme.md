@@ -1,6 +1,6 @@
 # Arquitectura de Orquestación Edge: Implementación gRPC
 
-Este repositorio documenta la segunda iteración de la comparativa de protocolos para arquitecturas distribuidas en entornos Edge Computing. En esta fase, se abandona el estándar web tradicional en favor de **gRPC y Protocol Buffers (Protobuf)**, un framework de Comunicación a Procedimiento Remoto (RPC) de alto rendimiento, ideal para la transmisión eficiente de datos binarios masivos.
+Este repositorio documenta la segunda versión de la comparativa de protocolos para arquitecturas distribuidas en entornos Edge Computing. En esta fase, se abandona el estándar web tradicional en favor de **gRPC y Protocol Buffers (Protobuf)**, un framework de Comunicación a Procedimiento Remoto (RPC) de alto rendimiento, ideal para la transmisión eficiente de datos binarios masivos.
 
 ## Diseño de la Arquitectura (Master-Worker)
 
