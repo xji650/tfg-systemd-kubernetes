@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package mnist;
+
+service MnistService {
+    rpc ProcessBatch (BatchRequest) returns (BatchResponse) {}
+}
+
+message BatchRequest {
+    int32 batch_id = 1;
+    bytes image_data = 2; 
+}
+
+message BatchResponse {
+    int32 batch_id = 1;
+    int32 images_processed = 2;
+    string status = 3;
+    float ram_usage = 4;
+    float cpu_usage = 5;
+}
