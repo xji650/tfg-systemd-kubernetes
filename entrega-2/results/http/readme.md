@@ -1,169 +1,93 @@
-## 1. Descripción del Entorno
-Este proyecto implementa una arquitectura de procesamiento paralelo bajo el modelo **Master-Worker**. El sistema permite la distribución de carga de visión artificial (dataset MNIST) sobre nodos perimetrales (Edge) orquestados mediante **Ansible** y gestionados localmente por **systemd Quadlets**.
+# Arquitectura de Orquestación Edge: Implementación HTTP/REST
 
-| Componente | Servicio | Puerto (Host) | Protocolo | Descripción |
-| :--- | :--- | :--- | :--- | :--- |
-| **Worker (Hijos)** | FastAPI / Uvicorn | `8000` | TCP | Recepción de particiones de datos (POST) |
+Este repositorio documenta la primera versión de la comparativa de protocolos de red para arquitecturas distribuidas en entornos Edge Computing. Esta implementación establece el *baseline* o línea de referencia utilizando el estándar de la industria web: el protocolo HTTP/1.1 con serialización JSON bajo un patrón arquitectónico Master-Worker.
 
-## 4. Dependencias del Software
+## Diseño de la Arquitectura (Master-Worker)
 
-### Nodo Maestro (Control Machine)
-* **Python 3.10+**
-* **Librerías:**
-    * `tensorflow-datasets`: Ingesta de datos.
-    * `numpy`: Preprocesamiento y serialización.
-    * `requests`: Cliente HTTP para distribución.
+El sistema se estructura en dos capas principales, diseñadas para la distribución de cargas de trabajo de visión artificial (dataset MNIST).
 
-### Nodos Hijos (Edge Workers)
-* **Imagen Base:** `python:3.11-slim`
-* **Librerías internas (dentro del contenedor):**
-    * `fastapi`: Framework de API.
-    * `uvicorn`: Servidor ASGI.
+### 1. El Nodo Orquestador (Master)
+El nodo central (`master.py`) actúa como el coordinador y distribuidor de la carga. Sus responsabilidades técnicas incluyen:
+*   **Ingesta y Preprocesamiento:** Carga el dataset de entrenamiento MNIST utilizando `tensorflow-datasets`. A continuación, convierte los arrays brutos de NumPy en listas nativas de Python (`.tolist()`) para permitir su posterior serialización en JSON.
+*   **Partición de Datos:** Divide el volumen total de imágenes en fragmentos (chunks) equitativos en función del número de nodos Worker disponibles en el clúster.
+*   **Concurrencia de Red:** Implementa un `ThreadPoolExecutor` para lanzar peticiones POST HTTP en paralelo (multihilo) hacia las IPs de los nodos Workers, evitando el bloqueo síncrono y midiendo el tiempo global de procesamiento (Throughput).
 
-## 5. Resultados
+### 2. Los Nodos Perimetrales (Workers)
+Los dispositivos del clúster (ej: `192.168.98.143` y `144`) ejecutan contenedores *rootless* gestionados por Quadlets, que actúan como sumideros de datos pasivos.
+*   **Framework API:** Cada contenedor expone un servidor ASGI (`Uvicorn`) en el puerto 8000, orquestado por el microframework `FastAPI`.
+*   **Procesamiento y Telemetría:** El endpoint `/procesar` recibe la partición de datos, ejecuta la tarea simulada (conteo de imágenes) y utiliza la librería `psutil` para inspeccionar el uso de memoria RAM (RSS) y CPU del propio proceso antes de devolver el *payload* de respuesta.
 
-### Test 1
-```
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA 
-==================================================
-Protocolo de Comunicación:     HTTP/REST (JSON)
-Tiempo Total (s):              17.87 s
-Throughput (img/s):            3357.91 img/s
-RAM Máx. Worker (MB):          2621.75 MB
-CPU Promedio (%):              8.40 %
-Datos Totales Red (MB):        242.29 MB
-Tasa Éxito (%):                100.00 %
-==================================================
+## Protocolo y Formato de Serialización
+
+Esta iteración fuerza el uso de tecnologías web tradicionales en un entorno distribuido perimetral:
+
+*   **Capa de Transporte (HTTP/1.1):** La comunicación se realiza mediante peticiones HTTP estándar gestionadas por la librería `requests` en el Master. Esto introduce latencia inherente debido a la negociación de cabeceras y la apertura de conexiones individuales por cada transacción.
+*   **Capa de Serialización (JSON):** El formato de intercambio de datos es texto plano estructurado (JSON). El Master serializa el array multidimensional de píxeles (`{"imagenes": particion}`), y FastAPI en los Workers se encarga del *parsing* asíncrono para reconstruir los datos en memoria antes del cómputo.
+
+## Despliegue con Ansible
+
+La infraestructura se aprovisiona mediante Ansible, inyectando el código de los Workers en contenedores basados en `python:3.11-slim`. Para desplegar este protocolo específico, la variable de entorno en el inventario debe apuntar al directorio correcto:
+
+```yaml
+# En el archivo de variables o inventario de Ansible
+experimento_path: "../results/http"
 ```
 
-```
-nodo-a
+## Análisis de Rendimiento (resultados en `experiments.md`)
 
-Apr 30 21:43:26 node-a worker-mnist-node-a[2958]: Procesadas 30000 imágenes. RAM: 2641.60MB, CPU: 8.4%
-Apr 30 21:43:26 node-a worker-mnist-node-a[2958]: INFO:     10.89.0.2:58350 - "POST /procesar HTTP/1.1" 200 OK
-```
+Las pruebas de estrés sobre la implementación HTTP/REST arrojan métricas que evidencian los cuellos de botella de la serialización en texto plano para grandes volúmenes de datos binarios.
 
-```
-nodo-b
+Basado en las ejecuciones de prueba (Test 1-5):
+*   **Tiempo Promedio de Ejecución:** ~13.33 segundos.
+*   **Saturación de Memoria (RAM):** El proceso de *parsing* del inmenso objeto JSON obliga a Python a consumir un promedio superior a los **2.6 GB de RAM** por cada Worker.
+*   **Eficiencia de Red:** La transmisión en texto plano requiere mover un *payload* de aproximadamente **242.29 MB** por el enlace de red, limitando el Throughput general del clúster a unas 4.600 imágenes/segundo de media.
 
-Apr 30 21:43:26 node-b worker-mnist-node-b[3131]: Procesadas 30000 imágenes. RAM: 2601.90MB, CPU: 8.4%
-Apr 30 21:43:26 node-b worker-mnist-node-b[3131]: INFO:     10.89.0.2:44780 - "POST /procesar HTTP/1.1" 200 OK
-```
+### RESULTADOS: HTTP/REST (JSON)
 
-### Test 2
-```
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA 
-==================================================
-Protocolo de Comunicación:     HTTP/REST (JSON)
-Tiempo Total (s):              13.39 s
-Throughput (img/s):            4482.42 img/s
-RAM Máx. Worker (MB):          2631.48 MB
-CPU Promedio (%):              1.05 %
-Datos Totales Red (MB):        242.29 MB
-Tasa Éxito (%):                100.00 %
-==================================================
-```
-
-```
-nodo-a
-
-Apr 30 21:51:11 node-a worker-mnist-node-a[2958]: Procesadas 30000 imágenes. RAM: 2641.68MB, CPU: 1.1%
-Apr 30 21:51:11 node-a worker-mnist-node-a[2958]: INFO:     10.89.0.2:55360 - "POST /procesar HTTP/1.1" 200 OK
-```
-
-```
-nodo-b
-
-Apr 30 21:51:10 node-b worker-mnist-node-b[3131]: Procesadas 30000 imágenes. RAM: 2621.28MB, CPU: 1.0%
-Apr 30 21:51:10 node-b worker-mnist-node-b[3131]: INFO:     10.89.0.2:44718 - "POST /procesar HTTP/1.1" 200 OK
-```
+| Prueba | Tiempo Total (s) | Throughput (img/s) | RAM Máx, Worker (MB) | CPU Promedio (%) | Datos Totales Red (MB) | Tasa Éxito (%) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Test 1** | 17,87 | 3357,91 | 2621,75 MB | 8,40% | 242,29 MB | 100,00% |
+| **Test 2** | 13,39 | 4482,42 | 2631,48 MB | 1,05% | 242,29 MB | 100,00% |
+| **Test 3** | 11,6 | 5170,64 | 2631,48 MB | 1,50% | 242,29 MB | 100,00% |
+| **Test 4** | 12,41 | 4833,97 | 2631,48 MB | 0,40% | 242,29 MB | 100,00% |
+| **Test 5** | 11,38 | 5274,69 | 2631,48 MB | 4,65% | 242,29 MB | 100,00% |
+| **Total** | **13,33** | **4623,926** | **2631,48 MB** | **3,20%** | **242,29 MB** | **100,00%** |
 
 
-### Test 3
-```
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA 
-==================================================
-Protocolo de Comunicación:     HTTP/REST (JSON)
-Tiempo Total (s):              11.60 s
-Throughput (img/s):            5170.64 img/s
-RAM Máx. Worker (MB):          2631.48 MB
-CPU Promedio (%):              1.50 %
-Datos Totales Red (MB):        242.29 MB
-Tasa Éxito (%):                100.00 %
-==================================================
+## Guía de Ejecución: Clúster Edge MNIST (HTTP/REST)
+
+### 1. Preparación del Entorno (Master)
+Preparar el entorno virtual del nodo orquestador con las dependencias para ingestar el dataset y hacer peticiones web.
+```bash
+# Instalar dependencias necesarias en el Master
+pip install tensorflow-datasets numpy requests
 ```
 
-```
-nodo-a
+### 2. Despliegue de Infraestructura (Ansible)
+Asegúrate de que la variable `experimento_path` de tu inventario apunta a la carpeta de HTTP (`"../results/http"`). Luego, usa Ansible para configurar Podman, la red interna y los Quadlets de Systemd en los nodos.
+```bash
+# 1. Limpiar cualquier rastro previo de otros protocolos (Recomendado)
+ansible-playbook -i inventory.ini clean.yml -K
 
-Apr 30 21:55:22 node-a worker-mnist-node-a[2958]: Procesadas 30000 imágenes. RAM: 2641.27MB, CPU: 1.5%
-Apr 30 21:55:22 node-a worker-mnist-node-a[2958]: INFO:     10.89.0.2:35544 - "POST /procesar HTTP/1.1" 200 OK
-```
-
-```
-nodo-b
-
-Apr 30 21:55:22 node-b worker-mnist-node-b[3131]: Procesadas 30000 imágenes. RAM: 2621.69MB, CPU: 1.5%
-Apr 30 21:55:22 node-b worker-mnist-node-b[3131]: INFO:     10.89.0.2:43806 - "POST /procesar HTTP/1.1" 200 OK
+# 2. Desplegar y arrancar el clúster con la API de FastAPI
+ansible-playbook -i inventory.ini playbook.yml -K
 ```
 
-### Test 4
-```
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA 
-==================================================
-Protocolo de Comunicación:     HTTP/REST (JSON)
-Tiempo Total (s):              12.41 s
-Throughput (img/s):            4833.97 img/s
-RAM Máx. Worker (MB):          2631.64 MB
-CPU Promedio (%):              0.40 %
-Datos Totales Red (MB):        242.29 MB
-Tasa Éxito (%):                100.00 %
-==================================================
+### 3. Verificación en los Nodos (Workers)
+Si quieres comprobar que los contenedores están corriendo bajo Systemd (modo *rootless*) y que Uvicorn está escuchando correctamente en el puerto 8000:
+```bash
+# Conectarse a uno de los nodos (ej. node-a)
+ssh littledragon@192.168.98.143
+
+# Ver el estado del servicio gestionado por Systemd
+systemctl --user status worker.service
+
+# Ver logs en tiempo real del servidor FastAPI/Uvicorn
+journalctl --user -u worker.service -f
 ```
 
-```
-nodo-a
-
-Apr 30 22:33:45 node-a worker-mnist-node-a[2958]: Procesadas 30000 imágenes. RAM: 2642.14MB, CPU: 0.4%
-Apr 30 22:33:45 node-a worker-mnist-node-a[2958]: INFO:     10.89.0.2:39638 - "POST /procesar HTTP/1.1" 200 OK
-```
-
-```
-nodo-b
-
-Apr 30 22:33:45 node-b worker-mnist-node-b[3131]: Procesadas 30000 imágenes. RAM: 2621.14MB, CPU: 0.4%
-Apr 30 22:33:45 node-b worker-mnist-node-b[3131]: INFO:     10.89.0.2:38946 - "POST /procesar HTTP/1.1" 200 OK
-```
-
-### Test 5
-```
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA 
-==================================================
-Protocolo de Comunicación:     HTTP/REST (JSON)
-Tiempo Total (s):              11.38 s
-Throughput (img/s):            5274.69 img/s
-RAM Máx. Worker (MB):          2631.59 MB
-CPU Promedio (%):              4.65 %
-Datos Totales Red (MB):        242.29 MB
-Tasa Éxito (%):                100.00 %
-==================================================
-```
-
-```
-nodo-a
-
-Apr 30 22:35:01 node-a worker-mnist-node-a[2958]: Procesadas 30000 imágenes. RAM: 2641.62MB, CPU: 4.7%
-Apr 30 22:35:01 node-a worker-mnist-node-a[2958]: INFO:     10.89.0.2:36558 - "POST /procesar HTTP/1.1" 200 OK
-```
-
-```
-nodo-b
-
-Apr 30 22:35:01 node-b worker-mnist-node-b[3131]: Procesadas 30000 imágenes. RAM: 2621.56MB, CPU: 4.6%
-Apr 30 22:35:01 node-b worker-mnist-node-b[3131]: INFO:     10.89.0.2:35192 - "POST /procesar HTTP/1.1" 200 OK
+### 4. Ejecución del Experimento (Master)
+Una vez que los Workers muestren el estado `running` y Uvicorn esté listo, lanza el script principal desde tu máquina orquestadora para enviar las imágenes vía POST y obtener la tabla de resultados.
+```bash
+python master.py
 ```
