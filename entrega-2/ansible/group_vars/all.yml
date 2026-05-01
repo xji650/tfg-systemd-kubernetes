@@ -6,7 +6,7 @@ ansible_ssh_private_key_file: ~/.ssh/id_rsa
 
 # Variables del servicio
 web_port: 8000
-balancer_port: 8888
-web_image: docker.io/library/nginx:alpine
 
-experimento_path: "../results/master-worker/http/files"
+#experimento_path: "../results/http"
+
+experimento_path: "../results/grpc"

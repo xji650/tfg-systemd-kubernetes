@@ -49,6 +49,7 @@
         dest: "~/mnist-build/{{ item }}"
       loop:
         - worker.py
+        - mnist.proto
         - requirements.txt
         - Dockerfile
       when: "'workers' in group_names"
@@ -71,27 +72,3 @@
         state: restarted
         enabled: yes
       when: "'workers' in group_names"
-
-    # ---------------------------------------------------------
-    # 3. DESPLIEGUE DEL BALANCEADOR DE CARGA
-    # ---------------------------------------------------------
-    - name: Crear configuración de Nginx Balanceador
-      template:
-        src: templates/nginx-lb.conf.j2
-        dest: "~/nginx-lb.conf"
-        mode: '0644'
-      when: "'balancer' in group_names"
-
-    - name: Desplegar Quadlet del Balanceador
-      template:
-        src: templates/lb.container.j2
-        dest: "~/.config/containers/systemd/balancer.container"
-      when: "'balancer' in group_names"
-
-    - name: Arrancar servicio Balanceador
-      systemd:
-        scope: user
-        daemon_reload: yes
-        name: balancer.service
-        state: started
-      when: "'balancer' in group_names"
