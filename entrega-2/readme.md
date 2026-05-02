@@ -123,3 +123,5 @@ Tu informe dice: *"Verificación de la auto-recuperación... ante fallos"*. Los 
      journalctl --user -u worker.service -n 10
      ```
 
+
+//TODO: Construye la imagen de Podman solo en el nodo padre y envíala ya terminada a los hijos usando un Registry local; así los workers solo tienen que descargarla y ejecutarla sin gastar CPU ni RAM instalando librerías.
