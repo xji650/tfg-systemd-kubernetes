@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     # ---------------------------------------------------------
-    # 1. PERSISTENCIA Y PREPARACIÓN BASE
+    # 1. PERSISTENCIA Y PREPARACIÓN BASE 
     # ---------------------------------------------------------
     - name: Habilitar linger para persistencia rootless
       become: yes
@@ -35,29 +35,34 @@
         enabled: yes
 
     # ---------------------------------------------------------
-    # 2. CONSTRUCCIÓN Y DESPLIEGUE DEL WORKER MNIST
+    # 2. CONSTRUCCIÓN CENTRALIZADA Y EMPAQUETADO (Nodo de Control)
     # ---------------------------------------------------------
-    - name: Crear carpeta temporal para construir la imagen
-      file:
-        path: "~/mnist-build"
-        state: directory
-      when: "'workers' in group_names"
+    - name: Construir la imagen del Worker localmente
+      delegate_to: localhost
+      run_once: true
+      command: "podman build --cgroup-manager=cgroupfs -t localhost/worker-mnist:v1 {{ experimento_path }}/"
 
-    - name: Copiar código fuente y Dockerfile a los workers
+    - name: Guardar la imagen en un artefacto .tar
+      delegate_to: localhost
+      run_once: true
+      command: "podman save -o /tmp/worker-mnist.tar localhost/worker-mnist:v1"
+
+    # ---------------------------------------------------------
+    # 3. DISTRIBUCIÓN EDGE (Workers)
+    # ---------------------------------------------------------
+    - name: Transferir la imagen empaquetada a los nodos perimetrales
       copy:
-        src: "{{ experimento_path }}/{{ item }}"
-        dest: "~/mnist-build/{{ item }}"
-      loop:
-        - worker.py
-        - mnist.proto
-        - requirements.txt
-        - Dockerfile
+        src: "/tmp/worker-mnist.tar"
+        dest: "~/worker-mnist.tar"
       when: "'workers' in group_names"
 
-    - name: Construir la imagen del Worker con Podman
-      command: "podman build -t worker-mnist:v1 ~/mnist-build/"
+    - name: Cargar la imagen en el motor de contenedores del Worker
+      command: "podman load -i ~/worker-mnist.tar"
       when: "'workers' in group_names"
 
+    # ---------------------------------------------------------
+    # 4. DESPLIEGUE DEL WORKER MNIST
+    # ---------------------------------------------------------
     - name: Desplegar Quadlet del Worker MNIST
       template:
         src: templates/worker.container.j2

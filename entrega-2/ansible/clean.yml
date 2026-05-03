@@ -20,7 +20,7 @@
       loop:
         - "~/.config/containers/systemd/worker.container" 
         - "~/.config/containers/systemd/red.network"
-        - "~/mnist-build"        
+        - "~/worker-mnist.tar"
       ignore_errors: yes
 
     - name: Forzar borrado de contenedores y redes en Podman

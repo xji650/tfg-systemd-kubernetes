@@ -23,7 +23,11 @@ La inyección del entorno y dependencias específicas se controla de forma diná
 experimento_path: "../results/zeromq"
 ```
 
-Durante el despliegue, Ansible iterará sobre esta ruta para transferir el `Dockerfile`, el código fuente (`worker.py`) y las interfaces (`mnist.proto` si procede) al directorio de *build* (`~/mnist-build`) de cada nodo perimetral.
+Para optimizar los recursos del hardware perimetral y evitar problemas de red en entornos nómadas (NAT/Firewalls), la arquitectura utiliza un patrón de despliegue **Air-Gapped**.
+
+- Durante el despliegue, el orquestador (Ansible) itera sobre la ruta del experimento para compilar la imagen OCI de forma centralizada en el nodo de control. 
+    
+- Posteriormente, la imagen se empaqueta en un artefacto `.tar` y se empuja vía SSH a cada nodo Worker, donde se carga directamente en el motor de contenedores, liberando a los nodos perimetrales de la carga computacional de la compilación.
 
 ## Requisitos e Inventario
 La topología del clúster se define bajo el grupo `[workers]`. El nodo de control requiere acceso SSH sin contraseña a las IPs declaradas usando la clave RSA estándar (`~/.ssh/id_rsa`).
@@ -39,7 +43,7 @@ Todos los Workers exponen el puerto unificado `8000` (definido en la variable `w
 ### 1. Playbook de Despliegue (`playbook.yml`)
 Ejecuta el aprovisionamiento integral (Hito: Sistema Proactivo de N nodos):
 1.  **Preparación Base:** Activa el *linger* y despliega la red virtual a través de Quadlets, reiniciando el *daemon* de usuario.
-2.  **Construcción Nativa:** Crea el directorio de trabajo, transfiere el código del experimento seleccionado y compila la imagen OCI (`localhost/worker-mnist:v1`) en el destino usando Podman.
+2.  **Construcción Centralizada y Distribución (Air-Gapped):** Compila la imagen OCI en el nodo orquestador basándose en el experimento seleccionado, la empaqueta en formato `.tar`, la transfiere a los nodos perimetrales vía SSH y la inyecta directamente en Podman (`podman load`).
 3.  **Ejecución:** Despliega el Quadlet del contenedor y delega a Systemd el reinicio y habilitación del `worker.service`.
 
 ### 2. Playbook de Destrucción (`clean.yml`)
