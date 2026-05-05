@@ -1,93 +1,94 @@
-Nodo padre `172.24.127.206`
+# Instalacion kubernetes con K3S
 
-Nodos hijos `192.168.98.143` y `192.168.98.144`
+Guía de instalación y configuración para un entorno Kubernetes ligero utilizando K3s.
+
+## Arquitectura del Cluster
+| Rol | Nombre/Etiqueta | IP |
+| :--- | :--- | :--- |
+| **Master** | Nodo Padre | `172.24.127.206` |
+| **Worker 1** | Nodo Hijo A | `192.168.98.143` |
+| **Worker 2** | Nodo Hijo B | `192.168.98.144` |
 
 ---
 
-### 1. Instalar K3S (master):
-```Bash
+## 1. Instalación del Nodo Maestro (Master)
+
+Ejecutar en el servidor `172.24.127.206`:
+
+```bash
 curl -sfL https://get.k3s.io | sh -
 ```
 
-Para ver si está bien configurado
-
-``` Bash
-# Command 1: sudo k3s kubectl (The Built-In Version)
-sudo k3s kubectl get node
-
-# Command 2: sudo kubectl (The Standalone Version)
-sudo kubectl get nodes
-```
-
-Si de usa Docker Desktop, y os falla `("Failed to start ContainerManager" err="system validation failed - wrong number of fields (expected 6, got 7)")`: 
-
-1. Abrir Docker Desktop > Settings > Resources > WSL integration 
-
-2. Marcar `Enable integration with my default WSL distro` 
-
-3. En **Enable integration with additional distros**, activar `Ubuntu-22.04` o la version que tengais 
-
-Y luego ejecuta:
+### Configuración de acceso sin `sudo`
+Para gestionar el cluster con el `kubectl` independiente de tu usuario:
 
 ```bash
-sudo systemctl restart k3s
-```
----
-
-Para dejar de usar `sudo` cada vez que vamos a ejecutar:
-
-```Bash
-# 1. Create the default hidden folder for your user
 mkdir -p ~/.kube
-
-# 2. Copy the K3s config file into that new folder
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-
-# 3. Give your user ownership of the file so you don't need sudo anymore
 sudo chown $USER:$USER ~/.kube/config
 ```
 
-Ahora, el kubectl independiente ya no es ciego. Intenta ejecutar este comando limpio (sin sudo, sin k3s):
+### Inmovilización del entorno (Importante)
+Para evitar actualizaciones automáticas que puedan romper la compatibilidad o los certificados TLS, ejecutamos el bloqueo de paquetes:
 
-```Bash
-kubectl get nodes
+```bash
+sudo apt-mark hold kubectl k3s podman conmon slirp4netns
 ```
+> **Nota:** Esto asegura que `apt upgrade` ignore estos componentes. Para revertir, usar `unhold` en lugar de `hold`.
 
 ---
-### 2. Instalar K3S (worker):
 
+## 2. Instalación de Nodos Trabajadores (Workers)
+
+### 1. Obtener el Token en el Master:
+
+```bash
+sudo cat /var/lib/rancher/k3s/server/node-token
+```
+
+### 2. Ejecutar en cada Nodo Hijo
+
+Sustituyendo el `mynodetoken` e `myserver` (ip de master):
+   
 ```bash
 curl -sfL https://get.k3s.io | K3S_URL=https://myserver:6443 K3S_TOKEN=mynodetoken sh -
 ```
-- Substituye `myserver` por el `ip master`
-
-    ```bash
-    # En master:
-    ip a
-    ```
-
-- El valor que se debe usar para `K3S_TOKEN` se almacena en `/var/lib/rancher/k3s/server/node-token` en el nodo del servidor (master).
-
-    ```bash 
-    sudo cat /var/lib/rancher/k3s/server/node-token
-    ```
-
-**Repetir el proceso en todos los nodos.**
 
 ---
-### 3. Resultados
 
-Para ver si esta bien configurado, ejecuta:
+## ⚠️ Puntos Críticos y Solución de Errores
 
-```Bash
+### Error de ContainerManager (Docker Desktop + WSL2)
+Si aparece el error `system validation failed - wrong number of fields (expected 6, got 7)`, sigue estos pasos:
+1. **Docker Desktop Settings** > Resources > WSL integration.
+2. Activa `Enable integration with my default WSL distro`.
+3. En **additional distros**, activa tu distribución (ej. `Ubuntu-22.04`).
+4. Reinicia el servicio: `sudo systemctl restart k3s`.
+
+### Persistencia de la IP
+**IMPORTANTE:** Este cluster depende de que las IPs de los nodos sean estáticas.
+* Si la IP del Master cambia, los nodos hijos perderán la conexión y los certificados TLS de `kubectl` fallarán.
+* Se recomienda fijar la IP `172.24.127.206` en la configuración de red del sistema o en el router.
+
+### Inmutabilidad de Aplicaciones
+Para evitar que tus aplicaciones cambien sin previo aviso, **no uses el tag `:latest`** en tus archivos YAML. Usa siempre versiones fijas:
+* NO: `image: nginx:latest`
+* SÍ: `image: nginx:1.25.4`
+
+---
+
+## Verificación del Cluster
+
+Desde el nodo Master, comprueba que todos los nodos están en estado `Ready`:
+```bash
 kubectl get nodes
 ```
-
 Deberia de salir el nodo **master** con `control-plane` y una lista con numeros de nodos **workers** configurados.
 
+**Resultado esperado:**
 ```    
 NAME              STATUS   ROLES           AGE     VERSION
-desktop-105rpfe   Ready    control-plane   3h21m   v1.35.4+k3s1
-node-a            Ready    <none>          2m5s    v1.35.4+k3s1
-node-b            Ready    <none>          6s      v1.35.4+k3s1
+desktop-master    Ready    control-plane   3h      v1.X.X+k3s1
+node-worker-a     Ready    <none>          2m      v1.X.X+k3s1
+node-worker-b     Ready    <none>          1m      v1.X.X+k3s1
 ```
