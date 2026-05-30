@@ -40,21 +40,9 @@ Project-TFG/
 
 ## Visualización de la documentación
 
-### En local
+### En el navegador 
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/xji650/tfg-systemd-kubernetes.git
-cd tfg-systemd-kubernetes
-
-# Instalar docsify (requiere Node.js)
-npm install -g docsify-cli
-
-# Servir la documentación
-docsify serve .
-```
-
-Acceder en: http://localhost:3000
+Acceder en: https://xji650.github.io/tfg-systemd-kubernetes/#/
 
 ### Requisitos
 
