@@ -155,9 +155,13 @@ El sistema Master-Worker distribuye dinámicamente particiones del dataset MNIST
 
 $$tamano\_particion = \frac{total\_imagenes}{N\_nodos}$$
 
-Para acomodar la evaluación de las tres arquitecturas, el pipeline de **Ansible** se ha rediseñado bajo el principio de separación entre *Build* y *Run*:
-*   **Aprovisionamiento Agnóstico:** El orquestador inyecta configuraciones Quadlet idénticas para los contenedores *rootless*, independientemente de si ejecutan FastAPI (REST), un *Servicer* (gRPC) o un *Socket REP* (ZeroMQ).
-*   **Compilación Centralizada:** Para los protocolos binarios, el archivo de interfaz (`.proto`) se compila en el nodo Master. Ansible distribuye el código precompilado a los nodos Edge, evitando instalar pesadas herramientas de compilación (`grpcio-tools`) en los contenedores perimetrales y reduciendo su huella de almacenamiento.
+Para acomodar la evaluación de las diferentes arquitecturas de red, el pipeline de **Ansible** se ha diseñado bajo el principio estricto de separación entre *Build* (Construcción) y *Run* (Ejecución):
+
+* **Construcción Centralizada (Local Registry):** El nodo Master asume el rol de *Builder*. Compila los archivos de interfaz binaria (`.proto`) y construye una única imagen de contenedor Podman. Posteriormente, expone esta imagen ya terminada a través de un *Registry* local alojado en su propia red.
+
+* **Despliegue Ligero en el Edge:** Ansible instruye a los nodos *workers* para que realicen la descarga de la imagen directamente desde el *Registry* local del Master. Esto evita descargar datos desde repositorios externos (Docker Hub) y exime a los nodos perimetrales de instalar pesadas herramientas de compilación como `grpcio-tools`.
+
+* **Aprovisionamiento Agnóstico:** Una vez descargada la imagen, el orquestador inyecta configuraciones `systemd Quadlet` idénticas para levantar los contenedores *rootless*, independientemente de si el nodo ejecutará un servidor HTTP, un *Servicer* gRPC o un *Socket REP* de ZeroMQ.
 
 ---
 
