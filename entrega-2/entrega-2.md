@@ -164,19 +164,14 @@ Para acomodar la evaluación de las tres arquitecturas, el pipeline de **Ansible
 ## 4. Comparativa y experimento
 
 #### Comparativa de protocolo 
-HTTP/v1.1 + json
-
-HTTP/2 + binario - protobuf (gRPC)
-
-ZeroMQ + binario - protobuf
-
-MQTT + binario - protobuf
+- HTTP/v1.1 + json
+- HTTP/2 + binario - protobuf (gRPC)
+- ZeroMQ + binario - protobuf
+- MQTT + binario - protobuf
 
 #### Comparativa de formato de envio de datos
-ZeroMQ + binario - protobuf
-
-ZeroMq + binario - Messaje Pack
-
+- ZeroMQ + binario - protobuf
+- ZeroMq + binario - Messaje Pack
 
 ### 1. La Línea Base (El estándar a batir)
 
