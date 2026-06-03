@@ -23,47 +23,46 @@ La tarea consiste en:
 
 ``` mermaid
 flowchart TD
-Internet((Internet))
+    Internet((Internet))
 
-subgraph Maquina1 [Máquina 1: Master / Padre]
-    direction TB
-    Ansible[Plano de Control:\nAnsible Playbooks]
-    Padre[Plano de Datos:\nContenedor Padre Podman]
-    
-    Ansible -. "Fase1 Configura a sí mismo\n(Quadlets, systemd)" .-> Padre
-end
+    subgraph Maquina1 ["Máquina 1: Master / Padre"]
+        direction TB
+        Ansible["Plano de Control:<br>Ansible Playbooks"]
+        Padre["Plano de Datos:<br>Contenedor Padre Podman"]
+        
+        Ansible -. "Fase 1: Configura a sí mismo<br>(Quadlets, systemd)" .-> Padre
+    end
 
-subgraph Maquina2 [Máquina 2: Worker 1]
-    Hijo1[Contenedor Hijo 1]
-end
+    subgraph Maquina2 ["Máquina 2: Worker 1"]
+        Hijo1["Contenedor Hijo 1"]
+    end
 
-subgraph Maquina3 [Máquina 3: Worker 2]
-    Hijo2[Contenedor Hijo 2]
-end
+    subgraph Maquina3 ["Máquina 3: Worker 2"]
+        Hijo2["Contenedor Hijo 2"]
+    end
 
-%% FASE 1: Aprovisionamiento (Ansible a Hijos)
-Ansible -- "Fase1 SSH: Configura y arranca" --> Hijo1
-Ansible -- "Fase1 SSH: Configura y arranca" --> Hijo2
+    %% FASE 1: Aprovisionamiento (Ansible a Hijos)
+    Ansible -- "Fase 1 SSH: Configura y arranca" --> Hijo1
+    Ansible -- "Fase 1 SSH: Configura y arranca" --> Hijo2
 
-%% FASE 2: Dataset
-Internet -- "Fase2 Descarga MNIST" --> Padre
+    %% FASE 2: Dataset
+    Internet -- "Fase 2: Descarga MNIST" --> Padre
 
-%% FASE 3 y 4: Procesamiento (Protocolos a evaluar)
-Padre -- "Fase3 Envía fragmentos \n(HTTP, gRPC, MQTT...)" --> Hijo1
-Hijo1 -- "Fase4 Recibe resultados\n(HTTP, gRPC, MQTT...)" --> Padre
+    %% FASE 3 y 4: Procesamiento (Protocolos a evaluar)
+    Padre -- "Fase 3: Envía fragmentos<br>(HTTP, gRPC, MQTT...)" --> Hijo1
+    Hijo1 -- "Fase 4: Recibe resultados<br>(HTTP, gRPC, MQTT...)" --> Padre
 
-Padre -- "Fase3 Envía fragmentos \n(HTTP, gRPC, MQTT...)" --> Hijo2
-Hijo2 -- "Fase4 Recibe resultados\n(HTTP, gRPC, MQTT...)" --> Padre
+    Padre -- "Fase 3: Envía fragmentos<br>(HTTP, gRPC, MQTT...)" --> Hijo2
+    Hijo2 -- "Fase 4: Recibe resultados<br>(HTTP, gRPC, MQTT...)" --> Padre
 
+    %% Estilos (Añadido color:#000 para forzar contraste en Docsify)
+    classDef control fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px,color:#000;
+    classDef datos fill:#e1f5fe,stroke:#039be5,stroke-width:2px,color:#000;
+    classDef worker fill:#f1f8e9,stroke:#689f38,stroke-width:2px,color:#000;
 
-%% Estilos
-classDef control fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
-classDef datos fill:#e1f5fe,stroke:#039be5,stroke-width:2px;
-classDef worker fill:#f1f8e9,stroke:#689f38,stroke-width:2px;
-
-class Ansible control;
-class Padre datos;
-class Hijo1,Hijo2 worker;
+    class Ansible control;
+    class Padre datos;
+    class Hijo1,Hijo2 worker;
 
 ```
 
@@ -153,6 +152,7 @@ Así es como funcionaría el retorno según el protocolo activo:
 ## 3. Implementación Técnica y Orquestación
 
 El sistema Master-Worker distribuye dinámicamente particiones del dataset MNIST según la fórmula:
+
 $$tamano\_particion = \frac{total\_imagenes}{N\_nodos}$$
 
 Para acomodar la evaluación de las tres arquitecturas, el pipeline de **Ansible** se ha rediseñado bajo el principio de separación entre *Build* y *Run*:
@@ -165,12 +165,16 @@ Para acomodar la evaluación de las tres arquitecturas, el pipeline de **Ansible
 
 #### Comparativa de protocolo 
 HTTP/v1.1 + json
+
 HTTP/2 + binario - protobuf (gRPC)
+
 ZeroMQ + binario - protobuf
+
 MQTT + binario - protobuf
 
 #### Comparativa de formato de envio de datos
 ZeroMQ + binario - protobuf
+
 ZeroMq + binario - Messaje Pack
 
 
