@@ -221,6 +221,25 @@ Para acomodar la evaluación de las tres arquitecturas, el pipeline de **Ansible
 
 ## 5. Métricas evaluadas
 
+### 1. Aprovisionamiento (Plano de Control)
+- Tiempo de despliegue total ($T_{deploy}$) [s]
+- Tráfico de red de inicialización [MB]
+
+### 2. Orquestación y Ciclo de Vida (Plano de Gestión)
+- Consumo de RAM en reposo [MB]
+- Consumo de CPU en reposo [%]
+- Tiempo de arranque de servicios ($T_{setup}$) [ms]
+- Tiempo de recuperación ante fallos (kill -9) [ms]
+
+### 3. Trabajo de Red y Procesamiento (Plano de Datos)
+- Tamaño del Payload (JSON/Protobuf/MsgPack) [B o KB]
+- Latencia RTT de la tarea (Fase 3 y 4) [ms]
+- Tiempo de procesamiento en nodo worker ($T_{proc}$) [ms]
+- Throughput efectivo [img/s]
+- Pico máximo de RAM durante el estrés [MB]
+- Consumo promedio de CPU durante la transmisión [%]
+- Fiabilidad de entrega [% éxito]
+
 --- 
 
 ## 6. Resultados de la Evaluación Técnica
