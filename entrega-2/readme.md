@@ -4,6 +4,17 @@
 ![Systemd](https://img.shields.io/badge/Systemd-Orchestration-darkgreen?style=flat-square&logo=linux)
 ![Entrega](https://img.shields.io/badge/Entrega-2-blue?style=flat-square)
 
+El objetivo de esta entrega consiste en hacer la comparativa de diferentes protocolos de comunicaciones en Systemd + podman para una misma tarea y obtener las metricas y números.
+
+La tarea consiste en:
+
+    Amb el datset MNIST (https://www.tensorflow.org/datasets/catalog/mnist), has de fer:
+    1. Aquest datset s'ha de separar en N parts, que s'enviaran als N nodes fills
+
+    2. Els nodes fills faran una tasca sobre aquest dataset. Comença fent que la tasca sigui comptar el nombre d'imatges que li arriben al fill
+
+    3. Els nodes fills han de retornar al pare el resultat de la tasca. En aquest cas aquest nombre d'imatges
+
 ## 1. Descripción del Entorno
 
 

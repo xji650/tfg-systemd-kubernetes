@@ -1,4 +1,6 @@
-# Pasos para la ejecución y validación
+# Entrega 1: Manejo del Systemd + Podman + Ansible
+
+Objetivo de la entrega 1 consiste en levantar Systemd (quadlets) + Podman con Ansible 
 
 ## FASE 0: Instalación
 
