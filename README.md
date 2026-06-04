@@ -1,4 +1,4 @@
-# Orchestration Trade-offs in Edge Computing: systemd vs Kubernetes
+# Orchestration Trade-offs in Edge Computing: systemd vs Kubernetes (https://xji650.github.io/tfg-systemd-kubernetes/#/)
 
 Trabajo de Fin de Grado centrado en el análisis comparativo de mecanismos de orquestación para entornos edge.
 
