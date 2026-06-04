@@ -60,7 +60,7 @@ Podman te preguntará la primera vez de qué registro lo quieres o lo buscará d
 
 # 4. Verificación contenedor nginx (node-a)
 
-    http://192.168.1.101:8080/ 
+    http://192.168.98.143:8080/ 
 
 # 5. Comandos básicos
 
@@ -135,7 +135,7 @@ Nota: Se crea en ambos nodos para asegurar la simetría de la infraestructura, p
 
 ### b) Verifica en el navegador:
 
-Entra en `192.168.1.101:8081` y verás tu mensaje.
+Entra en `192.168.98.143:8081` y verás tu mensaje.
 
 ### c) Borrar contenedor: 
     podman stop web-persistente 
@@ -149,7 +149,7 @@ Se crea un nuevo contenedor (web-nuevo) vinculado al mismo volumen
 
 ### e) Resultado: 
 
-Entra en `192.168.1.101:8081` y verás el mensaje seguirá ahí.
+Entra en `192.168.98.143:8081` y verás el mensaje seguirá ahí.
 
 -----
 

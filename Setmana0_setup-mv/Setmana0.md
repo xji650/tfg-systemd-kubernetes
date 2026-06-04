@@ -45,14 +45,14 @@ Configuración realizada en:
 
     /etc/netplan/00-installer-config.yaml
 
-**Nodo A (Activo)**
+**Nodo A (worker 1)**
 
-    IP: 192.168.1.101/24
+    IP: 192.168.98.143/24
     Gateway: 192.168.1.1
 
-**Nodo B (Respaldo)**
+**Nodo B (worker 2)**
 
-    IP: 192.168.1.102/24
+    IP: 192.168.98.144/24
     Gateway: 192.168.1.1
 
 ---
@@ -66,8 +66,8 @@ Modificar el archivo:
 Contenido:
 
     127.0.0.1 localhost
-    192.168.1.101 nodo-a
-    192.168.1.102 nodo-b
+    192.168.98.143 nodo-a
+    192.168.98.144 nodo-b
 
 Esto permite comunicación por **hostname** dentro del clúster.
 
@@ -119,7 +119,7 @@ Configuración de acceso SSH mediante **intercambio de claves RSA** para permiti
 
 #### 1. Copiar la clave pública al Nodo B
 
-    ssh-copy-id littledragon@192.168.1.102
+    ssh-copy-id littledragon@192.168.98.144
 
 #### 2. Validación en Nodo A
 
@@ -129,7 +129,7 @@ Configuración de acceso SSH mediante **intercambio de claves RSA** para permiti
 
 #### 1. Copiar la clave pública al Nodo A
 
-    ssh-copy-id littledragon@192.168.1.101
+    ssh-copy-id littledragon@192.168.98.143
 
 #### 2 Validación en Nodo B
 

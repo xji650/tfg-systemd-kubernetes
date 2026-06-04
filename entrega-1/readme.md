@@ -37,21 +37,21 @@ Lo primero es crear una nueva identidad (llave SSH) exclusiva para tu máquina d
 
 Ahora vamos a enviar la llave pública (la cerradura) a tus máquinas virtuales. Durante este paso, te pedirá la contraseña del usuario `littledragon` por última vez.
 
-1. **Instala la llave en el Nodo A (192.168.1.101):**
+1. **Instala la llave en el Nodo A (192.168.98.143):**
    ```bash
-   ssh-copy-id littledragon@192.168.1.101
+   ssh-copy-id littledragon@192.168.98.143
    ```
    *(Si te pregunta `Are you sure you want to continue connecting?`, escribe `yes` y pulsa Enter. Luego, mete la contraseña de littledragon).*
 
-2. **Instala la llave en el Nodo B (192.168.1.102):**
+2. **Instala la llave en el Nodo B (192.168.98.144):**
    ```bash
-   ssh-copy-id littledragon@192.168.1.102
+   ssh-copy-id littledragon@192.168.98.144
    ```
 
 3. **Prueba de fuego (Verificación):**
    Intenta entrar al Nodo B desde tu WSL:
    ```bash
-   ssh littledragon@192.168.1.102
+   ssh littledragon@192.168.98.144
    ```
    Si entras directamente sin que te pida contraseña, ¡lo has conseguido! Escribe `exit` para volver a tu WSL.
 
@@ -97,18 +97,18 @@ Y lanza el misil de la automatización:
 ansible-playbook -i inventory.ini playbook.yml -K
 ```
 
-Verás cómo Ansible se conecta, crea las redes, levanta los workers, configura el Nginx temporal, lanza el balanceador y deja todo listo en cuestión de segundos. Cuando termine, abre tu navegador en Windows y entra a `http://192.168.1.101` para ver tu clúster balanceando el tráfico.
+Verás cómo Ansible se conecta, crea las redes, levanta los workers, configura el Nginx temporal, lanza el balanceador y deja todo listo en cuestión de segundos. Cuando termine, abre tu navegador en Windows y entra a `http://192.168.98.143` para ver tu clúster balanceando el tráfico.
 
 Ahora verifica que realmente funciona:
 
 ```bash
 # ¿El balanceador responde?
-curl http://192.168.1.101:8888
+curl http://192.168.98.143:8888
 
 # Llámalo varias veces para ver el round-robin entre workers
-curl http://192.168.1.101:8888
-curl http://192.168.1.101:8888
-curl http://192.168.1.101:8888
+curl http://192.168.98.143:8888
+curl http://192.168.98.143:8888
+curl http://192.168.98.143:8888
 ```
 
 Deberías ver alternar:
@@ -120,14 +120,14 @@ Hola! Estas siendo atendido por el worker: node-b
 
 ```bash
 # Apaga node-b
-ssh  -t littledragon@192.168.1.102 "sudo reboot"
+ssh  -t littledragon@192.168.98.144 "sudo reboot"
 
 # Sigue respondiendo solo con node-a?
-curl http://192.168.1.101:8888
+curl http://192.168.98.143:8888
 
 # Cuando node-b vuelva, ¿arranca solo el contenedor sin intervención?
 # (espera 1 min y prueba de nuevo)
-curl http://192.168.1.101:8888
+curl http://192.168.98.143:8888
 ```
 
 ## Fase 5: Limpieza

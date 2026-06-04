@@ -157,9 +157,9 @@ $$tamano\_particion = \frac{total\_imagenes}{N\_nodos}$$
 
 Para acomodar la evaluación de las diferentes arquitecturas de red, el pipeline de **Ansible** se ha diseñado bajo el principio estricto de separación entre *Build* (Construcción) y *Run* (Ejecución):
 
-* **Construcción Centralizada (Local Registry):** El nodo Master asume el rol de *Builder*. Compila los archivos de interfaz binaria (`.proto`) y construye una única imagen de contenedor Podman. Posteriormente, expone esta imagen ya terminada a través de un *Registry* local alojado en su propia red.
+* **Construcción Centralizada y Empaquetado:** El nodo Master asume el rol de Builder. Compila los archivos de interfaz binaria (`.proto`) y construye una única imagen base de contenedor Podman. Posteriormente, empaqueta esta imagen terminada en un artefacto portátil (`.tar`) mediante `podman save`, eliminando la necesidad de alojar y mantener un Registry local.
 
-* **Despliegue Ligero en el Edge:** Ansible instruye a los nodos *workers* para que realicen la descarga de la imagen directamente desde el *Registry* local del Master. Esto evita descargar datos desde repositorios externos (Docker Hub) y exime a los nodos perimetrales de instalar pesadas herramientas de compilación como `grpcio-tools`.
+* **Despliegue Ligero en el Edge (Side-loading)**: Ansible transfiere el artefacto comprimido a los nodos workers vía SSH y ejecuta su importación directa en el motor de contenedores (`podman load`). Esta estrategia offline evita latencias de descarga desde repositorios externos (Docker Hub) y exime a los nodos perimetrales del consumo de CPU y RAM derivado de instalar pesadas herramientas de compilación como `grpcio-tools`.
 
 * **Aprovisionamiento Agnóstico:** Una vez descargada la imagen, el orquestador inyecta configuraciones `systemd Quadlet` idénticas para levantar los contenedores *rootless*, independientemente de si el nodo ejecutará un servidor HTTP, un *Servicer* gRPC o un *Socket REP* de ZeroMQ.
 

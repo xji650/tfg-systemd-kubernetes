@@ -41,7 +41,7 @@ journalctl --user -xe
 
 **Explicación a fondo:**
 * `systemctl`: Es el comando principal para controlar `systemd` (el gestor de servicios de Ubuntu).
-* `--user`: **El concepto más importante de la semana.** Al usar Podman sin `sudo`, nuestros contenedores pertenecen a nuestro usuario estándar, no al administrador (`root`). Por tanto, debemos hablar con el `systemd` *del usuario*, no con el del sistema global.
+* `--user`: **Importante.** Al usar Podman sin `sudo`, nuestros contenedores pertenecen a nuestro usuario estándar, no al administrador (`root`). Por tanto, debemos hablar con el `systemd` *del usuario*, no con el del sistema global.
 * `journalctl`: Es el visor del diario (logs) del sistema. `-x` añade explicaciones a los errores y `-e` salta directamente al final (los eventos más recientes).
 
 ---
