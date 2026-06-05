@@ -42,9 +42,19 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub user@<ip-nodo>
 ```
 
 ### Paso 2: Aprovisionamiento (Ansible)
-El despliegue automatiza la habilitación de **Linger**, la creación de la red virtual Quadlet y el build local de la imagen de aplicación:
+El despliegue automatiza la habilitación de **Linger**, la creación de la red virtual Quadlet y el build local de la imagen de aplicación. 
+
+#### Opción A: Despliegue Estándar
+Para levantar el clúster de forma normal sin extraer métricas de infraestructura:
 ```bash
 ansible-playbook -i inventory.ini playbook.yml -K
+```
+
+#### Opción B: Despliegue con Benchmark (Extracción de Métricas)
+Para extraer los datos del Plano de Gestión ($T_{deploy}$, Consumo en Reposo, $T_{recovery}$), se ejecutará el script de automatización. Este script envuelve la ejecución de Ansible y aplica pruebas de Chaos Engineering sobre los nodos perimetrales:
+```bash
+chmod +x benchmark_infra.sh
+./benchmark_infra.sh
 ```
 
 ### Paso 3: Ejecución del Reparto de Carga
