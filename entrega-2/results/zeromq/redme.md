@@ -106,10 +106,10 @@ python3 -m grpc_tools.protoc -I. --python_out=. mnist.proto
 Asegúrate de que el inventario apunta a la ruta de ZeroMQ (`experimento_path: "../results/zeromq"`). A continuación, despliega los Quadlets en los Workers.
 ```bash
 # 1. Limpieza de contenedores previos (Obligatorio al cambiar de red)
-ansible-playbook -i inventory_3.ini clean_3.yml
+ansible-playbook -i inventory.ini clean.yml
 
 # 2. Despliegue de la imagen optimizada de ZeroMQ
-ansible-playbook -i inventory_3.ini playbook_3.yml
+ansible-playbook -i inventory.ini playbook.yml -K
 ```
 
 ### 3. Verificación en los Nodos (Workers)
@@ -127,3 +127,5 @@ Con los Workers listos, ejecuta el archivo principal en la máquina de control p
 ```bash
 python3 master.py
 ```
+
+>Para garantizar la validez y el aislamiento de las métricas en los nodos Edge, la recolección del consumo de CPU no se realizó a nivel global del sistema operativo (OS-level), ya que esto introduciría ruido provocado por procesos en segundo plano. En su lugar, se utilizó el aislamiento a nivel de proceso mediante el identificador (PID) del contenedor Worker (psutil.Process(os.getpid()).cpu_percent()). Este enfoque permite medir el esfuerzo computacional exacto y exclusivo de la tarea de deserialización, sumando el porcentaje de utilización real a través de los múltiples núcleos del procesador, lo que explica lecturas superiores al 100% en protocolos multihilo como gRPC.
