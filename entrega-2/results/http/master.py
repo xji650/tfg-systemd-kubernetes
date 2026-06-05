@@ -25,17 +25,15 @@ for i, ip in enumerate(NODOS_FILLS):
 def enviar_tarea(config):
     ip, payload_dict = config
     
-    # 1. Serializar manualmente para medir los bytes exactos que viajan por red
+    # Serializamos ANTES del RTT para medir el payload real que sale al cable
     payload_str = json.dumps(payload_dict)
     payload_bytes = len(payload_str.encode('utf-8'))
-    headers = {'Content-Type': 'application/json'}
     
-    # 2. Iniciar cronómetro RTT (Round Trip Time)
-    inicio_rtt = time.time()
+    inicio_rtt = time.perf_counter() # perf_counter es más preciso para RTT
     try:
-        # Enviamos 'data' en vez de 'json' porque ya lo hemos serializado nosotros
-        res = requests.post(f"http://{ip}:8000/procesar", data=payload_str, headers=headers, timeout=300)
-        fin_rtt = time.time()
+        res = requests.post(f"http://{ip}:8000/procesar", data=payload_str, 
+                            headers={'Content-Type': 'application/json'}, timeout=300)
+        fin_rtt = time.perf_counter()
         
         datos_worker = res.json()
         datos_worker["rtt_ms"] = (fin_rtt - inicio_rtt) * 1000
@@ -46,12 +44,12 @@ def enviar_tarea(config):
 
 # --- Ejecución y Cronometraje Global ---
 print(f"Lanzando proceso distribuido en {len(NODOS_FILLS)} nodos...")
-inicio_t = time.time()
+inicio_t = time.perf_counter()
 
 with ThreadPoolExecutor(max_workers=len(NODOS_FILLS)) as executor:
     resultados = list(executor.map(enviar_tarea, datos_preparados))
 
-fin_t = time.time()
+fin_t = time.perf_counter()
 
 # --- Consolidación de Resultados ---
 tiempo_total = fin_t - inicio_t
@@ -67,6 +65,7 @@ if exitos:
     rtt_medio = sum(r["rtt_ms"] for r in exitos) / len(exitos)
     t_proc_medio = sum(r["t_proc_ms"] for r in exitos) / len(exitos)
     payload_total_mb = sum(r["payload_bytes"] for r in exitos) / (1024 * 1024)
+    payload_promedio_nodo = payload_total_mb / len(exitos)
 else:
     ram_pico_max = cpu_media = rtt_medio = t_proc_medio = payload_total_mb = 0
 
@@ -81,6 +80,7 @@ print(f"{'Latencia RTT Promedio (ms):':<30} {rtt_medio:.2f} ms")
 print(f"{'Tiempo T_proc Promedio (ms):':<30} {t_proc_medio:.2f} ms")
 print(f"{'Pico Máx. RAM Worker (MB):':<30} {ram_pico_max:.2f} MB")
 print(f"{'CPU Promedio (%):':<30} {cpu_media:.2f} %")
+print(f"{'Payload Promedio por Nodo (MB):':<30} {payload_promedio_nodo:.2f} MB")
 print(f"{'Datos Totales Red (MB):':<30} {payload_total_mb:.2f} MB")
 print(f"{'Tasa Éxito (%):':<30} {tasa_exito:.2f} %")
 print("="*50)
