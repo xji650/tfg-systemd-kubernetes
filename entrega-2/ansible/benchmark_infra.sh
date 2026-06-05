@@ -19,7 +19,7 @@ echo "========================================================="
 echo -e "\n[1/4] Lanzando Ansible y cronometrando T_deploy para todos los nodos..."
 START_TIME=$(date +%s.%N)
 
-ansible-playbook -i inventory.ini playbook.yml > /dev/null 2>&1
+ansible-playbook -i inventory.ini playbook.yml -K
 
 END_TIME=$(date +%s.%N)
 DEPLOY_TIME=$(python3 -c "print(round($END_TIME - $START_TIME, 2))")
@@ -36,41 +36,64 @@ for IP in "${WORKER_IPS[@]}"; do
     echo " EVALUANDO NODO: $IP "
     echo "---------------------------------------------------------"
     
-    # Calculamos el nombre exacto del contenedor gracias a tu Quadlet
-    CONTAINER_NAME="worker-mnist-$IP"
+    # ---------------------------------------------------------
+    # BÚSQUEDA DINÁMICA DEL CONTENEDOR
+    # ---------------------------------------------------------
+    # Obtenemos el ID real del contenedor filtrando por nombre
+    CONTAINER_ID=$(ssh $WORKER_USER@$IP "podman ps -q --filter name=worker-mnist")
+
+    # Verificamos si se encontró el contenedor
+    if [ -z "$CONTAINER_ID" ]; then
+        echo "  [ERROR] No se encontró ningún contenedor 'worker-mnist' corriendo en $IP."
+        echo "          Asegúrate de que el playbook lo haya levantado correctamente."
+        continue
+    fi
 
     # ---------------------------------------------------------
     # 2. MÉTRICA: RAM y CPU en reposo
     # ---------------------------------------------------------
     echo "[2/4] Midiendo RAM y CPU en reposo..."
-    ssh $WORKER_USER@$IP "podman stats --no-stream --format '  [OK] CPU Reposo: {{.CPUPerc}} | RAM Reposo: {{.MemUsage}}' $CONTAINER_NAME"
+    ssh $WORKER_USER@$IP "podman stats --no-stream --format '  [OK] CPU Reposo: {{.CPUPerc}} | RAM Reposo: {{.MemUsage}}' $CONTAINER_ID"
 
     # ---------------------------------------------------------
-    # 3. MÉTRICA: Chaos Testing (Asesinato del proceso)
+    # 3 y 4. MÉTRICA: Chaos Testing y Tiempo de Recuperación
     # ---------------------------------------------------------
-    echo "[3/4] Simulación de fallo (kill -9)..."
-    ssh $WORKER_USER@$IP "
-        PID=\$(podman inspect -f '{{.State.Pid}}' $CONTAINER_NAME)
-        echo '  -> Matando proceso contenedor (PID: '\$PID')'
-        kill -9 \$PID
-    "
-
-    # ---------------------------------------------------------
-    # 4. MÉTRICA: Tiempo de Recuperación (T_recovery)
-    # ---------------------------------------------------------
-    echo "[4/4] Cronometrando recuperación de systemd..."
+    echo "[3/4 y 4/4] Simulación de fallo y cronometrando recuperación..."
     ssh $WORKER_USER@$IP "
         START_REC=\$(date +%s.%N)
         
+        # Usamos podman kill SIN la barra invertida para que pase el ID correcto
+        echo '  -> Forzando caída del contenedor (Chaos Testing)...'
+        podman kill $CONTAINER_ID > /dev/null
+        
+        # 1. Bucle para asegurar que systemd registra la caída (pasa a inactive/failed)
+        while systemctl --user is-active --quiet $SERVICE_NAME; do
+            sleep 0.05
+        done
+        
+        # 2. Bucle para medir cuánto tarda en volver a estar active
         while ! systemctl --user is-active --quiet $SERVICE_NAME; do
-            sleep 0.1
+            sleep 0.05
         done
         
         END_REC=\$(date +%s.%N)
-        REC_TIME=\$(python3 -c \"print(round((\$END_REC - \$START_REC) * 1000, 2))\")
-        echo '  [OK] systemd revivió el servicio en: '\$REC_TIME' ms'
+        
+        # Cálculo del Tiempo Total (MTTR)
+        REC_TIME_TOTAL=\$(python3 -c \"print(round((\$END_REC - \$START_REC) * 1000, 2))\")
+        
+        # Cálculo del Tiempo Real (restando 3000 ms)
+        REC_TIME_REAL=\$(python3 -c \"print(round(max(0, ((\$END_REC - \$START_REC) * 1000) - 3000), 2))\")
+        
+        # Impresión formateada para el TFG
+        echo '  [OK] Tiempo Real de Arranque: '\$REC_TIME_REAL' ms (Tiempo Total MTTR: '\$REC_TIME_TOTAL' ms)'
     "
 done
+
+# ---------------------------------------------------------
+# Borrar el contenedor para limpiar el entorno (opcional)
+# ---------------------------------------------------------
+echo -e "\n[5/5] Limpiando contenedores en cada nodo..."
+ansible-playbook -i inventory.ini clean.yml
 
 echo -e "\n========================================================="
 echo " BENCHMARK MULTINODO FINALIZADO "
