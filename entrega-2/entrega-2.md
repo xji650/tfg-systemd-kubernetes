@@ -197,9 +197,16 @@ Para acomodar la evaluación de las diferentes arquitecturas de red, el pipeline
 * **Prueba:** `MQTT + Protobuf`
 * **Por qué:** Al introducir un *broker* intermedio (Mosquitto), podrás medir cuánta latencia y memoria RAM extra consume tener un intermediario gestionando colas, algo vital en arquitecturas descentralizadas. Protobuf asegura que la red mueva el paquete más ligero posible.
 
+>Durante la fase de diseño, se evaluó la inclusión de protocolos asíncronos basados en el patrón Publicador/Suscriptor mediante un intermediario (como MQTT o AMQP). Sin embargo, se descartaron para mantener el rigor de las métricas de red.
+
+>La topología de un Message Broker impone inherentemente un modelo de "doble salto" (emisor -> broker -> receptor) y obliga a mantener dos terminaciones TCP distintas. Este procesamiento de enrutamiento centralizado introduce una latencia física y un consumo de RAM que enmascaran el rendimiento real de la capa de red subyacente.
+
+>Puesto que el objetivo principal de este estudio es aislar y cuantificar la penalización directa impuesta por el orquestador (Systemd frente Kubernetes), se ha priorizado el uso exclusivo de comunicaciones directas punto a punto (Brokerless mediante ZeroMQ y RPC mediante gRPC). Esto garantiza que cualquier fluctuación en la latencia o el ancho de banda registrada en las métricas sea consecuencia directa de la gestión de red del orquestador y no de la sobrecarga de un servidor intermediario de aplicaciones. 
+
+
 ### 5. La "Batalla" de la Serialización
 
-* **Prueba:** `ZeroMQ + MessagePack` **O BIEN** `MQTT + MessagePack` *(Elige solo una de las dos).*
+* **Prueba:** `ZeroMQ + MessagePack`
 * **Por qué:** En lugar de probar MessagePack en *todos* los protocolos, hazlo solo en uno (por ejemplo, en MQTT). Esto te permite tener una sección específica en tu TFG llamada: *"Impacto de la serialización con esquema (Protobuf) vs. sin esquema (MessagePack)"*. Mantienes el protocolo de red estático y mides si la comodidad de programar con MessagePack justifica el ligero aumento de latencia frente a Protobuf.
 
 ---
