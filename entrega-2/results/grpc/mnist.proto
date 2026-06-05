@@ -17,4 +17,5 @@ message BatchResponse {
     string status = 3;
     float ram_usage = 4;
     float cpu_usage = 5;
+    float t_proc_ms = 6;
 }

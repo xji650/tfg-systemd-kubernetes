@@ -72,7 +72,7 @@ Antes de nada, necesitas generar el código de gRPC a partir del contrato `.prot
 pip install grpcio grpcio-tools psutil numpy
 
 # Compilar el contrato (Genera los archivos _pb2.py y _pb2_grpc.py)
-python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. mnist.proto
+python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. mnist.proto
 ```
 
 ### 2. Despliegue de Infraestructura (Ansible)
