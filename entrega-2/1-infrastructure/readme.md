@@ -12,7 +12,7 @@ El sistema está diseñado bajo el paradigma de contenedores *rootless* para max
 
 ## Diseño Modular y Despliegue Dinámico (Air-Gapped)
 
-El pipeline de despliegue es completamente **agnóstico al protocolo de comunicación** (HTTP/REST, gRPC, ZeroMQ).
+El pipeline de despliegue es completamente **independiente al protocolo de comunicación** (HTTP/REST, gRPC, ZeroMQ).
 
 En esta versión optimizada, la inyección del entorno se controla dinámicamente en tiempo de ejecución. En lugar de editar ficheros estáticos, la ruta del experimento se sobrescribe al vuelo utilizando variables extra (`-e "experimento_path=..."`), permitiendo pivotar la arquitectura entera sin alterar el código fuente.
 
