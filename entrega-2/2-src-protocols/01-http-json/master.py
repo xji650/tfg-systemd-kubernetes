@@ -36,9 +36,16 @@ def enviar_tarea(config):
         fin_rtt = time.perf_counter()
         
         datos_worker = res.json()
-        datos_worker["rtt_ms"] = (fin_rtt - inicio_rtt) * 1000
-        datos_worker["payload_bytes"] = payload_bytes
-        return datos_worker
+        
+        # LO HACEMOS IDÉNTICO A gRPC Y ZEROMQ
+        return {
+            "ram_max_mb": datos_worker.get('ram_usage', datos_worker.get('ram_mb', 0)), 
+            "cpu_promedio": datos_worker.get('cpu_usage', datos_worker.get('cpu_percent', 0)),
+            "t_proc_ms": datos_worker.get('t_proc_ms', 0),
+            "rtt_ms": (fin_rtt - inicio_rtt) * 1000,
+            "payload_bytes": payload_bytes,
+            "imagenes_contadas": datos_worker.get('images_processed', 0)
+        }
     except Exception as e:
         return {"error": str(e), "ip": ip}
 

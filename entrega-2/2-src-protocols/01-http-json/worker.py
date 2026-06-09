@@ -35,9 +35,12 @@ async def procesar_datos(request: Request):
     print(f"RAM: {ram_mb:.2f} MB, CPU: {cpu_usage}%, T_proc: {t_proc_ms:.2f} ms")
 
     return {
-        "ram_mb": ram_mb,        # Cambiado a ram_mb para coincidir con tu Maestro
-        "cpu_percent": cpu_usage, # Cambiado a cpu_percent para coincidir con tu Maestro
-        "t_proc_ms": t_proc_ms
+        "batch_id": payload.get("batch_id", "N/A"),
+        "images_processed": len(imagenes),
+        "status": "OK",
+        "ram_usage": float(ram_mb),
+        "cpu_usage": float(cpu_usage),
+        "t_proc_ms": float(t_proc_ms)
     }
 
 if __name__ == "__main__":
