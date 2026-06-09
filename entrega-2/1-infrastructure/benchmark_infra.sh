@@ -40,7 +40,7 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     echo "=== MÉTRICAS DE INFRAESTRUCTURA: $NOMBRE_PROTOCOLO ===" > "$INFRA_LOG"
 
     echo -e "\n========================================================"
-    echo " 🚀 EVALUANDO PROTOCOLO: $NOMBRE_PROTOCOLO"
+    echo " EVALUANDO PROTOCOLO: $NOMBRE_PROTOCOLO"
     echo "========================================================"
 
     # 0. Limpiamos el clúster (Fíjate que ya NO hay -K)
@@ -136,5 +136,5 @@ echo -e "\n[!] Limpieza final de contenedores..."
 ansible-playbook -i inventory.ini clean.yml > /dev/null
 
 echo -e "\n========================================================="
-echo " 🎉 BENCHMARK TOTAL FINALIZADO AL 100% "
+echo " BENCHMARK TOTAL FINALIZADO AL 100% "
 echo "========================================================="
