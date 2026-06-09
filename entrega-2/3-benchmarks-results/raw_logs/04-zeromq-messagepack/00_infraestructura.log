@@ -1,0 +1,10 @@
+=== MÉTRICAS DE INFRAESTRUCTURA: 04-zeromq-messagepack ===
+  [OK] T_deploy total: 30.84 segundos
+
+  ---> EVALUANDO NODO: 192.168.98.143
+       [OK] CPU Reposo: 4.04% | RAM Reposo: 16.14MB / 4.056GB
+       [OK] Tiempo Real Arranque: 811.44 ms (Total MTTR: 3811.44 ms)
+
+  ---> EVALUANDO NODO: 192.168.98.144
+       [OK] CPU Reposo: 2.27% | RAM Reposo: 16.13MB / 4.056GB
+       [OK] Tiempo Real Arranque: 883.93 ms (Total MTTR: 3883.93 ms)

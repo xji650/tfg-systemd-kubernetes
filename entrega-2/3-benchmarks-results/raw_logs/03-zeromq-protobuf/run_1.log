@@ -1,0 +1,30 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1781030318.351256   69387 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1781030318.351741   69387 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1781030318.378631   69387 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1781030318.993487   69387 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1781030318.993784   69387 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1781030320.695152   69387 cuda_executor.cc:1737] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1781030320.695459   69433 cuda_executor.cc:1755] Failed to determine cuDNN version (Note that this is expected if the application doesn't link the cuDNN plugin): INTERNAL: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+W0000 00:00:1781030320.708966   69387 gpu_device.cc:2365] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+I0000 00:00:1781030320.772774   69534 tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+Cargando MNIST...
+Lanzando proceso ZeroMQ en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf/Binary)
+Tiempo Total (s):              0.65 s
+Throughput (img/s):            92432.14 img/s
+Latencia RTT Promedio (ms):    642.14 ms
+Tiempo T_proc Promedio (ms):   258.71 ms
+Pico Máx. RAM Worker (MB):     301.08 MB
+CPU Promedio (%):              98.60 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================

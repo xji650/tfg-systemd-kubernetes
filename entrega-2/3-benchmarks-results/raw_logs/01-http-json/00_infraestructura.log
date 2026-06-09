@@ -1,0 +1,10 @@
+=== MÉTRICAS DE INFRAESTRUCTURA: 01-http-json ===
+  [OK] T_deploy total: 20.18 segundos
+
+  ---> EVALUANDO NODO: 192.168.98.143
+       [OK] CPU Reposo: 6.16% | RAM Reposo: 32.16MB / 4.056GB
+       [OK] Tiempo Real Arranque: 801.16 ms (Total MTTR: 3801.16 ms)
+
+  ---> EVALUANDO NODO: 192.168.98.144
+       [OK] CPU Reposo: 3.66% | RAM Reposo: 32.17MB / 4.056GB
+       [OK] Tiempo Real Arranque: 819.39 ms (Total MTTR: 3819.39 ms)

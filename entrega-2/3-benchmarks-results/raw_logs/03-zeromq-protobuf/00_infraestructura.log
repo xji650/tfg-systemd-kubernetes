@@ -1,0 +1,10 @@
+=== MÉTRICAS DE INFRAESTRUCTURA: 03-zeromq-protobuf ===
+  [OK] T_deploy total: 25.48 segundos
+
+  ---> EVALUANDO NODO: 192.168.98.143
+       [OK] CPU Reposo: 4.20% | RAM Reposo: 17.6MB / 4.056GB
+       [OK] Tiempo Real Arranque: 769.24 ms (Total MTTR: 3769.24 ms)
+
+  ---> EVALUANDO NODO: 192.168.98.144
+       [OK] CPU Reposo: 2.43% | RAM Reposo: 17.6MB / 4.056GB
+       [OK] Tiempo Real Arranque: 923.47 ms (Total MTTR: 3923.47 ms)

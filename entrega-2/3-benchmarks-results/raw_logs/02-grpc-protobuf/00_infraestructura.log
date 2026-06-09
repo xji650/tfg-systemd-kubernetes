@@ -1,0 +1,10 @@
+=== MÉTRICAS DE INFRAESTRUCTURA: 02-grpc-protobuf ===
+  [OK] T_deploy total: 35.43 segundos
+
+  ---> EVALUANDO NODO: 192.168.98.143
+       [OK] CPU Reposo: 5.55% | RAM Reposo: 23.85MB / 4.056GB
+       [OK] Tiempo Real Arranque: 900.73 ms (Total MTTR: 3900.73 ms)
+
+  ---> EVALUANDO NODO: 192.168.98.144
+       [OK] CPU Reposo: 3.74% | RAM Reposo: 23.85MB / 4.056GB
+       [OK] Tiempo Real Arranque: 921.69 ms (Total MTTR: 3921.69 ms)
