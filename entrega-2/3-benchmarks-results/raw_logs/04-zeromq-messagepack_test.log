@@ -1,0 +1,17 @@
+Cargando MNIST...
+Lanzando proceso ZeroMQ (MessagePack) en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.53 s
+Throughput (img/s):            112794.59 img/s
+Latencia RTT Promedio (ms):    523.13 ms
+Tiempo T_proc Promedio (ms):   124.83 ms
+Pico Máx. RAM Worker (MB):     209.26 MB
+CPU Promedio (%):              104.10 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================

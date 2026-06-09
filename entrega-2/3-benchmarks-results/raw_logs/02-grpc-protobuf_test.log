@@ -1,0 +1,17 @@
+Cargando MNIST...
+Lanzando proceso gRPC en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     gRPC (Protobuf/Binary)
+Tiempo Total (s):              1.18 s
+Throughput (img/s):            51028.00 img/s
+Latencia RTT Promedio (ms):    1122.87 ms
+Tiempo T_proc Promedio (ms):   141.70 ms
+Pico Máx. RAM Worker (MB):     313.12 MB
+CPU Promedio (%):              95.00 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================

@@ -1,0 +1,17 @@
+Cargando MNIST...
+Lanzando proceso ZeroMQ en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf/Binary)
+Tiempo Total (s):              0.67 s
+Throughput (img/s):            89039.83 img/s
+Latencia RTT Promedio (ms):    663.52 ms
+Tiempo T_proc Promedio (ms):   268.25 ms
+Pico Máx. RAM Worker (MB):     300.89 MB
+CPU Promedio (%):              98.80 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================

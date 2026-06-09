@@ -37,13 +37,13 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     echo "========================================================"
 
     # 0. Limpiamos el clúster (Fíjate que ya NO hay -K)
-    echo "[0/6] Limpiando clúster..."
+    echo -e "\n[0/6] Limpiando clúster..."
     ansible-playbook -i inventory.ini clean.yml > /dev/null
 
     # ---------------------------------------------------------
     # 1. MÉTRICA: Tiempo de Despliegue (T_deploy) Global
     # ---------------------------------------------------------
-    echo "[1/6] Desplegando clúster (inyectando parámetro -e)..."
+    echo -e "\n[1/6] Desplegando clúster (inyectando parámetro -e)..."
     START_TIME=$(date +%s.%N)
 
     # AQUÍ PONEMOS EL PARÁMETRO: -e "experimento_path=$PROTOCOLO"
