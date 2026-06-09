@@ -115,7 +115,7 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
         LOG_DESTINO="../../3-benchmarks-results/raw_logs/$NOMBRE_PROTOCOLO/run_$RUN.log"
         
         echo -e "\n\n==================================================" >> "$LOG_DESTINO"
-        echo " NUEVA EJECUCIÓN DEL TEST (Prueba de Estrés - sleep 3s)" >> "$LOG_DESTINO"
+        echo " NUEVA EJECUCIÓN DEL TEST " >> "$LOG_DESTINO"
         echo "==================================================" >> "$LOG_DESTINO"
         
         python3 master.py >> "$LOG_DESTINO" 2>&1

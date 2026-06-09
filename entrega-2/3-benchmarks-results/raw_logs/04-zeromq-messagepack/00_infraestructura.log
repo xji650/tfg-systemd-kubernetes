@@ -8,3 +8,39 @@
   ---> EVALUANDO NODO: 192.168.98.144
        [OK] CPU Reposo: 2.27% | RAM Reposo: 16.13MB / 4.056GB
        [OK] Tiempo Real Arranque: 883.93 ms (Total MTTR: 3883.93 ms)
+
+=== MÉTRICAS DE INFRAESTRUCTURA: 04-zeromq-messagepack ===
+  [OK] T_deploy total: 30.92 segundos
+
+  ---> EVALUANDO NODO: 192.168.98.143
+       [OK] CPU Reposo: 4.01% | RAM Reposo: 16.14MB / 4.056GB
+       [OK] Tiempo Real Arranque: 844.54 ms (Total MTTR: 3844.54 ms)
+
+  ---> EVALUANDO NODO: 192.168.98.144
+       [OK] CPU Reposo: 2.76% | RAM Reposo: 16.14MB / 4.056GB
+       [OK] Tiempo Real Arranque: 917.51 ms (Total MTTR: 3917.51 ms)
+
+
+=== MÉTRICAS DE INFRAESTRUCTURA: 04-zeromq-messagepack ===
+  [OK] T_deploy total: 51.28 segundos
+
+  ---> EVALUANDO NODO: 192.168.98.143
+       [OK] CPU Reposo: 4.02% | RAM Reposo: 16.14MB / 4.056GB
+       [OK] Tiempo Real Arranque: 785.09 ms (Total MTTR: 3785.09 ms)
+
+  ---> EVALUANDO NODO: 192.168.98.144
+       [OK] CPU Reposo: 2.48% | RAM Reposo: 16.14MB / 4.056GB
+       [OK] Tiempo Real Arranque: 906.68 ms (Total MTTR: 3906.68 ms)
+
+
+
+=== MÉTRICAS DE INFRAESTRUCTURA: 04-zeromq-messagepack ===
+  [OK] T_deploy total: 32.05 segundos
+
+  ---> EVALUANDO NODO: 192.168.98.143
+       [OK] CPU Reposo: 4.43% | RAM Reposo: 16.14MB / 4.056GB
+       [OK] Tiempo Real Arranque: 853.29 ms (Total MTTR: 3853.29 ms)
+
+  ---> EVALUANDO NODO: 192.168.98.144
+       [OK] CPU Reposo: 3.49% | RAM Reposo: 16.13MB / 4.056GB
+       [OK] Tiempo Real Arranque: 823.97 ms (Total MTTR: 3823.97 ms)
