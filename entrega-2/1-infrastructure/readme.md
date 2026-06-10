@@ -62,7 +62,7 @@ Ejecuta una purga de infraestructura agresiva, necesaria para garantizar un ento
 3. **Limpieza de Podman:** Fuerza el borrado de los contenedores vivos, la red interna virtual y las imágenes locales cargadas.
 4. **Reset de Systemd:** Limpia cualquier estado de unidad fallida residual en memoria (`reset-failed`).
 
-### 2. El Pipeline de Evaluación: `benchmark_infra.sh`
+### 2. El Pipeline de Evaluación: `generate_benchmarks.sh`
 
 Script Bash avanzado que automatiza la batería de pruebas para el TFG. Realiza un ciclo continuo sobre los 4 protocolos implementados:
 
@@ -106,10 +106,10 @@ El método recomendado para extraer las métricas formales del TFG:
 echo 'ansible_become_pass: "TU_CONTRASEÑA_AQUI"' > group_vars/workers.yml
 
 # 2. Dar permisos de ejecución al pipeline
-chmod +x benchmark_infra.sh
+chmod +x generate_benchmarks.sh
 
 # 3. Lanzar la evaluación global
-./benchmark_infra.sh
+./generate_benchmarks.sh
 
 ```
 
