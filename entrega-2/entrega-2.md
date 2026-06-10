@@ -207,7 +207,7 @@ Para acomodar la evaluación de las diferentes arquitecturas de red, el pipeline
 ### 5. La "Batalla" de la Serialización
 
 * **Prueba:** `ZeroMQ + MessagePack`
-* **Por qué:** En lugar de probar MessagePack en *todos* los protocolos, hazlo solo en uno (por ejemplo, en MQTT). Esto te permite tener una sección específica en tu TFG llamada: *"Impacto de la serialización con esquema (Protobuf) vs. sin esquema (MessagePack)"*. Mantienes el protocolo de red estático y mides si la comodidad de programar con MessagePack justifica el ligero aumento de latencia frente a Protobuf.
+* **Por qué:** En lugar de probar MessagePack en *todos* los protocolos, haremos solo en uno (por ejemplo, en ZeroMQ). Esto nos permite visualizar ambos formato de binario: *"Impacto de la serialización con esquema (Protobuf) vs. sin esquema (MessagePack)"*. Mantendremos el protocolo de red estático y midimos si la comodidad de programar con MessagePack justifica el ligero aumento de latencia frente a Protobuf.
 
 ---
 
