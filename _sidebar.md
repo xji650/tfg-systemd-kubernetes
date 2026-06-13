@@ -1,5 +1,5 @@
 - **> Inicio**
-  - [Índice](index.html)
+  - [Índice](README.md)
 
 - **> Setup**
   - [Configuración Nodos (MV)](Setmana0_setup-mv/Setmana0.md)
@@ -33,8 +33,7 @@
       - [ZeroMQ + MessagePack](entrega-2/2-src-protocols/04-zeromq-messagepack/readme.md)
     - **> Benchmarks y resultados**
       - [Resumen Benchmarks](entrega-2/3-benchmarks-results/readme.md)
-      - [Resultados globales CSV](entrega-2/3-benchmarks-results/resultados_globales.csv)
-      - [Scripts: calcular promedios](entrega-2/3-benchmarks-results/calculate_benchmarks_avg.py)
-      - [Scripts: generar gráficos](entrega-2/3-benchmarks-results/generate_graphs.py)
+      - [Análisis Benchmarks](entrega-2/3-benchmarks-results/benchmarks-analisis.md)
+      - [Resultados (tablas)](entrega-2/3-benchmarks-results/resultados_tablas.md)
 
 If you find any link broken, tell me which one and I will fix it.
