@@ -46,8 +46,18 @@ El despliegue automatiza la habilitación de **Linger**, la creación de la red 
 
 #### Opción A: Despliegue Estándar
 Para levantar el clúster de forma normal sin extraer métricas de infraestructura:
+
+##### **1. desplegar protocolo (http-json por defecto)**
 ```bash
-ansible-playbook -i inventory.ini playbook.yml -K
+ansible-playbook -i inventory.ini playbook.yml
+```
+
+##### **2. desplegar un protocolo inyectando la variable**
+```bash
+ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/01-http-json"
+ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/02-grpc-protobuf"
+ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/03-zeromq-protobuf"
+ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/04-zeromq-messagepack"
 ```
 
 #### Opción B: Despliegue con Benchmark (Extracción de Métricas)
@@ -144,26 +154,6 @@ Tu informe dice: *"Verificación de la auto-recuperación... ante fallos"*. Los 
      journalctl --user -u worker.service -n 10
      ```
 
+---
 
-//TODO: Optimizar el Dockerfile usando multi-stage build para reducir el tamaño de la imagen al máximo; así el archivo .tar será mucho más ligero y se transferirá más rápido a los workers.
-
-1. El falso 1% de CPU (Desajuste de variables en el JSON)
-El problema: Al principio, la tabla mostraba un CPU Promedio de apenas un 1.05%, lo cual era imposible para un proceso tan pesado como parsear JSON masivos.
-
-La causa: Había un desajuste entre las llaves del diccionario JSON. El Worker devolvía el dato con un nombre (ej. cpu_usage), pero el Maestro intentaba leerlo con otro (ej. cpu_promedio). Al no encontrarlo, Python asignaba un 0, hundiendo la media global.
-
-La solución: Sincronizamos los nombres exactos de las variables (ram_mb, cpu_percent, t_proc_ms) entre el return del Worker y el cálculo del Maestro.
-
-2. Mediciones de CPU a cero (El comportamiento de psutil)
-El problema: Incluso con los nombres correctos, el Worker a veces devolvía 0.0% de uso de CPU.
-
-La causa: La función psutil.cpu_percent(interval=None) necesita comparar el tiempo de CPU entre dos momentos. Si la llamábamos solo una vez o sin inicializarla, no tenía un punto de referencia y daba 0.
-
-La solución: Añadimos una "llamada fantasma" a process.cpu_percent(interval=None) justo al inicio del endpoint /procesar para limpiar el buffer, y una segunda llamada al final para capturar el porcentaje exacto (el delta) que había consumido esa petición HTTP en concreto. Gracias a esto, vimos el 99.2% real.
-
-3. El tiempo total astronómico y Throughput a cero (Choque de relojes)
-El problema: En uno de los tests, el Tiempo Total dio 1.780.594.085 segundos (1.78 billones) y el Throughput se quedó en 0.00 img/s.
-
-La causa: Estábamos mezclando dos tipos de relojes en Python. Para el inicio usamos time.perf_counter() (un reloj relativo de alta precisión) y para el final usamos time.time() (el reloj absoluto del sistema Unix). Al restarlos, dio un número absurdo.
-
-La solución: Unificamos todo el script del Maestro para que utilizara exclusivamente time.perf_counter() tanto para inicio_t como para fin_t, logrando una precisión de milisegundos perfecta.
+>TODO: Optimizar el Dockerfile usando multi-stage build para reducir el tamaño de la imagen al máximo; así el archivo .tar será mucho más ligero y se transferirá más rápido a los workers.

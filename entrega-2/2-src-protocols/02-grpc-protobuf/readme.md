@@ -1,122 +1,91 @@
 # Arquitectura de Orquestación Edge: Implementación gRPC
 
-Este repositorio documenta la segunda versión de la comparativa de protocolos para arquitecturas distribuidas en entornos Edge Computing. En esta fase, se abandona el estándar web tradicional en favor de **gRPC y Protocol Buffers (Protobuf)**, un framework de Comunicación a Procedimiento Remoto (RPC) de alto rendimiento, ideal para la transmisión eficiente de datos binarios masivos.
+Este directorio documenta la segunda versión de la comparativa de protocolos de red para arquitecturas distribuidas en entornos Edge Computing. En esta fase, se abandona el estándar web tradicional en favor de **gRPC y Protocol Buffers (Protobuf)**, un framework de Llamada a Procedimiento Remoto (RPC) de alto rendimiento, ideal para la transmisión eficiente de datos binarios masivos.
 
 ## Diseño de la Arquitectura (Master-Worker)
 
-El sistema evoluciona hacia un modelo de comunicación basado en contratos estrictos, optimizando tanto el empaquetado de datos como el uso de memoria RAM.
+El sistema evoluciona hacia un modelo de comunicación basado en contratos estrictos, optimizando tanto el empaquetado de datos como la huella de memoria (RAM) al eliminar la serialización en texto plano.
 
 ### 1. El Nodo Orquestador (Master)
-El script `master.py` actúa como cliente gRPC y distribuidor de la carga de visión artificial.
-*   **Conversión Binaria Nativa:** Carga el dataset MNIST y lo convierte a matrices `float32` de NumPy. En lugar de parsear a listas, inyecta los datos directamente en formato binario mediante `particion_np.tobytes()`.
-*   **Configuración del Protocolo de Comunicación:** A diferencia de la implementación previa en HTTP/REST, gRPC impone por defecto un límite de 4 MB por mensaje por motivos de seguridad y eficiencia. Debido a que el dataset MNIST particionado para este experimento genera payloads de aproximadamente 94 MB, se procedió a la reconfiguración de los parámetros `max_send_message_length` y `max_receive_message_length` a 200 MB tanto en el Master como en los Workers. Esta decisión de diseño permite evaluar el rendimiento del protocolo mediante transferencias de grandes bloques binarios, minimizando el *overhead* de fragmentación.
+El script `master.py` actúa como cliente gRPC y distribuidor de la carga de visión artificial. Sus mejoras técnicas incluyen:
 
-### 2. Justificación de la Carga Útil (Payload)
-El dimensionamiento del payload enviado por la red responde a un cálculo estricto sobre la topología del dataset de visión artificial. 
+* **Conversión Binaria Nativa (Zero-Copy):** Carga el dataset MNIST como matrices `float32` de NumPy. En lugar de iterar y parsear a listas JSON, inyecta los datos directamente en crudo mediante `particion_np.tobytes()`, eliminando el *overhead* de transformación.
+* **Ajuste de Ventanas TCP/gRPC:** Por diseño, gRPC impone un límite estricto de 4 MB por mensaje por motivos de seguridad. Dado el volumen de las particiones, el Master reconfigura los canales asíncronos sobrescribiendo `grpc.max_send_message_length` y `max_receive_message_length` a **200 MB**, permitiendo la transmisión ininterrumpida de grandes tensores.
+* **Aislamiento de Métricas:** Se utilizan relojes de alta resolución (`time.perf_counter()`) para medir el RTT exacto de la llamada a procedimiento remoto de forma aislada.
 
-Considerando que se envían lotes de 30,000 imágenes (la mitad exacta del dataset de entrenamiento MNIST para un clúster de dos nodos Worker):
-*   Resolución dimensional por imagen: $28 \times 28 = 784$ píxeles.
-*   Profundidad de datos: Cada píxel se procesa como un `float32`, lo que equivale a 4 bytes.
-*   Peso unitario: $784 \times 4 = 3136$ bytes por imagen.
+### 2. Contrato de Datos (Protobuf)
+El intercambio se rige por un Interface Definition Language (IDL) definido en `mnist.proto`. Esto garantiza un tipado fuerte de las variables (`int32`, `bytes`, `float`) y comprime la transmisión al eliminar la basura sintáctica (llaves, comas, comillas) inherente a JSON.
 
-Por tanto, la huella de memoria exacta para la transmisión de un lote en crudo es:
-$$30000 \times 3136 = 94080000 \text{ bytes} \approx 94 \text{ MB}$$
+* **Justificación del Payload:** Se procesan 30.000 imágenes por nodo. Cada imagen (28x28) consta de 784 píxeles `float32` (4 bytes/píxel). La huella binaria matemática en la red es de exactamente 94.080.000 bytes ($\approx 89.72$ MB estandarizados).
 
 ### 3. Los Nodos Perimetrales (Workers)
-Los contenedores *rootless* ejecutan un servidor gRPC instanciado en el puerto 8000.
-*   **Servidor RPC:** La clase `MnistServicer` implementa el método `ProcessBatch` definido en el contrato Protobuf.
-*   **Zero-Parsing en Memoria:** El Worker recibe el payload binario (`request.image_data`) y lo mapea directamente a un array de NumPy utilizando `np.frombuffer`. Esta técnica elimina la sobrecarga computacional de decodificar texto a variables lógicas.
-*   **Telemetría Integrada:** Se inspeccionan los recursos del nodo con `psutil` y se devuelven en un objeto `BatchResponse` fuertemente tipado.
+Los contenedores *rootless* (Quadlets) ejecutan un servidor gRPC instanciado en el puerto 8000.
+
+* **Servidor RPC:** La clase `MnistServicer` implementa el método `ProcessBatch` derivado de los *stubs* generados por el compilador Protobuf.
+* **Zero-Parsing en Memoria:** Al recibir el payload binario (`request.image_data`), el Worker lo asigna directamente a la memoria de la CPU utilizando `np.frombuffer(..., dtype=np.float32)`. Esta instrucción actúa como un puntero de memoria, erradicando por completo el tiempo intensivo de deserialización iterativa.
+* **Telemetría Integrada:** Se ejecuta una limpieza de buffers (`cpu_percent(interval=None)`) antes de procesar el tensor binario, devolviendo al Master un objeto `BatchResponse` fuertemente tipado con los consumos exactos de hardware ($T_{proc}$, RAM y CPU).
 
 ## Protocolo y Formato de Serialización
 
-*   **Capa de Transporte (HTTP/2):** gRPC opera nativamente sobre HTTP/2, permitiendo multiplexación real sobre una única conexión TCP.
-*   **Capa de Serialización (Protobuf):** El intercambio de datos se rige por un Interface Definition Language (IDL) en el archivo `mnist.proto`. Esto garantiza un tipado fuerte de las variables (ej. `int32`, `bytes`, `float`) y comprime la transmisión al eliminar la basura sintáctica (llaves, comas, nombres de campos) inherente a JSON.
+* **Capa de Transporte (HTTP/2):** gRPC opera nativamente sobre HTTP/2, permitiendo multiplexación real sobre una única conexión TCP.
+* **Capa de Serialización (Protobuf):** El intercambio de datos se realiza de forma binaria, reduciendo significativamente el ancho de banda necesario respecto a la versión HTTP/REST.
 
 ## Despliegue con Ansible
 
-Los contenedores se construyen a partir de la imagen `python:3.11-slim`. En esta iteración, el `Dockerfile` de los Workers incluye una fase de compilación interna: instala `grpcio-tools` y ejecuta el compilador `protoc` (`RUN python -m grpc_tools.protoc...`) en tiempo de construcción para generar los *stubs* de red (`_pb2.py` y `_pb2_grpc.py`) dentro del clúster.
-```yaml
-# En el archivo de variables o inventario de Ansible
-experimento_path: "../results/grpc"
+La infraestructura se aprovisiona inyectando la ruta del directorio gRPC. Dado que el archivo de variables del repositorio apunta por defecto a HTTP, para este protocolo **es obligatorio** inyectar la variable dinámicamente por terminal. Los contenedores instalarán las herramientas base y compilarán automáticamente el `.proto` en su interior durante la fase de *build* orquestada por Systemd.
+
+```bash
+# Desplegar inyectando la ruta de gRPC para sobrescribir el valor por defecto
+ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/02-grpc-proto"
 ```
-
-## Análisis de Rendimiento (resultados en `experiments.md`)
-
-Las métricas demuestran una mejora arquitectónica drástica al migrar de serialización de texto a binaria, resolviendo el cuello de botella de memoria detectado en la prueba HTTP/REST.
-
-*   **Aceleración Extrema (Tiempo):** El tiempo de procesamiento de la red entera desciende a un promedio de **0.67 segundos** (frente a los ~13.3s de REST).
-*   **Liberación de Memoria (RAM):** Al no tener que crear diccionarios en memoria para parsear JSON, el consumo de RAM de los Workers se desploma, pasando de 2.6 GB a un promedio de **~275 MB**.
-*   **Eficiencia de Red:** Protobuf reduce el payload transferido de 242 MB a **179.44 MB**, eliminando 63 MB de *overhead* sintáctico.
-*   **Saturación Positiva de CPU:** El uso de CPU sube a un ~49%, lo que indica que el proceso ya no está bloqueado por latencia de red (I/O Bound) y el procesador puede ingerir y procesar la matriz a máxima velocidad.
-
-### RESULTADOS: gRPC (Protobuf/Binary)
-
-| Prueba | Tiempo Total (s) | Throughput (img/s) | RAM Máx, Worker (MB) | CPU Promedio (%) | Datos Totales Red (MB) | Tasa Éxito (%) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Test 1** | 0,80 | 74761,07 | 259,49 MB | 50,75% | 179,44 MB | 100,00% |
-| **Test 2** | 0,66 | 90470,43 | 281,43 MB | 43,65% | 179,44 MB | 100,00% |
-| **Test 3** | 0,65 | 92710,45 | 280,72 MB | 50,00% | 179,44 MB | 100,00% |
-| **Test 4** | 0,62 | 96571,41 | 276,25 MB | 52,80% | 179,44 MB | 100,00% |
-| **Test 5** | 0,65 | 92177,85 | 279,43 MB | 50,00% | 179,44 MB | 100,00% |
-| **Total** | **0,676** | **89338,24** | **275,46 MB** | **49,44%** | **179,44 MB** | **100,00%** |
 
 ---
 
 ## Guía de Ejecución: Clúster Edge MNIST (gRPC)
 
 ### 1. Preparación del Entorno (Master)
-Antes de nada, necesitas generar el código de gRPC a partir del contrato `.proto`.
+
+Antes de ejecutar el orquestador, se deben instalar las librerías base y compilar el contrato `.proto` para generar los *stubs* de red (`_pb2.py` y `_pb2_grpc.py`).
+
 ```bash
 # Instalar dependencias necesarias
-pip install grpcio grpcio-tools psutil numpy
+pip install grpcio grpcio-tools psutil numpy tensorflow-datasets
 
-# Compilar el contrato (Genera los archivos _pb2.py y _pb2_grpc.py)
+# Compilar el contrato Protobuf
 python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. mnist.proto
 ```
 
 ### 2. Despliegue de Infraestructura (Ansible)
-Usa el inventario de tus nodos para configurar Podman, la red interna y los Quadlets de Systemd. Asegúrate de que la ruta del experimento apunte a la carpeta `grpc`.
-```bash
-# 1. Limpiar cualquier rastro previo de otros protocolos (Opcional pero recomendado)
-ansible-playbook -i inventory.ini clean.yml -K
 
-# 2. Desplegar y arrancar el clúster
-ansible-playbook -i inventory.ini playbook.yml -K
+Asegúrate de que la variable `experimento_path` apunta a la carpeta de gRPC (`../2-src-protocols/02-grpc-proto`).
+
+```bash
+# 1. Limpiar cualquier rastro previo del protocolo HTTP
+ansible-playbook -i inventory.ini clean.yml
+
+# 2. Desplegar y arrancar el clúster inyectando el código gRPC
+ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/02-grpc-proto"
 ```
 
 ### 3. Verificación en los Nodos (Workers)
-Si quieres comprobar que los contenedores están corriendo bajo Systemd sin root en `node-a` o `node-b`:
+
+Si quieres comprobar que los contenedores están corriendo y que el servidor de RPC está listo en el puerto 8000:
+
 ```bash
 # Conectarse al nodo
 ssh littledragon@192.168.98.143
 
-# Ver el estado del servicio gestionado por Systemd
+# Ver el estado del servicio
 systemctl --user status worker.service
 
-# Ver logs en tiempo real del servidor gRPC
+# Ver logs (debe indicar "Servidor gRPC iniciado (Límite 200MB)")
 journalctl --user -u worker.service -f
 ```
 
 ### 4. Ejecución del Experimento (Master)
-Una vez que los Workers están en `running` y escuchando en el puerto 8000, lanza el script principal para inyectar la carga y obtener la tabla de resultados.
+
+Una vez validado el clúster, lanza el script principal para inyectar la carga. Los resultados crudos se imprimirán en consola para su posterior consolidación en la matriz de métricas de la Parte 03.
+
 ```bash
 python master.py
-```
-
-## Comandos de Mantenimiento
-
-### Actualización de Código
-Si modificas el `worker.py`, solo tienes que relanzar el playbook. Ansible se encarga de:
-1. Copiar los archivos nuevos.
-2. Reconstruir la imagen con `podman build`.
-3. Reiniciar el servicio con `systemctl --user restart`.
-```bash
-ansible-playbook -i inventory.ini playbook.yml -K
-```
-
-### Limpieza Total
-Para dejar los nodos (`node-a` y `node-b`) como si nada hubiera pasado, eliminando imágenes, redes y servicios:
-```bash
-ansible-playbook -i inventory.ini clean.yml -K
 ```

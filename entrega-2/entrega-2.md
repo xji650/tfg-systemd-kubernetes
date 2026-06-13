@@ -253,23 +253,22 @@ Para acomodar la evaluación de las diferentes arquitecturas de red, el pipeline
 
 --- 
 
-## 6. Resultados de la Evaluación Técnica
+## 6. Resultados de la Evaluación Técnica (`resultados_tablas.md`)
 
-Se han realizado pruebas de estrés enviando un lote continuo de 60.000 imágenes (aprox. 94 MB) a los nodos Edge. La siguiente tabla refleja la media consolidada de 5 ejecuciones independientes:
+Se han realizado pruebas de estrés enviando un lote continuo de 60.000 imágenes (aprox. 94 MB) a los nodos Edge. 
 
-| Métrica Evaluada | Fase 1: HTTP/REST (JSON) | Fase 2: gRPC (Protobuf) | Fase 3: ZeroMQ (Protobuf) |
-| :--- | :--- | :--- | :--- |
-| **Tiempo Total (s)** | 13,33 s | 0,67 s | **0,35 s** |
-| **Throughput (img/s)** | ~4.623 img/s | ~89.338 img/s | **~171.578 img/s** |
-| **Consumo RAM Máx.** | **2.631,48 MB** *(Crítico)* | 275,46 MB | 300,57 MB |
-| **Uso CPU Promedio** | 3,20% *(Bloqueo I/O)* | 49,44% | 50,00% |
-| **Datos Transmitidos** | 242,29 MB | **179,44 MB** | **179,44 MB** |
+Para ver resultados de la comparativa, pulsa [aqui](/entrega-2/3-benchmarks-results/resultados_tablas.md).
 
-## 7. Análisis y Conclusiones
+## 7. Análisis Final y Conclusiones
 
-La evolución a través de las tres arquitecturas arroja conclusiones claras para el diseño de sistemas Edge:
-1.  **La Inviabilidad de REST/JSON:** El consumo de más de 2.6 GB de RAM para leer un mensaje demuestra que las APIs web tradicionales no son aptas para la transmisión de datos densos en dispositivos perimetrales limitados.
-2.  **El Impacto de la Serialización:** Migrar de JSON a Protobuf eliminó más de 60 MB de basura sintáctica en la red y redujo el consumo de RAM en un 89%, permitiendo a la CPU trabajar libre de bloqueos de E/S.
-3.  **Transporte TCP vs HTTP/2:** Una vez resuelto el problema de la serialización con Protobuf, la comparativa de transporte demostró que eliminar las capas HTTP (gRPC) para bajar a sockets TCP puros (ZeroMQ) duplica el rendimiento, logrando tiempos de 0.35 segundos.
+La comparativa técnica realizada demuestra que la elección del protocolo de red no es una cuestión accesoria, sino un pilar fundamental del rendimiento en sistemas distribuidos perimetrales. Las conclusiones se sintetizan en los siguientes puntos:
 
-Todo ello demuestra que la optimización de los protocolos de red es tan crítica como la propia orquestación de los contenedores mediante **systemd**, logrando un sistema ultraligero y de alto rendimiento.
+1. **Inviabilidad del estándar REST/JSON:** El *baseline* (HTTP/JSON) resultó ser ineficiente para el tráfico de tensores, consumiendo más de 2.6 GB de RAM y limitando el rendimiento a ~3.600 img/s. Se confirma que los estándares web tradicionales introducen una penalización por serialización de texto que es inasumible para dispositivos Edge con recursos limitados.
+2. **La revolución binaria (gRPC/Protobuf):** El salto a gRPC no fue solo una mejora, sino un cambio de paradigma. Al eliminar la serialización de texto y aplicar *Zero-Copy*, el throughput aumentó un **1.500%** (de 3.636 a 57.850 img/s) y la huella de memoria se redujo drásticamente a 384 MB, validando la serialización binaria como requisito indispensable.
+3. **Optimización de la capa de transporte (ZeroMQ):** Al prescindir de las cabeceras HTTP/2 y pasar a sockets TCP crudos con ZeroMQ, la latencia RTT cayó de ~1.023 ms a **672 ms** en Protobuf, demostrando que la complejidad de la pila de red de gRPC añade un *overhead* medible que puede eliminarse mediante túneles TCP directos.
+4. **La superioridad de MessagePack (Eficiencia Dinámica):** La iteración final con ZeroMQ + MessagePack representa el límite teórico del sistema. Con un tiempo total de **0.54s** y un throughput de **111.087 img/s**, esta arquitectura minimiza el uso de RAM a solo **209 MB**. El uso de un formato *schema-less* ha demostrado ser más eficiente que el tipado estricto de Protobuf al eliminar el coste computacional de instanciar clases complejas (`_pb2`) en el Worker.
+
+
+La optimización del sistema Edge no reside únicamente en la orquestación mediante `systemd/podman`. La tríada **ZeroMQ + MessagePack + Zero-Copy** se establece como la arquitectura ganadora, logrando un equilibrio sin precedentes entre rendimiento bruto, latencia mínima y agilidad de desarrollo. 
+
+

@@ -1,6 +1,6 @@
 # Orquestación Ansible: Clúster Edge Multi-Protocolo
 
-Este repositorio contiene la Infraestructura como Código (IaC) basada en Ansible para el aprovisionamiento automatizado, la gestión del ciclo de vida y la evaluación de rendimiento (*Benchmarking*) de nodos Worker en un entorno de procesamiento perimetral (*Edge Computing*).
+Este directorio contiene la Infraestructura como Código (IaC) basada en Ansible para el aprovisionamiento automatizado y la gestión del ciclo de vida de nodos Master y Worker en un entorno de procesamiento perimetral (*Edge Computing*).
 
 ## Arquitectura e Implementación Técnica
 
@@ -26,22 +26,40 @@ Para optimizar los recursos del hardware perimetral y asegurar la resiliencia en
 
 Para lograr una automatización absoluta sin intervención humana (Zero-Touch) y sin comprometer la seguridad del repositorio en el control de versiones, la escalada de privilegios se gestiona mediante un archivo de secretos local.
 
-El acceso de administrador requerido para tareas de bajo nivel (como activar el *Linger*) se inyecta desde `group_vars/secrets.yml` (archivo excluido explícitamente vía `.gitignore`), **eliminando la necesidad de introducir contraseñas interactivas (`-K`)** durante el despliegue.
+El acceso de administrador (`sudo`) requerido para tareas de bajo nivel (como activar el *Linger*) se inyecta desde `group_vars/workers.yml` (archivo excluido explícitamente vía `.gitignore`), **eliminando la necesidad de introducir contraseñas interactivas (`-K`)** durante el despliegue.
 
 ## Requisitos e Inventario
 
-La topología del clúster se define en `inventory.ini` bajo el grupo `[workers]`. El nodo de control requiere acceso SSH mediante clave RSA (`~/.ssh/id_rsa`).
+La topología completa del clúster y los roles de enrutamiento se encuentran unificados en el archivo `inventory.ini`. El nodo de control orquestador requiere acceso SSH sin contraseña hacia los entornos perimetrales mediante el intercambio previo de claves públicas RSA (`~/.ssh/id_rsa`).
 
-**Nodos actualmente registrados:**
+### Configuración del Inventario (`inventory.ini`)
 
-* `node-a` (IP: 192.168.98.143)
-* `node-b` (IP: 192.168.98.144)
+El inventario está estructurado segregando el entorno de control local del plano de ejecución en el Edge:
 
-Todos los Workers exponen el puerto unificado `8000` (definido en la variable `web_port`) al orquestador central.
+```ini
+[master]
+localhost ansible_connection=local
+
+[workers]
+node-a ansible_host=192.168.98.143
+node-b ansible_host=192.168.98.144
+
+```
+
+* **Grupo `[master]`:** Define el nodo de control central (orquestador). Utiliza la directiva `ansible_connection=local` para optimizar las tareas de compilación interna, empaquetado y aprovisionamiento local (como la descarga del dataset MNIST) sin necesidad de saltos de red SSH artificiales hacia el propio host.
+* **Grupo `[workers]`:** Registra los nodos perimetrales del clúster dedicados al cómputo pasivo. Cada host mapea su alias simbólico (`node-a`, `node-b`) a su dirección IPv4 correspondiente a través del parámetro nativo `ansible_host`.
+
+### Parámetros de Red y Puertos
+
+Por defecto, la infraestructura expone un puerto unificado en los contenedores para canalizar el tráfico hacia el microframework correspondiente:
+
+* **Puerto de Servicio:** `8000` (declarado mediante la variable global `web_port` en los playbooks).
+* Todos los servicios desplegados quedan vinculados de forma *rootless* a las interfaces físicas de los Workers, permitiendo al nodo Master la inyección paralela de cargas de trabajo directamente a través de los sockets expuestos de cada IP.
+
 
 ## Documentación de Ejecución y Benchmarking
 
-El repositorio incluye herramientas para gestionar la infraestructura de forma individual o mediante un pipeline de evaluación global.
+El directorio incluye herramientas para gestionar la infraestructura de forma individual o mediante un pipeline de evaluación global.
 
 ### 1. Documentación de Playbooks
 
@@ -64,7 +82,7 @@ Ejecuta una purga de infraestructura agresiva, necesaria para garantizar un ento
 
 ### 2. El Pipeline de Evaluación: `generate_benchmarks.sh`
 
-Script Bash avanzado que automatiza la batería de pruebas para el TFG. Realiza un ciclo continuo sobre los 4 protocolos implementados:
+Script Bash avanzado que automatiza proceso de pruebas para diferentes protocolos de comunicación. Realiza un ciclo continuo sobre los 3 protocolos (4 formas) implementados:
 
 1. **Despliegue Limpio:** Ejecuta `clean.yml` y despliega el nuevo protocolo dinámicamente.
 2. **Medición Base:** Captura el $T_{deploy}$ global y el consumo de RAM/CPU en reposo.
