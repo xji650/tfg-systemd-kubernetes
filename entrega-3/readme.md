@@ -1,0 +1,2 @@
+Entrenamiento de un modelo IA con framework PyTorch en nodo Master y distribuir el model i el codigo de inferencia y hacerlo en cada Worker, para que worker pueda identificar contenidos de  la imagen y obtener las métricas
+https://pythonguides.com/pytorch-mnist/
