@@ -1,0 +1,1 @@
+Entrenamiento de un modelo IA con framework PyTorch https://pythonguides.com/pytorch-mnist/
