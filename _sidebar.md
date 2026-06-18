@@ -19,7 +19,7 @@
   - [Redes Neuronales - PyTorch](Setmana5-PyTorch/ml-pytorch.md)
 
 - **> Kubernetes**
-  - [Setup K3S](Setmana5-kubernetes/setup.md)
+  - [Setup K3S](Setmana6-kubernetes/setup.md)
 
 - **> Entregas**
   - **> Entrega 1**
