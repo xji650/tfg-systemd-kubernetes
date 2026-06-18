@@ -15,6 +15,9 @@
   - [Protocolos de comunicación](Setmana4_protocolos-comunicacion/protocolos-comunicacion.md)
   - [Formato envío datos](Setmana4_protocolos-comunicacion/formato-envio-datos.md)
 
+- **> Machine Learning**
+  - [Redes Neuronales - PyTorch](Setmana5_PyTorch/ml-pytorch.md)
+
 - **> Kubernetes**
   - [Setup K3S](Setmana5_kubernetes/setup.md)
 
