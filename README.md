@@ -40,9 +40,18 @@ Project-TFG/
 
 ## Visualización de la documentación
 
-### En el navegador 
+### 1. En Localhost (Dev)
+
+```bash
+docsify serve .
+```
+Accede en: http://localhost:45731
+
+### 2. En el navegador (Prod)
 
 Acceder en: https://xji650.github.io/tfg-systemd-kubernetes/#/
+
+---
 
 ### Requisitos
 
