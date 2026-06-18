@@ -2,24 +2,24 @@
   - [Índice](README.md)
 
 - **> Setup**
-  - [Configuración Nodos (MV)](Setmana0_setup-mv/Setmana0.md)
+  - [Configuración Nodos (MV)](Setmana0-setup-mv/Setmana0.md)
 
 - **> Podman**
-  - [Instalación Podman](Setmana1_podman/Setmana1.md)
+  - [Instalación Podman](Setmana1-podman/Setmana1.md)
 
 - **> Systemd**
-  - [Systemd Legacy](Setmana2_systemd-legacy/Setmana2.md)
-  - [Systemd Quadlets](Setmana3_systemd-quadlets/Semana3.md)
+  - [Systemd Legacy](Setmana2-systemd-legacy/Setmana2.md)
+  - [Systemd Quadlets](Setmana3-systemd-quadlets/Semana3.md)
 
 - **> Protocolos**
-  - [Protocolos de comunicación](Setmana4_protocolos-comunicacion/protocolos-comunicacion.md)
-  - [Formato envío datos](Setmana4_protocolos-comunicacion/formato-envio-datos.md)
+  - [Protocolos de comunicación](Setmana4-protocolos-comunicacion/protocolos-comunicacion.md)
+  - [Formato envío datos](Setmana4-protocolos-comunicacion/formato-envio-datos.md)
 
 - **> Machine Learning**
-  - [Redes Neuronales - PyTorch](Setmana5_PyTorch/ml-pytorch.md)
+  - [Redes Neuronales - PyTorch](Setmana5-PyTorch/ml-pytorch.md)
 
 - **> Kubernetes**
-  - [Setup K3S](Setmana5_kubernetes/setup.md)
+  - [Setup K3S](Setmana5-kubernetes/setup.md)
 
 - **> Entregas**
   - **> Entrega 1**
@@ -37,6 +37,6 @@
     - **> Benchmarks y resultados**
       - [Resumen Benchmarks](entrega-2/3-benchmarks-results/readme.md)
       - [Análisis Benchmarks](entrega-2/3-benchmarks-results/benchmarks-analisis.md)
-      - [Resultados (tablas)](entrega-2/3-benchmarks-results/resultados_tablas.md)
+      - [Resultados (tablas)](entrega-2/3-benchmarks-results/resultados-tablas.md)
 
 If you find any link broken, tell me which one and I will fix it.
