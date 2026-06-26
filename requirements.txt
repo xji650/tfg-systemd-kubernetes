@@ -1,0 +1,31 @@
+## This is a requirements file for a Python project that specifies the dependencies needed to run the project. The listed packages include PyTorch, torchvision, matplotlib, pillow, and tk.
+numpy
+psutil
+tensorflow-datasets
+requests
+
+## protocols http-json
+fastapi
+uvicorn
+ 
+## protocols grpc-protobuf
+grpcio==1.62.2
+grpcio-tools==1.62.2
+protobuf==4.25.3
+
+## protocols zeromq-protobuf
+pyzmq
+
+## protocols zeromq-messagepack
+msgpack
+
+## benchmarks-results
+pandas 
+matplotlib 
+seaborn
+
+## pytorch
+torch 
+torchvision 
+pillow 
+tk
