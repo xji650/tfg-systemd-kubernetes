@@ -92,43 +92,28 @@ Script Bash avanzado que automatiza proceso de pruebas para diferentes protocolo
 
 ---
 
-### Instrucciones de Uso
-
-#### Opción A: Despliegue Manual por Protocolo
-
-Útil para depuración y pruebas aisladas:
+### Comandos
 
 ```bash
-# 1. Limpieza de la infraestructura actual
+# Limpieza de la infraestructura actual
 ansible-playbook -i inventory.ini clean.yml
+```
 
-
-# 2. Despliegue 
-## desplegar protocolo (http-json por defecto)
+```bash
+# Desplegar protocolo por defecto (http-json)
 ansible-playbook -i inventory.ini playbook.yml
 
-## desplegar un protocolo inyectando la variable
+# Desplegar un protocolo inyectando la variable
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/01-http-json"
+
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/02-grpc-protobuf"
+
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/03-zeromq-protobuf"
+
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/04-zeromq-messagepack"
-
 ```
-
-#### Opción B: Ejecución Global Automatizada (Zero-Touch)
-
-El método recomendado para extraer las métricas formales del TFG:
 
 ```bash
-# 1. Configurar la clave de administrador local (solo la primera vez)
-echo 'ansible_become_pass: "TU_CONTRASEÑA_AQUI"' > group_vars/workers.yml
-
-# 2. Dar permisos de ejecución al pipeline
-chmod +x generate_benchmarks.sh
-
-# 3. Lanzar la evaluación global
+# Despliegue automatizada (Limpieza + Despliegue + Ejecución de nodos)
 ./generate_benchmarks.sh
-
 ```
-
-*(Los resultados de cada arquitectura se guardarán automáticamente en la carpeta `3-benchmarks-results/raw_logs/` del proyecto).*

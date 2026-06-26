@@ -13,7 +13,7 @@ Esta carpeta contiene la infraestructura de datos y el análisis técnico consol
 * `readme.md`: Información general este directorio.
 
 
-
+---
 ## Ejecución del Análisis
 Para regenerar los resultados a partir de los logs crudos, ejecuta:
 ```bash

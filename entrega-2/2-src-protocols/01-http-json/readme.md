@@ -47,46 +47,10 @@ ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-pro
 
 ## Guía de Ejecución: Clúster Edge MNIST (HTTP/REST)
 
-### 1. Preparación del Entorno (Master)
-
-Preparar el entorno virtual del nodo orquestador con las dependencias para ingestar el dataset y hacer peticiones web.
-
 ```bash
 # Instalar dependencias necesarias en el Master
 pip install tensorflow-datasets numpy requests
-```
 
-### 2. Despliegue de Infraestructura (Ansible)
-
-Asegúrate de que la variable `experimento_path` apunta a la carpeta de HTTP (`../2-src-protocols/01-http-json`). Luego, usa Ansible para configurar Podman, la red interna y los Quadlets de Systemd en los nodos.
-
-```bash
-# 1. Limpiar cualquier rastro previo de otros protocolos (Recomendado)
-ansible-playbook -i inventory.ini clean.yml
-
-# 2. Desplegar y arrancar el clúster inyectando el código HTTP
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/01-http-json"
-```
-
-### 3. Verificación en los Nodos (Workers)
-
-Si quieres comprobar que los contenedores están corriendo bajo Systemd (modo *rootless*) y que Uvicorn está escuchando correctamente en el puerto 8000:
-
-```bash
-# Conectarse a uno de los nodos (ej. node-a)
-ssh littledragon@192.168.98.143
-
-# Ver el estado del servicio gestionado por Systemd
-systemctl --user status worker.service
-
-# Ver logs en tiempo real del servidor FastAPI/Uvicorn
-journalctl --user -u worker.service -f
-```
-
-### 4. Ejecución del Experimento (Master)
-
-Una vez que los Workers muestren el estado `running` y Uvicorn esté listo, lanza el script principal desde tu máquina orquestadora para enviar las imágenes vía POST y obtener la tabla de resultados.
-
-```bash
-python master.py
+# Ejecutar nodo Master
+python3 master.py
 ```

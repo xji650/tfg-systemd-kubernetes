@@ -43,49 +43,13 @@ ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-pro
 
 ## Guía de Ejecución: Clúster Edge MNIST (gRPC)
 
-### 1. Preparación del Entorno (Master)
-
-Antes de ejecutar el orquestador, se deben instalar las librerías base y compilar el contrato `.proto` para generar los *stubs* de red (`_pb2.py` y `_pb2_grpc.py`).
-
 ```bash
 # Instalar dependencias necesarias
 pip install grpcio grpcio-tools psutil numpy tensorflow-datasets
 
 # Compilar el contrato Protobuf
 python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. mnist.proto
-```
 
-### 2. Despliegue de Infraestructura (Ansible)
-
-Asegúrate de que la variable `experimento_path` apunta a la carpeta de gRPC (`../2-src-protocols/02-grpc-proto`).
-
-```bash
-# 1. Limpiar cualquier rastro previo del protocolo HTTP
-ansible-playbook -i inventory.ini clean.yml
-
-# 2. Desplegar y arrancar el clúster inyectando el código gRPC
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/02-grpc-proto"
-```
-
-### 3. Verificación en los Nodos (Workers)
-
-Si quieres comprobar que los contenedores están corriendo y que el servidor de RPC está listo en el puerto 8000:
-
-```bash
-# Conectarse al nodo
-ssh littledragon@192.168.98.143
-
-# Ver el estado del servicio
-systemctl --user status worker.service
-
-# Ver logs (debe indicar "Servidor gRPC iniciado (Límite 200MB)")
-journalctl --user -u worker.service -f
-```
-
-### 4. Ejecución del Experimento (Master)
-
-Una vez validado el clúster, lanza el script principal para inyectar la carga. Los resultados crudos se imprimirán en consola para su posterior consolidación en la matriz de métricas de la Parte 03.
-
-```bash
+# Ejecutar nodo Master
 python master.py
 ```

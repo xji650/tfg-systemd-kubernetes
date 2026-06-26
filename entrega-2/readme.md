@@ -34,44 +34,80 @@ El sistema requiere la apertura de los siguientes puertos en los nodos para gara
 
 ## 4. Procedimiento de Instalación y Despliegue
 
-### Paso 1: Configuración de Claves SSH
+### Paso 1: Configuración entorno
+
+#### 1. Intercambio de claves RSA
+
 Se requiere intercambio de claves RSA para permitir la ejecución desatendida de Ansible:
 ```bash
 ssh-keygen -t rsa -b 4096
 ssh-copy-id -i ~/.ssh/id_rsa.pub user@<ip-nodo>
 ```
 
-### Paso 2: Aprovisionamiento (Ansible)
+#### 2. Entorno Virtual Python
+
+Para ejecutar este proyecto de forma aislada y segura, es necesario configurar un entorno virtual y descargar las dependencias. Sigue estos pasos desde la raíz del proyecto:
+
+1. **Crear el entorno virtual:**
+    ```bash
+    python3 -m venv .venv
+    ```
+
+2. **Activar el entorno virtual:**
+* En Linux o macOS: `source .venv/bin/activate`
+* En Windows: `.venv\Scripts\activate`
+* *(Sabrás que está activado si ves `(.venv)` al principio de tu línea de comandos).*
+
+3. **Instalar las dependencias requerides:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### Paso 2: Despliegue
 El despliegue automatiza la habilitación de **Linger**, la creación de la red virtual Quadlet y el build local de la imagen de aplicación. 
 
 #### Opción A: Despliegue Estándar
 Para levantar el clúster de forma normal sin extraer métricas de infraestructura:
 
-##### **1. desplegar protocolo (http-json por defecto)**
-```bash
-ansible-playbook -i inventory.ini playbook.yml
-```
+```bash 
+# 1. Desplegar protocolo
 
-##### **2. desplegar un protocolo inyectando la variable**
-```bash
+# http-json
+ansible-playbook -i inventory.ini playbook.yml
+
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/01-http-json"
+
+# grpc-protobuf
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/02-grpc-protobuf"
+
+# zeromq-protobuf
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/03-zeromq-protobuf"
+
+# zeromq-messagepack
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/04-zeromq-messagepack"
 ```
-
-#### Opción B: Despliegue con Benchmark (Extracción de Métricas)
-Para extraer los datos del Plano de Gestión ($T_{deploy}$, Consumo en Reposo, $T_{recovery}$), se ejecutará el script de automatización. Este script envuelve la ejecución de Ansible y aplica pruebas de Chaos Engineering sobre los nodos perimetrales:
 ```bash
-chmod +x benchmark_infra.sh
-./benchmark_infra.sh
-```
-
-### Paso 3: Ejecución del Reparto de Carga
-Desde la máquina de control, se inicia la partición y envío de datos:
-```bash
+# 2. Ejecución del Reparto de Carga desde la máquina de control
 python3 master.py
 ```
+
+#### Opción B: Ejecución Automatizada (Zero-Touch)
+
+Limpieza + Despliegue + Ejecución de nodos
+
+Para extraer los datos del Plano de Gestión ($T_{deploy}$, Consumo en Reposo, $T_{recovery}$), se ejecutará el script de automatización. Este script envuelve la ejecución de Ansible y aplica pruebas de Chaos Engineering sobre los nodos perimetrales:
+
+```bash
+# 1. Configurar la clave de administrador local (solo la primera vez)
+echo 'ansible_become_pass: "TU_CONTRASEÑA_AQUI"' > group_vars/workers.yml
+
+# 2. Dar permisos de ejecución al pipeline
+chmod +x generate_benchmarks.sh
+
+# 3. Lanzar la evaluación global
+./generate_benchmarks.sh
+```
+*(Los resultados de cada arquitectura se guardarán automáticamente en la carpeta `3-benchmarks-results/raw_logs/` del proyecto).*
 
 ### Opcional: Monitorización de logs
 Monitorización de Logs:
@@ -106,54 +142,6 @@ Para auditoría técnica de los nodos en tiempo real, se utilizan las herramient
 * **Ansible Systemd Module:** [Community.General.Systemd](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html)
 
 ---
-## 9. Demo
 
-### Paso 1: Mostrar que es "Declarativo" (El Blueprint)
-Antes de ejecutar nada, demuestra que estás usando systemd como un orquestador real y no lanzando contenedores a mano.
-* **En el Nodo A:**
-  ```bash
-  cat ~/.config/containers/systemd/worker.container
-  ```
-* **Qué decirle al tutor:** *"Como ves, no ejecuto comandos de Podman. Defino el estado deseado en este Quadlet, incluyendo la red virtual y las políticas de reinicio, y systemd se encarga de todo el ciclo de vida del contenedor en espacio de usuario (rootless)."*
-
-### Paso 2: Ejecutar el Sistema Distribuido (El flujo feliz)
-Aquí es donde demuestras el particionamiento del dataset.
-* **En el Nodo A (Terminal derecha):** Deja los logs del trabajador monitorizándose en tiempo real.
-  ```bash
-  journalctl --user -u worker.service -f
-  ```
-* **En el WSL (Terminal izquierda):** Ejecuta tu orquestador de datos.
-  ```bash
-  python master.py
-  ```
-* **Qué decirle al tutor:** *"Al ejecutar el maestro, vemos cómo descarga las 60.000 imágenes, calcula matemáticamente la división entre los nodos activos y despacha los paquetes. Si miramos la terminal de la derecha, vemos en tiempo real cómo el contenedor del Nodo A recibe y cuenta exactamente sus 30.000 imágenes, devolviendo un HTTP 200 OK."*
-
-### Paso 3: Demostrar la eficiencia energética (El argumento contra Kubernetes)
-Tu informe habla de un consumo de ~215 MB. Esto es una ventaja brutal frente a Kubernetes (que consume gigabytes solo para existir). Hay que mostrarlo.
-* **En el Nodo A:**
-  ```bash
-  podman stats --no-stream
-  ```
-  *(También puedes usar `systemd-cgtop` si lo prefieres).*
-* **Qué decirle al tutor:** *"Este es uno de los trade-offs principales del estudio. Al delegar la orquestación a systemd en lugar de instalar un agente pesado de Kubernetes (como Kubelet), el contenedor procesa miles de imágenes consumiendo apenas 200 MB de RAM. Casi el 100% del hardware del Edge se dedica a la carga útil, no a la gestión."*
-
-### Paso 4: La prueba del Caos (Demostrar la Resiliencia)
-Tu informe dice: *"Verificación de la auto-recuperación... ante fallos"*. Los tutores aman ver las cosas romperse y arreglarse solas. Vamos a "asesinar" a tu worker.
-* **En el Nodo A:**
-  1. Primero, mira el estado del servicio:
-     ```bash
-     systemctl --user status worker.service
-     ```
-  2. Ahora, mata el contenedor a lo bruto (simulando un fallo crítico de software o de memoria):
-     ```bash
-     podman stop worker-mnist-node-a -t 0
-     ```
-  3. Rápidamente, vuelve a mirar el estado y los logs:
-     ```bash
-     systemctl --user status worker.service
-     journalctl --user -u worker.service -n 10
-     ```
-
----
 
 >TODO: Optimizar el Dockerfile usando multi-stage build para reducir el tamaño de la imagen al máximo; así el archivo .tar será mucho más ligero y se transferirá más rápido a los workers.

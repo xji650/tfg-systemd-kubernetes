@@ -45,43 +45,10 @@ ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-pro
 
 ## Guía de Ejecución: Clúster Edge MNIST (ZMQ + MessagePack)
 
-### 1. Preparación del Entorno (Master)
-
-El nodo central se libera de los compiladores, requiriendo únicamente las librerías base de comunicación y serialización.
-
 ```bash
 # Instalar dependencias necesarias (¡Sin necesidad de compilar nada!)
 pip install pyzmq msgpack numpy psutil tensorflow-datasets
-```
 
-### 2. Despliegue de Infraestructura (Ansible)
-
-Asegúrate de inyectar la variable de ruta para que Ansible tome los archivos de la carpeta correspondiente a esta variante.
-
-```bash
-# 1. Limpieza de contenedores previos (Obligatorio para liberar el puerto 8000)
-ansible-playbook -i inventory.ini clean.yml
-
-# 2. Despliegue de la imagen de ZeroMQ + MessagePack
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/04-zeromq-msgpack"
-```
-
-### 3. Verificación en los Nodos (Workers)
-
-Conéctate por SSH a los nodos Edge para validar que el servicio está levantado y el socket TCP está expuesto.
-
-```bash
-# Conectarse al nodo
-ssh littledragon@192.168.98.143
-
-# Ver logs en tiempo real del contenedor (debe indicar "Worker ZeroMQ + MessagePack listo...")
-journalctl --user -u worker.service -f
-```
-
-### 4. Ejecución del Experimento (Master)
-
-Con los Workers listos, ejecuta el orquestador principal. Los resultados consolidados se extraerán para la comparativa final en la matriz de la Parte 03.
-
-```bash
+# Ejecutar nodo Master
 python master.py
 ```

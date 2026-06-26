@@ -41,48 +41,13 @@ ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-pro
 
 ## Guía de Ejecución: Clúster Edge MNIST (ZeroMQ)
 
-### 1. Preparación del Entorno (Master)
-
-El nodo central requiere la librería de ZeroMQ y la generación del traductor binario a partir del `.proto`.
 ```bash
 # Instalar dependencias necesarias
 pip install pyzmq protobuf numpy psutil tensorflow-datasets
 
 # Compilar el contrato de datos (Solo generamos _pb2.py, omitimos _pb2_grpc.py)
 python3 -m grpc_tools.protoc -I. --python_out=. mnist.proto
-```
 
-### 2. Despliegue de Infraestructura (Ansible)
-
-Asegúrate de inyectar la variable de ruta para que Ansible tome los archivos de la carpeta correspondiente a ZeroMQ.
-
-```bash
-# 1. Limpieza de contenedores previos (Recomendado al cambiar de motor de red)
-ansible-playbook -i inventory.ini clean.yml
-
-# 2. Despliegue de la imagen optimizada de ZeroMQ
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/03-zeromq-proto"
-```
-
-### 3. Verificación en los Nodos (Workers)
-
-Conéctate por SSH a los nodos Edge para validar que el servicio de Systemd está levantado y el socket de ZMQ está a la escucha de peticiones crudas.
-
-```bash
-# Conectarse al nodo
-ssh littledragon@192.168.98.143
-
-# Ver el estado del servicio gestionado por Systemd
-systemctl --user status worker.service
-
-# Ver logs en tiempo real del contenedor (debe indicar "Worker ZeroMQ listo...")
-journalctl --user -u worker.service -f
-```
-
-### 4. Ejecución del Experimento (Master)
-
-Con los Workers listos, ejecuta el archivo principal en la máquina de control para inyectar los arrays a través del túnel TCP. Los resultados crudos se imprimirán en consola para su posterior consolidación en la matriz de métricas de la Parte 03.
-
-```bash
+# Ejecutar nodo Master
 python master.py
 ```
