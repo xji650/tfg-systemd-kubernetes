@@ -1,0 +1,91 @@
+---
+
+  # ---------------------------------------------------------
+  # 1. PERSISTENCIA Y PREPARACIÓN BASE 
+  # ---------------------------------------------------------
+  - name: Preparar entorno en todos los nodos
+    hosts: workers
+    tasks:
+    - name: Habilitar linger para persistencia rootless
+      become: yes
+      command: "loginctl enable-linger {{ ansible_user }}"
+      args:
+        creates: "/var/lib/systemd/linger/{{ ansible_user }}"
+
+    - name: Crear directorio de Quadlets
+      file:
+        path: "~/.config/containers/systemd"
+        state: directory
+        mode: '0755'
+
+    - name: Desplegar Red Quadlet
+      template:
+        src: "templates/red.network.j2"
+        dest: "~/.config/containers/systemd/red.network"
+    
+    - name: Recargar systemd de usuario
+      systemd:
+        scope: user
+        daemon_reload: yes
+
+    - name: Arrancar red Quadlet
+      systemd:
+        scope: user
+        name: red-network.service
+        state: started
+        enabled: yes
+
+  # ---------------------------------------------------------
+  # 2. CONSTRUCCIÓN CENTRALIZADA Y EMPAQUETADO (Nodo de Control)
+  # ---------------------------------------------------------
+  - name: Construir y empaquetar imagen (Ejecutado solo en el Maestro)
+    hosts: localhost
+    connection: local
+    tasks:
+    - name: Construir la imagen del Worker localmente
+      delegate_to: localhost
+      run_once: true
+      command: "podman build --cgroup-manager=cgroupfs -t localhost/worker-mnist:v1 {{ experimento_path }}/"
+
+    - name: Eliminar artefacto .tar previo
+      file:
+        path: /tmp/worker-mnist.tar
+        state: absent
+
+    - name: Guardar la imagen en un artefacto .tar
+      delegate_to: localhost
+      run_once: true
+      command: "podman save -o /tmp/worker-mnist.tar localhost/worker-mnist:v1"
+
+  # ---------------------------------------------------------
+  # 3. DISTRIBUCIÓN EDGE (Workers)
+  # ---------------------------------------------------------
+  - name: Distribución edge
+    hosts: workers
+    tasks:
+    - name: Transferir la imagen empaquetada a los nodos perimetrales
+      copy:
+        src: "/tmp/worker-mnist.tar"
+        dest: "~/worker-mnist.tar"
+
+    - name: Cargar la imagen en el motor de contenedores del Worker
+      command: "podman load -i ~/worker-mnist.tar"
+
+  # ---------------------------------------------------------
+  # 4. DESPLIEGUE DEL WORKER MNIST
+  # ---------------------------------------------------------
+  - name: Desplegar Worker MNIST
+    hosts: workers
+    tasks:
+    - name: Desplegar Quadlet del Worker MNIST
+      template:
+        src: templates/worker.container.j2
+        dest: "~/.config/containers/systemd/worker.container"
+
+    - name: Arrancar servicio Worker MNIST con systemd
+      systemd:
+        scope: user
+        daemon_reload: yes
+        name: worker.service
+        state: restarted
+        enabled: yes
