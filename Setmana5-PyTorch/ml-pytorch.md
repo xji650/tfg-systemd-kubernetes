@@ -41,12 +41,8 @@ Para ejecutar este proyecto de forma aislada y segura, es necesario configurar u
 
 3. **Instalar las dependencias requerides:**
     ```bash
-    pip install torch torchvision matplotlib pillow tk
+    pip install requirements.txt
     ```
-
-Para desarrollar esta sección en la memoria de tu TFG, es importante utilizar un tono académico y técnico que demuestre al tribunal que comprendes perfectamente no solo el código, sino las decisiones de diseño arquitectónico y matemático que hay detrás del modelo.
-
-Aquí tienes una propuesta extensa y profesional para desarrollar ese apartado, lista para ser incluida en tu documento. Puedes adaptar o resumir las partes que consideres necesarias:
 
 ---
 
