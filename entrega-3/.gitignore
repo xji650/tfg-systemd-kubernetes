@@ -1,1 +1,5 @@
 workers.yml
+
+data/
+*.pth
+*.eps

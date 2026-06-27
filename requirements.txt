@@ -1,31 +1,37 @@
-## This is a requirements file for a Python project that specifies the dependencies needed to run the project. The listed packages include PyTorch, torchvision, matplotlib, pillow, and tk.
-numpy
+## ==========================================
+## REQUIREMENTS TFG - SYSTEMD VS KUBERNETES
+## ==========================================
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+## Core & Utils
+numpy<2.0.0
 psutil
-tensorflow-datasets
 requests
 
-## protocols http-json
-fastapi
-uvicorn
- 
-## protocols grpc-protobuf
-grpcio==1.62.2
-grpcio-tools==1.62.2
-protobuf==4.25.3
-
-## protocols zeromq-protobuf
-pyzmq
-
-## protocols zeromq-messagepack
-msgpack
-
-## benchmarks-results
+## Inteligencia Artificial & Datos
+tensorflow-datasets
+scikit-learn==1.5.2
 pandas 
 matplotlib 
 seaborn
 
-## pytorch
-torch 
-torchvision 
+## PyTorch (Versión CPU)
+torch==2.1.2+cpu
+torchvision==0.16.2+cpu
 pillow 
 tk
+
+## Protocolo 1: HTTP-JSON
+fastapi
+uvicorn
+python-multipart
+
+## Protocolo 2: gRPC-Protobuf
+grpcio==1.64.1
+grpcio-tools==1.64.1
+protobuf==5.27.2
+
+## Protocolo 3: ZeroMQ
+pyzmq
+msgpack
