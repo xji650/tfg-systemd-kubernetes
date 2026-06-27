@@ -24,17 +24,19 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bmnist.proto\x12\x05mnist\"4\n\x0c\x42\x61tchRequest\x12\x10\n\x08\x62\x61tch_id\x18\x01 \x01(\x05\x12\x12\n\nimage_data\x18\x02 \x01(\x0c\"\x84\x01\n\rBatchResponse\x12\x10\n\x08\x62\x61tch_id\x18\x01 \x01(\x05\x12\x18\n\x10images_processed\x18\x02 \x01(\x05\x12\x0e\n\x06status\x18\x03 \x01(\t\x12\x11\n\tram_usage\x18\x04 \x01(\x02\x12\x11\n\tcpu_usage\x18\x05 \x01(\x02\x12\x11\n\tt_proc_ms\x18\x06 \x01(\x02\x32K\n\x0cMnistService\x12;\n\x0cProcessBatch\x12\x13.mnist.BatchRequest\x1a\x14.mnist.BatchResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0bmnist.proto\x12\x05mnist\"\"\n\x0cModelRequest\x12\x12\n\nmodel_data\x18\x01 \x01(\x0c\" \n\rModelResponse\x12\x0f\n\x07message\x18\x01 \x01(\t\"4\n\x0c\x42\x61tchRequest\x12\x10\n\x08\x62\x61tch_id\x18\x01 \x01(\x05\x12\x12\n\nimage_data\x18\x02 \x01(\x0c\"\x7f\n\rBatchResponse\x12\x10\n\x08\x62\x61tch_id\x18\x01 \x01(\x05\x12\x13\n\x0bpredictions\x18\x02 \x03(\x05\x12\x0e\n\x06status\x18\x03 \x01(\t\x12\x11\n\tram_usage\x18\x04 \x01(\x02\x12\x11\n\tcpu_usage\x18\x05 \x01(\x02\x12\x11\n\tt_proc_ms\x18\x06 \x01(\x02\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'mnist_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_BATCHREQUEST']._serialized_start=22
-  _globals['_BATCHREQUEST']._serialized_end=74
-  _globals['_BATCHRESPONSE']._serialized_start=77
-  _globals['_BATCHRESPONSE']._serialized_end=209
-  _globals['_MNISTSERVICE']._serialized_start=211
-  _globals['_MNISTSERVICE']._serialized_end=286
+  _globals['_MODELREQUEST']._serialized_start=22
+  _globals['_MODELREQUEST']._serialized_end=56
+  _globals['_MODELRESPONSE']._serialized_start=58
+  _globals['_MODELRESPONSE']._serialized_end=90
+  _globals['_BATCHREQUEST']._serialized_start=92
+  _globals['_BATCHREQUEST']._serialized_end=144
+  _globals['_BATCHRESPONSE']._serialized_start=146
+  _globals['_BATCHRESPONSE']._serialized_end=273
 # @@protoc_insertion_point(module_scope)

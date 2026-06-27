@@ -2,8 +2,15 @@ syntax = "proto3";
 
 package mnist;
 
-service MnistService {
-    rpc ProcessBatch (BatchRequest) returns (BatchResponse) {}
+// En ZeroMQ no usamos 'service', gestionamos el enrutamiento manualmente.
+// Solo definimos las estructuras de datos (mensajes).
+
+message ModelRequest {
+    bytes model_data = 1; 
+}
+
+message ModelResponse {
+    string message = 1;
 }
 
 message BatchRequest {
@@ -13,7 +20,7 @@ message BatchRequest {
 
 message BatchResponse {
     int32 batch_id = 1;
-    int32 images_processed = 2;
+    repeated int32 predictions = 2; // Predicciones de la IA
     string status = 3;
     float ram_usage = 4;
     float cpu_usage = 5;
