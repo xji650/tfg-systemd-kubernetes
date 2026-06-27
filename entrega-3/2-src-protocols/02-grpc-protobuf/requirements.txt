@@ -2,7 +2,7 @@
 
 # Dependencias del sistema y datos
 numpy<2.0.0
-psutil
+psutil==7.2.2
 
 # Dependencias de gRPC y Protobuf (El "Punto dulce")
 grpcio==1.64.1
@@ -15,5 +15,5 @@ torchvision==0.16.2+cpu
 
 # (Opcional) Si vas a ejecutar el master.py también dentro de esta misma carpeta
 scikit-learn==1.5.2
-matplotlib
-seaborn
+matplotlib==3.10.9 
+seaborn==0.13.2
