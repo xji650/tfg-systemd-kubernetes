@@ -1,0 +1,19 @@
+## Core & Utils
+numpy==1.26.4
+psutil==7.2.2
+requests==2.25.1
+
+## Inteligencia Artificial & Datos
+tensorflow==2.21.0
+tensorflow-datasets==4.9.9
+tensorflow-metadata==1.17.3
+scikit-learn==1.5.2
+pandas==2.3.3
+matplotlib==3.10.9 
+seaborn==0.13.2
+
+## PyTorch (Versión CPU)
+torch==2.1.2+cpu
+torchvision==0.16.2+cpu
+Pillow==9.0.1 
+tk
