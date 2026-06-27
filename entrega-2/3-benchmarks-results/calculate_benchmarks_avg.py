@@ -4,7 +4,7 @@ from collections import defaultdict
 
 # Rutas de archivos
 CSV_PATH = "resultados_globales.csv"
-MD_OUTPUT = "resultados_tablas.md"
+MD_OUTPUT = "resultados-tablas.md"
 
 if not os.path.exists(CSV_PATH):
     print(f"Error: No se encontró el archivo {CSV_PATH}. ¡Lanza primero el script de Bash!")

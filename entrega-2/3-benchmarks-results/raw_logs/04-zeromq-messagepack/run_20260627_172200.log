@@ -1,0 +1,183 @@
+=== BENCHMARK COMPLETO | INICIO: 27/06/2026 17:22:00 ===
+
+--- MÉTRICAS DE INFRAESTRUCTURA ---
+  [OK] T_deploy total: 28.73 segundos
+  [OK] Nodo 192.168.98.143 - CPU Reposo: 4.14% | RAM Reposo: 15.57MB / 4.056GB
+  [OK] Nodo 192.168.98.143 - Tiempo Real Arranque: 914.73 ms
+  [OK] Nodo 192.168.98.144 - CPU Reposo: 3.53% | RAM Reposo: 15.57MB / 4.056GB
+  [OK] Nodo 192.168.98.144 - Tiempo Real Arranque: 1007.52 ms
+
+
+==================================================
+ TEST RUN 1 (Prueba de Estrés)
+==================================================
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573786.713831   64017 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573786.714379   64017 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782573786.746648   64017 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573787.602569   64017 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573787.602921   64017 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782573789.870533   64017 cuda_executor.cc:1737] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1782573789.870787   64123 cuda_executor.cc:1755] Failed to determine cuDNN version (Note that this is expected if the application doesn't link the cuDNN plugin): INTERNAL: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+W0000 00:00:1782573789.885142   64017 gpu_device.cc:2365] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+I0000 00:00:1782573789.955670   64223 tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+Cargando MNIST...
+Lanzando proceso ZeroMQ (MessagePack) en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.56 s
+Throughput (img/s):            107285.88 img/s
+Latencia RTT Promedio (ms):    551.91 ms
+Tiempo T_proc Promedio (ms):   124.71 ms
+Pico Máx. RAM Worker (MB):     208.86 MB
+CPU Promedio (%):              96.15 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================
+
+
+==================================================
+ TEST RUN 2 (Prueba de Estrés)
+==================================================
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573801.618871   64343 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573801.619466   64343 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782573801.648947   64343 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573802.506005   64343 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573802.506473   64343 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782573803.654697   64343 cuda_executor.cc:1737] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1782573803.655019   64444 cuda_executor.cc:1755] Failed to determine cuDNN version (Note that this is expected if the application doesn't link the cuDNN plugin): INTERNAL: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+W0000 00:00:1782573803.669398   64343 gpu_device.cc:2365] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+I0000 00:00:1782573803.742618   64545 tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+Cargando MNIST...
+Lanzando proceso ZeroMQ (MessagePack) en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.57 s
+Throughput (img/s):            104549.38 img/s
+Latencia RTT Promedio (ms):    563.19 ms
+Tiempo T_proc Promedio (ms):   128.04 ms
+Pico Máx. RAM Worker (MB):     208.88 MB
+CPU Promedio (%):              97.60 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================
+
+
+==================================================
+ TEST RUN 3 (Prueba de Estrés)
+==================================================
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573815.823453   64685 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573815.824003   64685 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782573815.853813   64685 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573816.724701   64685 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573816.725116   64685 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782573817.891120   64685 cuda_executor.cc:1737] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1782573817.891431   64780 cuda_executor.cc:1755] Failed to determine cuDNN version (Note that this is expected if the application doesn't link the cuDNN plugin): INTERNAL: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+W0000 00:00:1782573817.907254   64685 gpu_device.cc:2365] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+I0000 00:00:1782573817.982990   64880 tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+Cargando MNIST...
+Lanzando proceso ZeroMQ (MessagePack) en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.56 s
+Throughput (img/s):            107973.30 img/s
+Latencia RTT Promedio (ms):    548.11 ms
+Tiempo T_proc Promedio (ms):   127.66 ms
+Pico Máx. RAM Worker (MB):     208.88 MB
+CPU Promedio (%):              101.80 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================
+
+
+==================================================
+ TEST RUN 4 (Prueba de Estrés)
+==================================================
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573829.884107   65005 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573829.884667   65005 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782573829.914594   65005 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573830.743627   65005 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573830.744024   65005 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782573831.893231   65005 cuda_executor.cc:1737] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1782573831.893605   65100 cuda_executor.cc:1755] Failed to determine cuDNN version (Note that this is expected if the application doesn't link the cuDNN plugin): INTERNAL: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+W0000 00:00:1782573831.910949   65005 gpu_device.cc:2365] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+I0000 00:00:1782573831.985113   65200 tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+Cargando MNIST...
+Lanzando proceso ZeroMQ (MessagePack) en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.60 s
+Throughput (img/s):            100664.28 img/s
+Latencia RTT Promedio (ms):    570.98 ms
+Tiempo T_proc Promedio (ms):   131.00 ms
+Pico Máx. RAM Worker (MB):     208.88 MB
+CPU Promedio (%):              102.95 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================
+
+
+==================================================
+ TEST RUN 5 (Prueba de Estrés)
+==================================================
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573844.087189   65328 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573844.087724   65328 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+I0000 00:00:1782573844.120826   65328 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1782573844.949557   65328 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1782573844.949904   65328 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+E0000 00:00:1782573846.032685   65328 cuda_executor.cc:1737] INTERNAL: CUDA Runtime error: Failed call to cudaGetRuntimeVersion: Error loading CUDA libraries. GPU will not be used.: Error loading CUDA libraries. GPU will not be used.
+W0000 00:00:1782573846.033016   65421 cuda_executor.cc:1755] Failed to determine cuDNN version (Note that this is expected if the application doesn't link the cuDNN plugin): INTERNAL: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+W0000 00:00:1782573846.048833   65328 gpu_device.cc:2365] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+I0000 00:00:1782573846.119557   65527 tf_record_dataset_op.cc:396] The default buffer size is 262144, which is overridden by the user specified `buffer_size` of 8388608
+Cargando MNIST...
+Lanzando proceso ZeroMQ (MessagePack) en 2 nodos...
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.57 s
+Throughput (img/s):            105417.28 img/s
+Latencia RTT Promedio (ms):    563.67 ms
+Tiempo T_proc Promedio (ms):   127.43 ms
+Pico Máx. RAM Worker (MB):     208.88 MB
+CPU Promedio (%):              98.10 %
+Payload Promedio por Nodo (MB): 89.72 MB
+Datos Totales Red (MB):        179.44 MB
+Tasa Éxito (%):                100.00 %
+==================================================
