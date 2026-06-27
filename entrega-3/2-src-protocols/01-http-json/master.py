@@ -121,7 +121,7 @@ def entrenar_y_evaluar_modelo():
     plt.xlabel('Batches')
     plt.ylabel('Pérdida (Cross Entropy)')
     plt.legend()
-    plt.savefig(os.path.join(ASSETS_DIR, 'loss_curve.png')) # Guardado en assets/
+    plt.savefig(os.path.join(ASSETS_DIR, 'loss-curve.png')) # Guardado en assets/
     plt.close()
     
     cm = confusion_matrix(all_labels, all_preds)
@@ -130,7 +130,7 @@ def entrenar_y_evaluar_modelo():
     plt.title('Matriz de Confusión - Validación')
     plt.xlabel('Predicción de la IA')
     plt.ylabel('Valor Real')
-    plt.savefig(os.path.join(ASSETS_DIR, 'matriz_confusion.png')) # Guardado en assets/
+    plt.savefig(os.path.join(ASSETS_DIR, 'matriz-confusion.png')) # Guardado en assets/
     plt.close()
 
     print("\n--- MÉTRICAS DEL MODELO (IA) ---")
@@ -260,7 +260,7 @@ if __name__ == "__main__":
                 ax.axis('off')
                 
             plt.tight_layout()
-            plt.savefig(os.path.join(ASSETS_DIR, '10_ejemplos_predicciones.png'), bbox_inches='tight')
+            plt.savefig(os.path.join(ASSETS_DIR, 'ejemplos-predicciones-http.png'), bbox_inches='tight')
             plt.close()
             print(f"\n-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.")
         except Exception as e:
