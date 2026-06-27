@@ -2,12 +2,16 @@ syntax = "proto3";
 
 package mnist;
 
+// En grpc SÍ usamos 'service', gestionamos el enrutamiento manualmente.
+
 service MnistService {
     // Fase 1: Despliegue del modelo
     rpc UploadModel (ModelRequest) returns (ModelResponse);
     // Fase 2: Inferencia de imágenes
     rpc Procesar (BatchRequest) returns (BatchResponse);
 }
+
+// Y tambien definimos las estructuras de datos (mensajes).
 
 message ModelRequest {
     bytes model_data = 1; 
