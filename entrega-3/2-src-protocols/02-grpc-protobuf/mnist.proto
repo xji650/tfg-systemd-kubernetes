@@ -3,7 +3,18 @@ syntax = "proto3";
 package mnist;
 
 service MnistService {
-    rpc ProcessBatch (BatchRequest) returns (BatchResponse) {}
+    // Fase 1: Despliegue del modelo
+    rpc UploadModel (ModelRequest) returns (ModelResponse);
+    // Fase 2: Inferencia de imágenes
+    rpc Procesar (BatchRequest) returns (BatchResponse);
+}
+
+message ModelRequest {
+    bytes model_data = 1; 
+}
+
+message ModelResponse {
+    string message = 1;
 }
 
 message BatchRequest {
@@ -13,7 +24,7 @@ message BatchRequest {
 
 message BatchResponse {
     int32 batch_id = 1;
-    int32 images_processed = 2;
+    repeated int32 predictions = 2; // Ahora devolvemos las predicciones de la IA
     string status = 3;
     float ram_usage = 4;
     float cpu_usage = 5;

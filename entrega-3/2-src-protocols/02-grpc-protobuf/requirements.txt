@@ -1,4 +1,19 @@
-grpcio
-grpcio-tools
-numpy
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Dependencias del sistema y datos
+numpy<2.0.0
 psutil
+
+# Dependencias de gRPC y Protobuf (El "Punto dulce")
+grpcio==1.64.1
+grpcio-tools==1.64.1
+protobuf==5.27.2
+
+# Dependencias de Inteligencia Artificial (Versión CPU ligera)
+torch==2.1.2+cpu
+torchvision==0.16.2+cpu
+
+# (Opcional) Si vas a ejecutar el master.py también dentro de esta misma carpeta
+scikit-learn==1.5.2
+matplotlib
+seaborn

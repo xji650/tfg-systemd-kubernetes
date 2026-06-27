@@ -52,7 +52,7 @@ Antes de ejecutar el orquestador, se deben instalar las librerías base y compil
 pip install grpcio grpcio-tools psutil numpy tensorflow-datasets
 
 # Compilar el contrato Protobuf
-python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. mnist.proto
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. edge.proto
 ```
 
 ### 2. Despliegue de Infraestructura (Ansible)

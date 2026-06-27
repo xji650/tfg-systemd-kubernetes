@@ -34,8 +34,13 @@ class MnistServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.ProcessBatch = channel.unary_unary(
-                '/mnist.MnistService/ProcessBatch',
+        self.UploadModel = channel.unary_unary(
+                '/mnist.MnistService/UploadModel',
+                request_serializer=mnist__pb2.ModelRequest.SerializeToString,
+                response_deserializer=mnist__pb2.ModelResponse.FromString,
+                _registered_method=True)
+        self.Procesar = channel.unary_unary(
+                '/mnist.MnistService/Procesar',
                 request_serializer=mnist__pb2.BatchRequest.SerializeToString,
                 response_deserializer=mnist__pb2.BatchResponse.FromString,
                 _registered_method=True)
@@ -44,8 +49,16 @@ class MnistServiceStub(object):
 class MnistServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def ProcessBatch(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+    def UploadModel(self, request, context):
+        """Fase 1: Despliegue del modelo
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Procesar(self, request, context):
+        """Fase 2: Inferencia de imágenes
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -53,8 +66,13 @@ class MnistServiceServicer(object):
 
 def add_MnistServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'ProcessBatch': grpc.unary_unary_rpc_method_handler(
-                    servicer.ProcessBatch,
+            'UploadModel': grpc.unary_unary_rpc_method_handler(
+                    servicer.UploadModel,
+                    request_deserializer=mnist__pb2.ModelRequest.FromString,
+                    response_serializer=mnist__pb2.ModelResponse.SerializeToString,
+            ),
+            'Procesar': grpc.unary_unary_rpc_method_handler(
+                    servicer.Procesar,
                     request_deserializer=mnist__pb2.BatchRequest.FromString,
                     response_serializer=mnist__pb2.BatchResponse.SerializeToString,
             ),
@@ -70,7 +88,7 @@ class MnistService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def ProcessBatch(request,
+    def UploadModel(request,
             target,
             options=(),
             channel_credentials=None,
@@ -83,7 +101,34 @@ class MnistService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/mnist.MnistService/ProcessBatch',
+            '/mnist.MnistService/UploadModel',
+            mnist__pb2.ModelRequest.SerializeToString,
+            mnist__pb2.ModelResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Procesar(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/mnist.MnistService/Procesar',
             mnist__pb2.BatchRequest.SerializeToString,
             mnist__pb2.BatchResponse.FromString,
             options,

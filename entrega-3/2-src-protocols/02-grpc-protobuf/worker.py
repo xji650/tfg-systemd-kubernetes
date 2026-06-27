@@ -1,41 +1,73 @@
+import os
+import time
+import psutil
 import grpc
 from concurrent import futures
-import psutil
-import os
 import numpy as np
-import time
+
+import torch
+import torch.nn as nn
+
 import mnist_pb2
 import mnist_pb2_grpc
 
+# --- 1. ARQUITECTURA IA ---
+class CNN(nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1)
+        self.relu = nn.ReLU()
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+        self.fc1 = nn.Linear(64 * 7 * 7, 128)
+        self.fc2 = nn.Linear(128, 10)
+
+    def forward(self, x):
+        x = self.pool(self.relu(self.conv1(x)))
+        x = self.pool(self.relu(self.conv2(x)))
+        x = x.reshape(-1, 64 * 7 * 7)
+        x = self.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+model = CNN()
+MODEL_LOCAL_PATH = "model_local.pth"
+
+# --- 2. SERVIDOR GRPC ---
 class MnistServicer(mnist_pb2_grpc.MnistServiceServicer):
     def __init__(self):
         self.process = psutil.Process(os.getpid())
-        self.process.cpu_percent(interval=None) # Inicialización obligatoria
-
-    def ProcessBatch(self, request, context):
-        # 1. Limpieza de buffer de CPU
         self.process.cpu_percent(interval=None)
-        
-        # Inicio cronómetro de procesamiento
+
+    def UploadModel(self, request, context):
+        print("-> Recibiendo modelo vía gRPC...")
+        with open(MODEL_LOCAL_PATH, "wb") as f:
+            f.write(request.model_data)
+        model.load_state_dict(torch.load(MODEL_LOCAL_PATH))
+        model.eval()
+        print("-> Modelo IA cargado en RAM.")
+        return mnist_pb2.ModelResponse(message="OK")
+
+    def Procesar(self, request, context):
+        self.process.cpu_percent(interval=None)
         start_proc = time.perf_counter()
         
-        # 2. Deserialización binaria (¡Esto debería ser mucho más rápido que JSON!)
-        datos = np.frombuffer(request.image_data, dtype=np.float32)
-        cantidad = len(datos) // 784 
+        # Deserialización binaria ultra-rápida y pase a PyTorch
+        datos = np.frombuffer(request.image_data, dtype=np.float32).copy()
+        imagenes_tensor = torch.tensor(datos).view(-1, 1, 28, 28)
         
-        # 3. Medición de recursos
+        # INFERENCIA IA
+        with torch.no_grad():
+            outputs = model(imagenes_tensor)
+            _, predicted = torch.max(outputs.data, 1)
+            
         ram_usage = self.process.memory_info().rss / (1024 * 1024)
         cpu_usage = self.process.cpu_percent(interval=None)
+        t_proc_ms = (time.perf_counter() - start_proc) * 1000
         
-        end_proc = time.perf_counter()
-        t_proc_ms = (end_proc - start_proc) * 1000
-        
-        print(f"gRPC: Procesadas {cantidad} img. RAM: {ram_usage:.2f}MB, CPU: {cpu_usage}%, T_proc: {t_proc_ms:.2f}ms")
-        
-        # Retornamos incluyendo el t_proc_ms
         return mnist_pb2.BatchResponse(
             batch_id=request.batch_id,
-            images_processed=int(cantidad),
+            predictions=predicted.tolist(),
             status="OK",
             ram_usage=float(ram_usage),
             cpu_usage=float(cpu_usage),
@@ -43,9 +75,7 @@ class MnistServicer(mnist_pb2_grpc.MnistServiceServicer):
         )
 
 def serve():
-    # Definimos el límite (ej. 200 MB para ir sobrados)
     MAX_MESSAGE_LENGTH = 200 * 1024 * 1024 
-
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=10),
         options=[
@@ -54,8 +84,8 @@ def serve():
         ]
     )
     mnist_pb2_grpc.add_MnistServiceServicer_to_server(MnistServicer(), server)
-    server.add_insecure_port('[::]:8000') # Puerto definido en el Quadlet
-    print("Servidor gRPC iniciado (Límite 200MB) en puerto 8000...")
+    server.add_insecure_port('[::]:8000') 
+    print("Iniciando Worker Edge IA (gRPC/Protobuf) en puerto 8000...")
     server.start()
     server.wait_for_termination()
 
