@@ -51,7 +51,6 @@ class CNN(nn.Module):
 # =====================================================================
 # 2. EL MASTER COMO CIENTÍFICO DE DATOS (Benchmark IA)
 # =====================================================================
-
 def entrenar_y_evaluar_modelo():
     print("\n" + "="*50)
     print("1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA")
@@ -99,8 +98,7 @@ def entrenar_y_evaluar_modelo():
     print("-> Evaluando modelo con datos de validación...")
     model.eval()
     correct, total = 0, 0
-    all_preds = []
-    all_labels = []
+    all_preds, all_labels = [], []
     
     with torch.no_grad():
         for inputs, labels in val_loader:
@@ -120,7 +118,7 @@ def entrenar_y_evaluar_modelo():
     plt.xlabel('Batches')
     plt.ylabel('Pérdida (Cross Entropy)')
     plt.legend()
-    plt.savefig(os.path.join(ASSETS_DIR, 'loss-curve.png')) # Guardado en assets/
+    plt.savefig(os.path.join(ASSETS_DIR, 'loss-curve.png'))
     plt.close()
     
     cm = confusion_matrix(all_labels, all_preds)
@@ -133,20 +131,19 @@ def entrenar_y_evaluar_modelo():
     plt.close()
 
     print("\n--- MÉTRICAS DEL MODELO (IA) ---")
-    print(f"Precisión Validación: {100 * correct / total:.2f}%")
+    print(f"Precisión (Validation Accuracy): {val_accuracy:.2f}%")
     print(f"Tiempo de entrenamiento:         {tiempo_entrenamiento:.2f} s")
     print(f"Peso del artefacto (.pth):       {tamano_mb:.2f} MB")
     print(f"-> Gráficas generadas y guardadas en la carpeta '{ASSETS_DIR}/'.\n")
 
-
 # =====================================================================
 # 3. EL MASTER COMO ORQUESTADOR (Despliegue)
 # =====================================================================
-
 def distribuir_modelo():
     print("\n" + "="*50)
     print("2. DISTRIBUYENDO EL MODELO VÍA gRPC")
     print("="*50)
+
     with open(MODEL_PATH, "rb") as f:
         model_bytes = f.read()
         
@@ -192,7 +189,6 @@ def enviar_tarea_grpc(config):
 # =====================================================================
 # 4. BENCHMARK DE RENDIMIENTO (RED)
 # =====================================================================
-
 if __name__ == "__main__":
     entrenar_y_evaluar_modelo()
     distribuir_modelo()
@@ -215,6 +211,7 @@ if __name__ == "__main__":
     # Particionamiento de datos para los Workers
     tamano_particion = len(lista_imagenes) // len(NODOS_FILLS)
     datos_preparados = []
+    
     for i, addr in enumerate(NODOS_FILLS):
         inicio = i * tamano_particion
         fin = (i + 1) * tamano_particion if i < (len(NODOS_FILLS)-1) else len(lista_imagenes)

@@ -11,7 +11,9 @@ import torch.nn as nn
 import mnist_pb2
 import mnist_pb2_grpc
 
-# --- 1. ARQUITECTURA IA ---
+# =====================================================================
+# 1. DEFINICIÓN DE LA ARQUITECTURA IA (Debe ser idéntica al Master)
+# =====================================================================
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -33,7 +35,9 @@ class CNN(nn.Module):
 model = CNN()
 MODEL_LOCAL_PATH = "model_local.pth"
 
-# --- 2. SERVIDOR GRPC ---
+# =====================================================================
+# 2. SERVIDOR GRPC
+# =====================================================================
 class MnistServicer(mnist_pb2_grpc.MnistServiceServicer):
     def __init__(self):
         self.process = psutil.Process(os.getpid())
