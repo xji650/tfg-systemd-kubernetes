@@ -106,14 +106,18 @@ def get_avg(filepath, pattern):
         return sum([float(m) for m in matches]) / len(matches)
     except: return 0.0
 
-# Extracción
+# Extracción de Infraestructura
 t_deploy = get_avg(log_file, r"T_deploy total:\s*([0-9\.]+)")
 cpu_reposo = get_avg(log_file, r"CPU Reposo:\s*([0-9\.]+)%")
+# Podman suele devolver '15.2MB' o '15.2MiB', el regex coge el 15.2 perfecto
 ram_reposo = get_avg(log_file, r"RAM Reposo:\s*([0-9\.]+)")
 mttr = get_avg(log_file, r"Tiempo Real Arranque:\s*([0-9\.]+)")
 
+# Extracción de Red (Añadida la Tasa de Éxito)
 t_total = get_avg(log_file, r"Tiempo Total \(s\):\s*([0-9\.]+)")
 throughput = get_avg(log_file, r"Throughput \(img/s\):\s*([0-9\.]+)")
+# Regex tolerante: Atrapa "Tasa Éxito" o "Tasa de Éxito"
+tasa_exito = get_avg(log_file, r"Tasa(?: de)? Éxito \(%\):\s*([0-9\.]+)") 
 rtt = get_avg(log_file, r"Latencia RTT Promedio \(ms\):\s*([0-9\.]+)")
 t_proc = get_avg(log_file, r"Tiempo T_proc Promedio \(ms\):\s*([0-9\.]+)")
 ram_max = get_avg(log_file, r"Pico Máx\. RAM Worker \(MB\):\s*([0-9\.]+)")
@@ -124,8 +128,9 @@ payload_nodo = get_avg(log_file, r"Payload Promedio por Nodo \(MB\):\s*([0-9\.]+
 file_exists = os.path.isfile(csv_file)
 with open(csv_file, 'a', encoding='utf-8') as f:
     if not file_exists:
-        f.write("Fecha,Protocolo,T_deploy,CPU_Reposo,RAM_Reposo,MTTR,T_Total,Throughput,RTT,T_Proc,RAM_Max,CPU_Max,Payload_MB\n")
-    f.write(f"{fecha},{protocol_name},{t_deploy:.2f},{cpu_reposo:.2f},{ram_reposo:.2f},{mttr:.2f},{t_total:.2f},{throughput:.2f},{rtt:.2f},{t_proc:.2f},{ram_max:.2f},{cpu_max:.2f},{payload_nodo:.2f}\n")
+        f.write("Fecha,Protocolo,T_deploy,CPU_Reposo,RAM_Reposo,MTTR,T_Total,Throughput,Exito_%,RTT,T_Proc,RAM_Max,CPU_Max,Payload_MB\n")
+        
+    f.write(f"{fecha},{protocol_name},{t_deploy:.2f},{cpu_reposo:.2f},{ram_reposo:.2f},{mttr:.2f},{t_total:.2f},{throughput:.2f},{tasa_exito:.2f},{rtt:.2f},{t_proc:.2f},{ram_max:.2f},{cpu_max:.2f},{payload_nodo:.2f}\n")
 EOF
     echo "[OK] Fila añadida a: $CSV_FILE"
 done
