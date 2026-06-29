@@ -2,6 +2,8 @@ FROM docker.io/library/python:3.11-slim
 
 WORKDIR /app
 
+RUN pip install --upgrade pip
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -12,4 +14,4 @@ RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. mnist.pro
 
 EXPOSE 8000
 
-CMD ["python", "-u", "worker.py"] 
+CMD ["python3", "-u", "worker.py"] 
