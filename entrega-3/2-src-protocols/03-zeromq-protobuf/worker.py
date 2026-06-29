@@ -32,7 +32,7 @@ model = CNN()
 MODEL_LOCAL_PATH = "model_local.pth"
 
 # =====================================================================
-# 2. SERVIDOR ZEROMQ
+# 2. SERVIDOR ZEROMQ + PROTOBUF
 # =====================================================================
 def serve():
     context = zmq.Context()
@@ -76,6 +76,7 @@ def serve():
             
             # Deserialización binaria y pase a PyTorch
             datos = np.frombuffer(request.image_data, dtype=np.float32).copy()
+            cantidad = len(datos) // 784
             imagenes_tensor = torch.tensor(datos).view(-1, 1, 28, 28)
             
             with torch.no_grad():
@@ -84,7 +85,9 @@ def serve():
                 
             ram_usage = process.memory_info().rss / (1024 * 1024)
             cpu_usage = process.cpu_percent(interval=None)
-            t_proc_ms = (time.perf_counter() - start_proc) * 1000
+            
+            end_proc = time.perf_counter()
+            t_proc_ms = (end_proc - start_proc) * 1000
             
             response = mnist_pb2.BatchResponse(
                 batch_id=request.batch_id,
@@ -95,6 +98,8 @@ def serve():
                 t_proc_ms=float(t_proc_ms)
             )
             socket.send(response.SerializeToString())
+
+            print(f"ZMQ: Procesadas {int(cantidad)} img. RAM: {ram_usage:.2f}MB, CPU: {cpu_usage}%, T_proc: {t_proc_ms:.2f}ms")
 
 if __name__ == "__main__":
     serve()

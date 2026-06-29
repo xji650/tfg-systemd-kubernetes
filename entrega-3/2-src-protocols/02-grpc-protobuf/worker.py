@@ -58,6 +58,7 @@ class MnistServicer(mnist_pb2_grpc.MnistServiceServicer):
         
         # Deserialización binaria ultra-rápida y pase a PyTorch
         datos = np.frombuffer(request.image_data, dtype=np.float32).copy()
+        cantidad = len(datos) // 784 
         imagenes_tensor = torch.tensor(datos).view(-1, 1, 28, 28)
         
         # INFERENCIA IA
@@ -67,7 +68,11 @@ class MnistServicer(mnist_pb2_grpc.MnistServiceServicer):
             
         ram_usage = self.process.memory_info().rss / (1024 * 1024)
         cpu_usage = self.process.cpu_percent(interval=None)
-        t_proc_ms = (time.perf_counter() - start_proc) * 1000
+        
+        end_proc = time.perf_counter()
+        t_proc_ms = (end_proc - start_proc) * 1000
+
+        print(f"gRPC: Procesadas {cantidad} img. RAM: {ram_usage:.2f}MB, CPU: {cpu_usage}%, T_proc: {t_proc_ms:.2f}ms")
         
         return mnist_pb2.BatchResponse(
             batch_id=request.batch_id,

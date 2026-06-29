@@ -89,6 +89,10 @@ async def procesar_datos(request: Request):
     
     end_proc = time.perf_counter()
     t_proc_ms = (end_proc - start_proc) * 1000
+
+    # Print de control para depurar en el nodo
+    print(f"RAM: {ram_mb:.2f} MB, CPU: {cpu_usage}%, T_proc: {t_proc_ms:.2f} ms")
+
     
     return {
         "status": "OK",

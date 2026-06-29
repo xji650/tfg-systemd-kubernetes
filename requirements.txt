@@ -25,9 +25,9 @@ Pillow==9.0.1
 tk
 
 ## Protocolo 1: HTTP-JSON
-fastapi
-uvicorn
-python-multipart
+fastapi==0.138.1
+uvicorn==0.49.0
+python-multipart==0.0.32
 
 ## Protocolo 2: gRPC-Protobuf
 grpcio==1.80.0
