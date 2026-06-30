@@ -52,7 +52,7 @@ def entrenar_y_evaluar_modelo():
     print("\n" + "="*50)
     print("1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA")
     print("="*50)
-
+    
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
     
     if os.path.exists(MODEL_PATH):
@@ -74,7 +74,7 @@ def entrenar_y_evaluar_modelo():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     
-    # --- NUEVO: Configuración de Épocas ---
+    # Listas para guardar las métricas por época
     EPOCHS = 3
     train_losses = []
     val_losses = []
@@ -86,7 +86,6 @@ def entrenar_y_evaluar_modelo():
         # --- FASE DE ENTRENAMIENTO ---
         model.train()
         running_train_loss = 0.0
-        
         for inputs, labels in train_loader:
             optimizer.zero_grad()
             outputs = model(inputs)
@@ -116,24 +115,23 @@ def entrenar_y_evaluar_modelo():
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
                 
-                # Solo guardamos las predicciones para la matriz en la última época
+                # Solo guardamos la matriz de confusión en la última época
                 if epoch == EPOCHS - 1:
                     all_preds.extend(predicted.tolist())
                     all_labels.extend(labels.tolist())
-
+                    
         avg_val_loss = running_val_loss / len(val_loader)
         val_losses.append(avg_val_loss)
         val_accuracy = 100 * correct / total
         
         print(f"   Época {epoch+1}/{EPOCHS} | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Val Acc: {val_accuracy:.2f}%")
-
+        
     tiempo_entrenamiento = time.perf_counter() - inicio_entrenamiento
     torch.save(model.state_dict(), MODEL_PATH)
     tamano_mb = os.path.getsize(MODEL_PATH) / (1024 * 1024)
-
+    
     # --- ARTEFACTOS VISUALES IA ---
     plt.figure(figsize=(8, 5))
-    # Dibujamos ambas líneas
     plt.plot(range(1, EPOCHS+1), train_losses, color='blue', marker='o', label='Train Loss')
     plt.plot(range(1, EPOCHS+1), val_losses, color='red', marker='s', label='Validation Loss')
     plt.title(f'Curva de Aprendizaje ({EPOCHS} Épocas)')
