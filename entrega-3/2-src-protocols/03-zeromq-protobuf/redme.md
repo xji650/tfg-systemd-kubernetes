@@ -13,9 +13,15 @@ El sistema implementa el patrón de mensajería síncrona Request-Reply (REQ-REP
 El script central actúa como cliente de red puro, inyectando los datos directamente a través de sockets TCP mediante cuatro fases:
 
 * **Fase 1: Entrenamiento y Artefactos (Offline):** El Master entrena la red neuronal CNN y exporta las métricas visuales (`loss-curve.png`, `matriz-confusion.png`) a la carpeta `assets/`, guardando los pesos en `best_model.pth`.
+![Train loss curve](assets/loss-curve.png)
+![Matriz de confusión](assets/matriz-confusion.png)
+
 * **Fase 2: Distribución del Modelo (Upload ZMQ):** Instancia un `zmq.Context()` y utiliza sockets `zmq.REQ`. A diferencia de gRPC, aquí se utiliza un envío multiparte (`send_multipart`) empaquetando el identificador `b"UPLOAD"` junto con los bytes crudos del modelo para transferir el cerebro de la IA a los nodos.
+
 * **Fase 3: Conversión Binaria Nativa (Zero-Copy):** Reutilizando el contrato Protobuf (`BatchRequest`), el Master transforma las matrices `float32` de NumPy en una cadena de bytes pura (`SerializeToString()`) antes de iniciar la transmisión.
+
 * **Fase 4: Inferencia y Resiliencia TCP:** Se establecen túneles concurrentes con cada IP del clúster. Puesto que ZeroMQ no implementa *timeouts* por defecto, se inyecta la directiva `socket.setsockopt(zmq.RCVTIMEO, 300000)` para evitar cuelgues infinitos. Finalmente, se genera el mosaico visual cruzando las predicciones devueltas.
+![Ejemplo de predicción](assets/ejemplos-predicciones-zmq.png)
 
 ### 2. El Contrato de Datos (Protobuf)
 

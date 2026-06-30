@@ -13,9 +13,15 @@ El sistema evoluciona hacia un modelo de comunicación basado en contratos estri
 El script `master.py` actúa como cliente gRPC y distribuidor de la carga de visión artificial, ejecutando cuatro fases secuenciales:
 
 * **Fase 1: Entrenamiento y Artefactos (Offline):** El Master entrena una red neuronal CNN durante 1 época (o la recupera de la caché local). Exporta métricas visuales a la carpeta `assets/` y genera el binario de pesos neuronales `best_model.pth`.
+![Train loss curve](assets/loss-curve.png)
+![Matriz de confusión](assets/matriz-confusion.png)
+
 * **Fase 2: Distribución del Modelo (Upload gRPC):** A diferencia de HTTP, utiliza un canal asíncrono RPC (`UploadModel`) para inyectar el archivo binario del modelo directamente en los nodos remotos superando las limitaciones estándar de tamaño de mensaje.
+
 * **Fase 3: Conversión Binaria Nativa (Zero-Copy):** En lugar de iterar iterativamente para generar largas cadenas JSON, el Master convierte el dataset completo a matrices `float32` de NumPy e inyecta los datos en crudo directamente a nivel de C mediante `particion_np.tobytes()`. Esto elimina el 100% del *overhead* de transformación de datos.
+
 * **Fase 4: Inferencia y Ajuste de Ventanas TCP:** gRPC impone un límite de seguridad estricto de 4 MB por mensaje. El Master reconfigura los canales sobrescribiendo `grpc.max_send_message_length` a **200 MB**. Se lanzan los hilos paralelos y se aíslan los tiempos de RTT, generando finalmente el mosaico visual de validación (`ejemplos-predicciones-grpc.png`).
+![Ejemplo de predicción](assets/ejemplos-predicciones-grpc.png)
 
 ### 2. Contrato de Datos (Protobuf)
 

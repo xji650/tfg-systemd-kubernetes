@@ -12,10 +12,16 @@ El sistema se estructura en dos capas principales, diseñadas para separar el en
 
 El nodo central (`master.py`) actúa con una doble responsabilidad (Científico de Datos y Orquestador de Red):
 
-* **Fase 1: Entrenamiento y Artefactos (Offline):** Antes de interactuar con la red, el Master descarga el dataset MNIST y entrena una red neuronal CNN durante 1 época. Genera automáticamente artefactos visuales (matriz de confusión y curva de aprendizaje) en la carpeta local `assets/` y guarda los pesos en el archivo binario `best_model.pth`.
+* **Fase 1: Entrenamiento y Artefactos (Offline):** Antes de interactuar con la red, el Master descarga el dataset MNIST y entrena una red neuronal CNN durante 1 época. Genera automáticamente artefactos visuales (matriz de confusión y curva de aprendizaje) en la carpeta local `assets/` y guarda los pesos en el archivo binario `best_model.pth`
+![Train loss curve](assets/loss-curve.png)
+![Matriz de confusión](assets/matriz-confusion.png)
+
 * **Fase 2: Distribución del Modelo (Upload):** Actúa como un servidor de despliegue, inyectando el modelo ya entrenado directamente en la memoria RAM de los nodos Workers mediante peticiones HTTP POST (envío de archivos binarios).
+
 * **Fase 3: Partición y Serialización:** Divide las imágenes de prueba en fragmentos (*chunks*). Antes de iniciar la transmisión, el Master transforma los tensores matemáticos a listas de texto estructurado (`json.dumps()`). Esta operación se ejecuta **fuera del cronómetro de latencia**, garantizando que el RTT mida estrictamente el tiempo de red y procesamiento.
+
 * **Fase 4: Concurrencia de Red y Validación visual:** Implementa un `ThreadPoolExecutor` para lanzar las inferencias en paralelo. Al finalizar, recolecta las métricas de los contenedores y genera un mosaico visual (`ejemplos-predicciones-http.png`) cruzando las predicciones devueltas por el Worker con las etiquetas reales.
+![Ejemplo de predicción](assets/ejemplos-predicciones-http.png)
 
 ### 2. Los Nodos Perimetrales (Workers)
 

@@ -3,8 +3,8 @@ import os
 from collections import defaultdict
 
 # Rutas de archivos
-CSV_PATH = "resultados_globales.csv"
-MD_OUTPUT = "resultados_tablas.md"
+CSV_PATH = "resultados-globales.csv"
+MD_OUTPUT = "resultados-tablas.md"
 
 if not os.path.exists(CSV_PATH):
     print(f"Error: No se encontró el archivo {CSV_PATH}. ¡Lanza primero el script de Bash!")
@@ -24,7 +24,7 @@ with open(CSV_PATH, 'r', encoding='utf-8') as f:
 
 # 2. Generar el documento Markdown
 md_content = "# Resultados Consolidados del Proyecto\n"
-md_content += "> **Nota:** Estas tablas representan la **media histórica total** de todas las ejecuciones almacenadas en el Data Lake (`resultados_globales.csv`).\n\n"
+md_content += "> **Nota:** Estas tablas representan la **media histórica total** de todas las ejecuciones almacenadas en el Data Lake (`resultados-globales.csv`).\n\n"
 
 for proto, metricas in datos_por_protocolo.items():
     # Calcular medias

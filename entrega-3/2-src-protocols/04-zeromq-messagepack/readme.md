@@ -13,9 +13,15 @@ El sistema mantiene el patrón de mensajería síncrona Request-Reply (REQ-REP) 
 El orquestador asume el control total de la IA y la inyección de datos a través de sockets TCP prescindiendo de compiladores externos:
 
 * **Fase 1: Entrenamiento y Artefactos (Offline):** El Master entrena la red neuronal CNN, guarda el cerebro de la IA en `best_model.pth` y genera las métricas de rendimiento (`loss-curve.png`, `matriz-confusion.png`) en la carpeta local `assets/`.
+![Train loss curve](assets/loss-curve.png)
+![Matriz de confusión](assets/matriz-confusion.png)
+
 * **Fase 2: Distribución del Modelo (Estructuración Dinámica):** A diferencia de Protobuf, que requiere instanciar clases precompiladas, el Master empaqueta los bytes del modelo `.pth` directamente en un diccionario estándar de Python (`{'model_data': model_bytes}`). Utiliza `msgpack.packb(..., use_bin_type=True)` para inyectarlo en el socket mediante mensajería multiparte (`b"UPLOAD"`).
+
 * **Fase 3: Serialización MessagePack (Inferencia):** Para la inferencia, se repite el proceso dinámico. Se inyecta el ID del lote y el tensor binario (`particion_np.tobytes()`) en un diccionario. MessagePack comprime esta estructura dinámica a un formato binario altamente eficiente en microsegundos.
+
 * **Fase 4: Resiliencia y Validación TCP:** Mantiene el `ThreadPoolExecutor` para la transmisión paralela y la inyección del *timeout* (`zmq.RCVTIMEO`) para proteger al orquestador. Al finalizar, extrae 10 muestras aleatorias y genera el mosaico visual de validación (`ejemplos-predicciones-msgpack.png`).
+![Ejemplo de predicción](assets/ejemplos-predicciones-msgpack.png)
 
 ### 2. Los Nodos Perimetrales (Workers)
 
