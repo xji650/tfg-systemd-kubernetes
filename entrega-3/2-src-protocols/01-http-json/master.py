@@ -76,87 +76,66 @@ def entrenar_y_evaluar_modelo():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     
-    # Listas para guardar las métricas por época
-    EPOCHS = 3
     train_losses = []
-    val_losses = []
     
-    print(f"-> Entrenando modelo ({EPOCHS} Épocas)...")
+    # --- FASE DE ENTRENAMIENTO ---
+    print("-> Entrenando modelo (1 Época)...")
     inicio_entrenamiento = time.perf_counter()
+    model.train()
     
-    for epoch in range(EPOCHS):
-        # --- FASE DE ENTRENAMIENTO ---
-        model.train()
-        running_train_loss = 0.0
-        for inputs, labels in train_loader:
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-            running_train_loss += loss.item()
-            
-        avg_train_loss = running_train_loss / len(train_loader)
-        train_losses.append(avg_train_loss)
-        
-        # --- FASE DE VALIDACIÓN ---
-        model.eval()
-        running_val_loss = 0.0
-        correct = 0
-        total = 0
-        all_preds = []
-        all_labels = []
-        
-        with torch.no_grad():
-            for inputs, labels in val_loader:
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                running_val_loss += loss.item()
-                
-                _, predicted = torch.max(outputs.data, 1)
-                total += labels.size(0)
-                correct += (predicted == labels).sum().item()
-                
-                # Solo guardamos la matriz de confusión en la última época
-                if epoch == EPOCHS - 1:
-                    all_preds.extend(predicted.tolist())
-                    all_labels.extend(labels.tolist())
-                    
-        avg_val_loss = running_val_loss / len(val_loader)
-        val_losses.append(avg_val_loss)
-        val_accuracy = 100 * correct / total
-        
-        print(f"   Época {epoch+1}/{EPOCHS} | Train Loss: {avg_train_loss:.4f} | Val Loss: {avg_val_loss:.4f} | Val Acc: {val_accuracy:.2f}%")
+    for inputs, labels in train_loader:
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+        train_losses.append(loss.item())
         
     tiempo_entrenamiento = time.perf_counter() - inicio_entrenamiento
     torch.save(model.state_dict(), MODEL_PATH)
     tamano_mb = os.path.getsize(MODEL_PATH) / (1024 * 1024)
     
+    # --- FASE DE EVALUACIÓN (MÉTRICAS IA) ---
+    print("-> Evaluando modelo con datos de validación...")
+    model.eval()
+    correct = 0
+    total = 0
+    all_preds = []
+    all_labels = []
+    
+    with torch.no_grad():
+        for inputs, labels in val_loader:
+            outputs = model(inputs)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+            all_preds.extend(predicted.tolist())
+            all_labels.extend(labels.tolist())
+            
+    val_accuracy = 100 * correct / total
+    
     # --- ARTEFACTOS VISUALES IA ---
     plt.figure(figsize=(8, 5))
-    plt.plot(range(1, EPOCHS+1), train_losses, color='blue', marker='o', label='Train Loss')
-    plt.plot(range(1, EPOCHS+1), val_losses, color='red', marker='s', label='Validation Loss')
-    plt.title(f'Curva de Aprendizaje ({EPOCHS} Épocas)')
-    plt.xlabel('Épocas')
+    plt.plot(train_losses, color='blue', label='Train Loss')
+    plt.title('Curva de Aprendizaje (1 Época)')
+    plt.xlabel('Batches')
     plt.ylabel('Pérdida (Cross Entropy)')
-    plt.xticks(range(1, EPOCHS+1))
     plt.legend()
-    plt.grid(True, linestyle='--', alpha=0.7)
-    plt.savefig(os.path.join(ASSETS_DIR, 'loss-curve.png'))
+    plt.savefig(os.path.join(ASSETS_DIR, 'loss-curve.png')) # Guardado en assets/
     plt.close()
     
     cm = confusion_matrix(all_labels, all_preds)
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    plt.title('Matriz de Confusión - Validación Final')
+    plt.title('Matriz de Confusión - Validación')
     plt.xlabel('Predicción de la IA')
     plt.ylabel('Valor Real')
-    plt.savefig(os.path.join(ASSETS_DIR, 'matriz-confusion.png'))
+    plt.savefig(os.path.join(ASSETS_DIR, 'matriz-confusion.png')) # Guardado en assets/
     plt.close()
 
     print("\n--- MÉTRICAS DEL MODELO (IA) ---")
-    print(f"Precisión Final (Validation):    {val_accuracy:.2f}%")
-    print(f"Tiempo total entrenamiento:      {tiempo_entrenamiento:.2f} s")
+    print(f"Precisión (Validation Accuracy): {val_accuracy:.2f}%")
+    print(f"Tiempo de entrenamiento:         {tiempo_entrenamiento:.2f} s")
     print(f"Peso del artefacto (.pth):       {tamano_mb:.2f} MB")
     print(f"-> Gráficas generadas y guardadas en la carpeta '{ASSETS_DIR}/'.\n")
 
