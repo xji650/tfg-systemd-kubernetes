@@ -45,7 +45,7 @@ Project-TFG/
 ```bash
 docsify serve .
 ```
-Accede en: http://localhost:45731
+Accede en: http://localhost:3000
 
 ### 2. En el navegador (Prod)
 
