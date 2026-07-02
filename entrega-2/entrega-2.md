@@ -21,7 +21,7 @@ La tarea consiste en:
 
     3. Els nodes fills han de retornar al pare el resultat de la tasca. En aquest cas aquest nombre d'imatges
 
-![Arquitectura del sistema](./asserts/flow.png)
+![Arquitectura del sistema](./assets/flow.png)
 ---
 
 ## Índice
