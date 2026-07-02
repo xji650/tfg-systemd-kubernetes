@@ -65,20 +65,22 @@ El sistema orquestador ejecuta ahora un flujo altamente diferenciado para garant
 * **Mecanismo:** Procesamiento local en el Master (PyTorch).
 * **Acción:** El Master descarga el dataset MNIST. En lugar de limitarse a dividirlo, entrena una Red Neuronal Convolucional (CNN) fundacional. Una vez validada, la "inteligencia" se guarda en el artefacto binario `best_model.pth`.
 
+    ![Ejemplospredicciones](./model/ejemplos-predicciones-msgpack.png)
+    *Fig 1: Ejemplos de predicciones del modelo entrenado.*
+
 > **Certificación del Modelo (Fase de Entrenamiento)**
 > 
-> ![Curva de Aprendizaje](./assets/loss-curve.png)
-> *Fig 1: Caída del error de entrenamiento por lotes durante la única época de ejecución.*
+> ![Curva de Aprendizaje](./model/loss-curve.png)
+> *Fig 2: Caída del error de entrenamiento por lotes durante la única época de ejecución.*
 > 
-> ![Matriz de Confusión](./assets/matriz-confusion.png)
-> *Fig 2: Matriz de confusión resultante evaluando las imágenes de validación.*
+> ![Matriz de Confusión](./model/matriz-confusion.png)
+> *Fig 3: Matriz de confusión resultante evaluando las imágenes de validación.*
 
 > **Justificación del Entrenamiento de 1 Época:**
 > Para la evaluación del sistema, el entrenamiento de la CNN se configuró deliberadamente para ejecutarse durante una única época (1 Epoch). Esta decisión arquitectónica se fundamenta en tres criterios clave:
 > 1. **Alcance del Proyecto:** El objetivo principal de este estudio es aislar y cuantificar el rendimiento de los protocolos de comunicación en arquitecturas Edge, no la optimización de hiperparámetros en modelos de Deep Learning.
 > 2. **Evidencia de Convergencia:** Como se observa en la curva de aprendizaje (medida por lotes/batches), el error de entrenamiento (*Train Loss*) experimenta una caída drástica y se estabiliza antes de finalizar la primera iteración completa del dataset.
 > 3. **Eficiencia Computacional:** Al finalizar esta única época, el modelo alcanza una precisión de validación (*Validation Accuracy*) que ronda el 97-98%. Este nivel de acierto es prueba empírica suficiente para certificar que el pipeline de inferencia y la transmisión de tensores funcionan correctamente de extremo a extremo, evitando un consumo innecesario de tiempo en el nodo Master.
-
 
 ### Fase 3: Distribución del Cerebro IA y Procesamiento (Padre -> Hijos)
 
@@ -170,19 +172,34 @@ Se han realizado pruebas de estrés enviando un lote continuo de 60.000 imágene
 
 Para ver resultados de la comparativa de red, pulsa [aquí](/entrega-3/3-benchmarks-results/resultados-tablas.md).
 
+### Impacto del Flujo MLOps en el Despliegue ($T_{deploy}$)
+
+Al comparar los registros de métricas de esta fase con los resultados previos, se ha detectado un incremento significativo en el tiempo de despliegue total ($T_{deploy}$), pasando de una media de **~28 segundos** en la tarea simple de conteo a **~180 segundos** en el pipeline MLOps actual.
+
+Este aumento es totalmente esperado y responde a dos factores críticos de ingeniería:
+1. **Dependencias de Inferencia:** A diferencia de la tarea anterior, los contenedores actuales requieren la instalación y carga en memoria de *frameworks* de computación científica pesados como `torch` y sus dependencias de computación tensorial, que son órdenes de magnitud más pesadas que las librerías estándar utilizadas anteriormente.
+2. **Carga de Artefactos (Weights Distribution):** El proceso de despliegue ahora incluye la distribución y carga en memoria de los pesos del modelo (`best_model.pth`) en cada nodo Edge, asegurando que el entorno esté preparado para la inferencia inmediata.
+
+Este incremento en el tiempo de preparación es el "coste de entrada" por migrar de una tarea de telemetría simple a un entorno de inferencia de IA real, garantizando que el sistema esté totalmente configurado para ejecutar tareas complejas con alta precisión.
+
+![Métricas Ansible](/entrega-2/assets/benckmarks-infraestructura.png)
+*Fig 4: Métricas del despliegue sin modelo IA torch.*
+
+![Métricas Ansible IA](./assets/benckmarks-infraestructura-IA.png)
+*Fig 5: Métricas del despliegue scon modelo IA torch.*
 
 ### Resumen Visual de Rendimiento
 
 Para ilustrar la drástica penalización del estándar web frente a la serialización binaria en dispositivos con recursos restringidos, se exponen las siguientes gráficas consolidadas:
 
 ![Rendimiento Global - Throughput](./3-benchmarks-results/visualizations/graph_1_throughput.png)
-*Fig 3: Comparativa de Throughput (Imágenes por segundo). La transición de JSON a formatos binarios supone un incremento del rendimiento superior al 260%.*
+*Fig 6: Comparativa de Throughput (Imágenes por segundo). La transición de JSON a formatos binarios supone un incremento del rendimiento superior al 260%.*
 
 ![Huella de Memoria RAM](./3-benchmarks-results/visualizations/graph_2_ram_footprint.png)
-*Fig 4: Huella de memoria RAM en los nodos Edge. La línea de referencia (1000 MB) simula el límite de un dispositivo perimetral estándar (ej. Raspberry Pi 1GB). Se observa cómo ZMQ/MsgPack minimiza el impacto durante la inferencia (Pico de Carga) en comparación con el costoso parseo de texto de HTTP/JSON.*
+*Fig 7: Huella de memoria RAM en los nodos Edge. La línea de referencia (1000 MB) simula el límite de un dispositivo perimetral estándar (ej. Raspberry Pi 1GB). Se observa cómo ZMQ/MsgPack minimiza el impacto durante la inferencia (Pico de Carga) en comparación con el costoso parseo de texto de HTTP/JSON.*
 
 ![Matriz de Trade-off - Latencia vs Rendimiento](./3-benchmarks-results/visualizations/graph_3_scatter_tradeoff.png)
-*Fig 5: Matriz de Trade-off (Latencia RTT vs Throughput). Se evidencia cómo HTTP/JSON queda aislado como un anti-patrón para el Edge (alta latencia, bajo rendimiento), mientras que las implementaciones sobre ZeroMQ y gRPC convergen en el cuadrante de eficiencia óptima.*
+*Fig 8: Matriz de Trade-off (Latencia RTT vs Throughput). Se evidencia cómo HTTP/JSON queda aislado como un anti-patrón para el Edge (alta latencia, bajo rendimiento), mientras que las implementaciones sobre ZeroMQ y gRPC convergen en el cuadrante de eficiencia óptima.*
 
 ---
 
