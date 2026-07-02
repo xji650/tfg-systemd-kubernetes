@@ -10,7 +10,7 @@ El objetivo de esta entrega consiste en hacer la comparativa de diferentes proto
 
 La tarea consiste en procesar el dataset MNIST distribuido en N partes hacia N nodos hijos. En esta iteración avanzada, el procesamiento ha evolucionado de un simple conteo a un **ciclo de vida completo de MLOps (Machine Learning Operations)**, donde el Master entrena una Inteligencia Artificial y los nodos Edge ejecutan la inferencia.
 
-![Arquitectura del sistema](./asserts/flow.png)
+![Arquitectura del sistema](./assets/flow.png)
 
 ---
 
@@ -67,10 +67,10 @@ El sistema orquestador ejecuta ahora un flujo altamente diferenciado para garant
 
 > **Certificación del Modelo (Fase de Entrenamiento)**
 > 
-> ![Curva de Aprendizaje](./asserts/loss-curve.png)
+> ![Curva de Aprendizaje](./assets/loss-curve.png)
 > *Fig 1: Caída del error de entrenamiento por lotes durante la única época de ejecución.*
 > 
-> ![Matriz de Confusión](./asserts/matriz-confusion.png)
+> ![Matriz de Confusión](./assets/matriz-confusion.png)
 > *Fig 2: Matriz de confusión resultante evaluando las imágenes de validación.*
 
 > **Justificación del Entrenamiento de 1 Época:**

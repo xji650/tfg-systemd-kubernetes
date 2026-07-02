@@ -60,7 +60,7 @@ Antes de alimentar la red neuronal, los datos pasan por una fase de preprocesami
 
 Una decisión de diseño crítica en esta fase ha sido la creación manual de un **Conjunto de Validación**. Dado que MNIST proporciona por defecto solo conjuntos de *Train* y *Test*, se ha aplicado la función `random_split` de PyTorch para segmentar dinámicamente las 60.000 imágenes de entrenamiento en un **80% (48.000 imágenes) para el entrenamiento puro** y un **20% (12.000 imágenes) para la validación**. Esta separación mutuamente excluyente es fundamental para garantizar que el modelo no vea los datos de validación durante el cálculo del gradiente, evitando así el problema de la "Fuga de Datos" (*Data Leakage*) y permitiendo evaluar el modelo de forma objetiva al final de cada época.
 
-![Example-sample](asserts/image-sample.png)
+![Example-sample](assets/image-sample.png)
 
 ### 1.2 Arquitectura de la Red Neuronal (CNN)
 
@@ -80,7 +80,7 @@ Para asegurar la trazabilidad y reproducibilidad del proyecto a nivel de softwar
 * **La Gráfica de Convergencia (`loss_curve.png`):** Una visualización automática de la evolución comparativa del *Train Loss* frente al *Val Loss*.
 * **Las Métricas (`metrics.json`):** Un archivo estructurado que registra el número de épocas, la precisión lograda y los valores de pérdida finales, facilitando la auditoría de cada prueba.
 
-![Loss-curve](asserts/loss-curve.png)
+![Loss-curve](assets/loss-curve.png)
 
 ### 1.4 Evaluación y Resultados
 
@@ -88,7 +88,7 @@ Al finalizar el entrenamiento, el mejor modelo exportado se somete a la prueba d
 
 Los resultados demuestran la eficacia de la arquitectura diseñada, logrando consistentemente una precisión matemática (Accuracy) superior al **98.5%** (alcanzando cifras en torno al 98.9% en varios de los experimentos registrados). Esta tasa de éxito, junto con una curva de pérdida convergente sin signos de *overfitting*, confirma que el modelo generaliza de forma excelente y constituye un componente lógico altamente capaz para ser empaquetado, distribuido y orquestado por los nodos *Worker* en las siguientes fases del proyecto basadas en Systemd y Kubernetes.
 
-![Prediction-results](asserts/image-pred.png)
+![Prediction-results](assets/image-pred.png)
 
 ---
 
@@ -130,10 +130,10 @@ python interact.py
 
 ### 2.5 Ejemplo de resultados obtenidos
 
-![Interact-result1](asserts/interact-result/interact-result1.png)
-![Interact-result2](asserts/interact-result/interact-result2.png)
-![Interact-result3](asserts/interact-result/interact-result3.png)
-![Interact-result4](asserts/interact-result/interact-result4.png)
+![Interact-result1](assets/interact-result/interact-result1.png)
+![Interact-result2](assets/interact-result/interact-result2.png)
+![Interact-result3](assets/interact-result/interact-result3.png)
+![Interact-result4](assets/interact-result/interact-result4.png)
 
 ---
 
