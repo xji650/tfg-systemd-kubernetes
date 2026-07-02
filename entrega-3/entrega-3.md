@@ -166,9 +166,23 @@ El sistema orquestador ejecuta ahora un flujo altamente diferenciado para garant
 
 ## 6. Resultados de la Evaluación Técnica (`resultados_tablas.md`)
 
-Se han realizado pruebas de estrés enviando un lote continuo de 60.000 imágenes a los nodos Edge. *(Nota: La Matriz de Confusión y Curvas de Aprendizaje generadas en la Fase 2 se documentan en los artefactos individuales de cada prueba para certificar el estado del modelo).*
+Se han realizado pruebas de estrés enviando un lote continuo de 60.000 imágenes a los nodos Edge.
 
 Para ver resultados de la comparativa de red, pulsa [aquí](/entrega-3/3-benchmarks-results/resultados-tablas.md).
+
+
+### Resumen Visual de Rendimiento
+
+Para ilustrar la drástica penalización del estándar web frente a la serialización binaria en dispositivos con recursos restringidos, se exponen las siguientes gráficas consolidadas:
+
+![Rendimiento Global - Throughput](./3-benchmarks-results/visualizations/graph_1_throughput.png)
+*Fig 3: Comparativa de Throughput (Imágenes por segundo). La transición de JSON a formatos binarios supone un incremento del rendimiento superior al 260%.*
+
+![Huella de Memoria RAM](./3-benchmarks-results/visualizations/graph_2_ram_footprint.png)
+*Fig 4: Huella de memoria RAM en los nodos Edge. La línea de referencia (1000 MB) simula el límite de un dispositivo perimetral estándar (ej. Raspberry Pi 1GB). Se observa cómo ZMQ/MsgPack minimiza el impacto durante la inferencia (Pico de Carga) en comparación con el costoso parseo de texto de HTTP/JSON.*
+
+![Matriz de Trade-off - Latencia vs Rendimiento](./3-benchmarks-results/visualizations/graph_3_scatter_tradeoff.png)
+*Fig 5: Matriz de Trade-off (Latencia RTT vs Throughput). Se evidencia cómo HTTP/JSON queda aislado como un anti-patrón para el Edge (alta latencia, bajo rendimiento), mientras que las implementaciones sobre ZeroMQ y gRPC convergen en el cuadrante de eficiencia óptima.*
 
 ---
 
