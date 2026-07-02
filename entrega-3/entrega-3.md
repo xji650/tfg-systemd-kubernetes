@@ -65,8 +65,8 @@ El sistema orquestador ejecuta ahora un flujo altamente diferenciado para garant
 * **Mecanismo:** Procesamiento local en el Master (PyTorch).
 * **Acción:** El Master descarga el dataset MNIST. En lugar de limitarse a dividirlo, entrena una Red Neuronal Convolucional (CNN) fundacional. Una vez validada, la "inteligencia" se guarda en el artefacto binario `best_model.pth`.
 
-    ![Ejemplospredicciones](./model/ejemplos-predicciones-msgpack.png)
-    *Fig 1: Ejemplos de predicciones del modelo entrenado.*
+![Ejemplospredicciones](./model/ejemplos-predicciones-msgpack.png)
+*Fig 1: Ejemplos de predicciones del modelo entrenado.*
 
 > **Certificación del Modelo (Fase de Entrenamiento)**
 > 
