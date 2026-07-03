@@ -1,0 +1,188 @@
+% !TeX program = lualatex
+\documentclass[11pt, a4paper]{report}
+
+% --- UNIVERSAL PREAMBLE BLOCK ---
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{fontspec}
+
+\usepackage[spanish, bidi=basic, provide=*]{babel}
+
+\babelprovide[import, onchar=ids fonts]{spanish}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% Set default/Latin font to Serif in the main (rm) slot for an academic look
+\babelfont{rm}{Noto Serif}
+% Assign a specific font for Spanish text
+\babelfont[spanish]{rm}{Noto Serif}
+
+% Add because main language is not English
+\usepackage{enumitem}
+\setlist[itemize]{label=-}
+% --- END UNIVERSAL PREAMBLE BLOCK ---
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{setspace}
+
+% Formato de los capítulos para que sean más estéticos
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% Hyperref siempre al final
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=black, urlcolor=blue]{hyperref}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Large \textbf{TRABAJO DE FIN DE GRADO}} \\[1.5cm]
+    
+    {\huge \textbf{Orchestration Trade-offs in Edge Computing: Systemd vs Kubernetes}}\\[0.5cm]
+    {\Large Análisis de rendimiento, distribución de cargas e inferencia de modelos de IA en el extremo de la red}\\[2cm]
+    
+    {\Large \textbf{Autor:}} \\
+    {\large [Tu Nombre y Apellidos]}\\[1cm]
+    
+    {\Large \textbf{Director/es:}} \\
+    {\large [Nombre del Director/a]}\\[2cm]
+    
+    {\large \textbf{Grado en Ingeniería [Informática / Telecomunicaciones]}} \\[0.5cm]
+    {\large [Nombre de tu Universidad]} \\[0.5cm]
+    {\large [Mes y Año de la convocatoria]}
+    
+    \vfill
+\end{titlepage}
+
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+\listoftables
+\cleardoublepage
+
+\pagenumbering{arabic}
+\setstretch{1.15}
+
+\chapter{Introducción}
+
+\section{Contexto y Motivación}
+El auge del \textit{Edge Computing} plantea nuevos retos en la orquestación de servicios descentralizados. Los entornos perimetrales poseen recursos limitados que cuestionan la viabilidad de modelos \textit{cloud-native} puros.
+
+\section{Objetivos del Trabajo}
+El objetivo principal es analizar y comparar los \textit{trade-offs} (rendimiento, consumo y complejidad) entre una orquestación basada en Systemd (nativa y ligera) frente a Kubernetes (robusta pero pesada) en escenarios Edge.
+
+\section{Estructura de la Memoria}
+El documento se estructura siguiendo la progresión del desarrollo técnico iterativo, desde la base teórica hasta la comparativa final.
+
+\chapter{Estado del Arte y Tecnologías Involucradas}
+
+Este capítulo compila la investigación técnica previa (correspondiente a las \textit{Setmanas 4 y 5}) necesaria para fundamentar el diseño arquitectónico del proyecto.
+
+\section{Paradigmas de Computación: Cloud vs. Edge Computing}
+Definición de conceptos y necesidades de orquestación en el extremo.
+
+\section{Tecnologías de Contenedorización Ligera}
+Análisis de Podman frente a Docker, destacando su arquitectura \textit{daemonless} y ejecución \textit{rootless}, ideales para entornos perimetrales seguros y con pocos recursos.
+
+\section{Orquestación y Ciclo de Vida en el Edge}
+\subsection{Systemd y la evolución hacia Quadlets}
+Gestión del ciclo de vida de los contenedores de forma nativa desde el sistema operativo.
+\subsection{Distribuciones Ligeras de Kubernetes (K3s)}
+Concepto de K3s como estándar de facto para llevar la semántica de Kubernetes al Edge.
+
+\section{Protocolos de Comunicación y Serialización para Alta Frecuencia}
+\subsection{Arquitecturas HTTP/REST y RPC (gRPC)}
+\subsection{Mensajería Asíncrona y Punto a Punto (ZeroMQ, MQTT)}
+\subsection{Estrategias de Serialización: JSON vs Protobuf vs MessagePack}
+Comparativa teórica entre texto plano con alto \textit{overhead} y esquemas binarios eficientes.
+
+\section{Frameworks de Machine Learning para Inferencia}
+Introducción a PyTorch y las características del dataset MNIST utilizado para las cargas de trabajo.
+
+\chapter{Metodología y Evolución de la Arquitectura}
+
+\section{Enfoque de Desarrollo Iterativo}
+El proyecto se ha abordado mediante iteraciones incrementales semanales. Se partió del aprovisionamiento base (\textit{Setmana 0 a 3}), pasando por la optimización de protocolos (\textit{Setmana 4}), la integración de IA (\textit{Setmana 5}) y culminando en la migración a Kubernetes (\textit{Setmana 6}).
+
+\section{Definición del Entorno de Pruebas}
+Infraestructura compuesta por un nodo Master (Ubuntu 22.04, WSL) y nodos Workers (Ubuntu 24.04, VMware VMs).
+
+\section{Herramientas de Aprovisionamiento y Automatización}
+Justificación del uso de Ansible para garantizar despliegues reproducibles bajo el patrón de \textit{Side-loading} (evitando repositorios de contenedores externos).
+
+\section{Casos de Uso y Definición de Tareas}
+\subsection{Tarea 1: Transmisión masiva de datos (Conteo de imágenes)}
+División del dataset en $N$ particiones y retorno del conteo.
+\subsection{Tarea 2: Inferencia distribuida de Inteligencia Artificial}
+Sustitución del conteo simple por la predicción numérica usando modelos pre-entrenados.
+
+\chapter{Fase 1: Arquitectura Base y Optimización de Red (Systemd + Podman)}
+
+\section{Despliegue de la Infraestructura mediante Systemd Quadlets}
+Explicación de cómo se estructuraron los servicios base de forma agnóstica a la carga de trabajo.
+
+\section{Diseño del Banco de Pruebas de Comunicaciones}
+Metodología para medir latencias y consumos enviando 60.000 imágenes a los nodos.
+
+\section{Resultados: Comparativa de Rendimiento de Protocolos}
+Análisis del rendimiento base (HTTP/1.1), el estándar microservicios (gRPC), el crudo P2P (ZeroMQ) y el paradigma IoT (MQTT).
+
+\section{Resultados: Impacto de la Serialización}
+La transición de JSON a binario (Protobuf) y el refinamiento final con MessagePack (\textit{schema-less}).
+
+\section{Selección de la Arquitectura Óptima para el Edge}
+Conclusión de esta fase: La elección de ZeroMQ + MessagePack como pila de red ganadora para integrar en Systemd.
+
+\chapter{Fase 2: Implementación del Flujo de Machine Learning}
+
+\section{Entrenamiento y Empaquetado del Modelo (PyTorch)}
+El nodo Master asume la carga computacional de entrenamiento y serializa el modelo (`.pth`).
+
+\section{Distribución Segura de Modelos y Datos a Nodos Trabajadores}
+Envío del modelo y las particiones mediante la arquitectura de red optimizada en la Fase 1.
+
+\section{Ejecución de Inferencia Descentralizada}
+Los Workers cargan el modelo en memoria y evalúan cada imagen, devolviendo las predicciones agregadas al Master.
+
+\section{Análisis de Rendimiento y Consumo Computacional}
+Evaluación del incremento de estrés en CPU y memoria ($T_{proc}$) al añadir el \textit{overhead} matemático de los tensores.
+
+\chapter{Fase 3: Migración a Kubernetes y Análisis Comparativo Final}
+
+\section{Transición de Arquitectura: De Quadlets a Manifiestos de K3s}
+Adaptación de los servicios a la semántica de \textit{Deployments} y \textit{Services} de K8s.
+
+\section{Despliegue del Escenario de Inferencia sobre K3s}
+Ejecución de la Tarea 2 a través de la interfaz de red de contenedores (CNI) de Kubernetes.
+
+\section{Comparativa de Trade-offs: Systemd vs. Kubernetes}
+\subsection{Plano de Gestión: Consumo de RAM y CPU}
+Comparativa del \textit{overhead} en reposo del Kubelet frente al demonio de Systemd.
+\subsection{Plano de Datos: Latencia de red y Throughput}
+Impacto del enrutamiento de Kube-proxy frente a la red nativa punto a punto.
+\subsection{Complejidad Operativa y Facilidad de Mantenimiento}
+
+\chapter{Conclusiones y Trabajo Futuro}
+
+\section{Conclusiones de la Investigación}
+Resumen de los hitos alcanzados y la viabilidad técnica demostrada a lo largo de los capítulos.
+
+\section{Respuesta al Dilema: ¿Systemd o Kubernetes para el Edge?}
+Veredicto final apoyado en las métricas extraídas en la Fase 3. Cuándo merece la pena asumir el coste de Kubernetes y cuándo es preferible la simplicidad de Systemd.
+
+\section{Líneas de Trabajo Futuro}
+
+\vspace{1cm}
+
+\begin{thebibliography}{99}
+\bibitem{podman_docs} Red Hat, \textit{Podman Documentation}, [Online]. Disponible en: \url{https://podman.io/docs/}
+\bibitem{systemd_quadlets} Freedesktop.org, \textit{systemd.service — Service unit configuration}, [Online].
+\bibitem{grpc_protocol} Cloud Native Computing Foundation (CNCF), \textit{gRPC: A high performance, open source universal RPC framework}, [Online].
+\bibitem{zeromq_guide} P. Hintjens, \textit{ZeroMQ: Messaging for Many Applications}, O'Reilly Media, 2013.
+\bibitem{k3s_arch} Rancher Labs (SUSE), \textit{K3s Lightweight Kubernetes}, [Online]. Disponible en: \url{https://k3s.io/}
+\bibitem{pytorch_edge} Paszke, A. et al., \textit{PyTorch: An Imperative Style, High-Performance Deep Learning Library}, NeurIPS 2019.
+\end{thebibliography}
+
+\end{document}

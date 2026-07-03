@@ -37,3 +37,7 @@ protobuf==6.32.0
 ## Protocolo 3: ZeroMQ-Protobuf
 pyzmq==27.1.0
 msgpack==1.1.2
+
+
+## Latex vsc extension LaTex Workshop by James Yu and dependences (sudo apt update && sudo apt install texlive-full)
+texlive-full
