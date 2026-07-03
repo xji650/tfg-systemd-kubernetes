@@ -1,4 +1,4 @@
-# Instalacion kubernetes con K3S
+# Instalacion y configuración de kubernetes K3S
 
 Guía de instalación y configuración para un entorno Kubernetes ligero utilizando K3s.
 
