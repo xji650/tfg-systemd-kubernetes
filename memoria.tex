@@ -1,0 +1,254 @@
+% !TeX program = lualatex
+\documentclass[11pt, a4paper]{report}
+
+% --- UNIVERSAL PREAMBLE BLOCK ---
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{fontspec}
+
+\usepackage[spanish, bidi=basic, provide=*]{babel}
+
+\babelprovide[import, onchar=ids fonts]{spanish}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% Set default/Latin font to Serif in the main (rm) slot for an academic look
+\babelfont{rm}{Noto Serif}
+% Assign a specific font for Spanish text
+\babelfont[spanish]{rm}{Noto Serif}
+
+% Add because main language is not English
+\usepackage{enumitem}
+\setlist[itemize]{label=-}
+% --- END UNIVERSAL PREAMBLE BLOCK ---
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{setspace}
+
+% Formato de los capítulos para que sean más estéticos
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Huge}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+% Hyperref siempre al final
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=black, urlcolor=blue]{hyperref}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Large \textbf{TRABAJO DE FIN DE GRADO}} \\[1.5cm]
+    
+    {\huge \textbf{Orchestration Trade-offs in Edge Computing: Systemd vs Kubernetes}}\\[0.5cm]
+    {\Large Análisis de rendimiento, distribución de cargas e inferencia de modelos de IA en el extremo de la red}\\[2cm]
+    
+    {\Large \textbf{Autor:}} \\
+    {\large [Tu Nombre y Apellidos]}\\[1cm]
+    
+    {\Large \textbf{Director/es:}} \\
+    {\large [Nombre del Director/a]}\\[2cm]
+    
+    {\large \textbf{Grado en Ingeniería [Informática / Telecomunicaciones]}} \\[0.5cm]
+    {\large [Nombre de tu Universidad]} \\[0.5cm]
+    {\large [Mes y Año de la convocatoria]}
+    
+    \vfill
+\end{titlepage}
+
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+\listoftables
+\cleardoublepage
+
+\pagenumbering{arabic}
+\setstretch{1.15}
+
+\chapter{Introducción}
+
+Este capítulo debe introducir al lector al problema, por qué es importante y qué vas a resolver.
+
+\section{Contexto y Motivación}
+Aquí debes hablar sobre el auge del \textit{Edge Computing} (computación en el extremo) y cómo difiere del \textit{Cloud Computing} tradicional. Explica que los entornos Edge tienen recursos limitados (CPU, RAM, red inestable) y que las herramientas de orquestación diseñadas para la nube (como Kubernetes) pueden ser demasiado pesadas. Introduce el dilema: ¿Necesitamos orquestadores complejos o bastan herramientas nativas del sistema operativo como Systemd + Podman?
+
+\section{Objetivos del Trabajo}
+\begin{itemize}
+    \item \textbf{Objetivo Principal:} Analizar y comparar los \textit{trade-offs} (rendimiento, resiliencia y complejidad) entre Kubernetes y Systemd como orquestadores para cargas de trabajo Edge.
+    \item \textbf{Objetivos Específicos:}
+    \begin{itemize}
+        \item Desplegar una infraestructura Master-Worker utilizando Ansible, Podman y Systemd (Fase 1).
+        \item Evaluar el rendimiento de múltiples protocolos de red (HTTP, gRPC, ZeroMQ, MQTT) y formatos de serialización (JSON, Protobuf, MessagePack) para la transmisión masiva de datos (Dataset MNIST).
+        \item Implementar un flujo de trabajo de Machine Learning distribuido (Fase 2) entrenando un modelo PyTorch en el nodo máster e infiriendo en los nodos worker.
+        \item Migrar la arquitectura a un entorno de Kubernetes/K3s (Fase 3) y contrastar las métricas de consumo y latencia frente a Systemd.
+    \end{itemize}
+\end{itemize}
+
+\section{Estructura de la Memoria}
+Breve resumen de lo que contiene cada uno de los siguientes capítulos.
+
+\chapter{Estado del Arte y Tecnologías Involucradas}
+
+Define teóricamente las herramientas y conceptos que usas. No es un manual de uso, sino una justificación técnica.
+
+\section{Edge Computing y Orquestación}
+Diferencias entre Cloud, Fog y Edge. Desafíos en el Edge (huella de memoria, latencia, ancho de banda). 
+
+\section{Gestión de Contenedores}
+\begin{itemize}
+    \item \textbf{Podman:} Arquitectura \textit{daemonless} y \textit{rootless}. Por qué es mejor que Docker para el Edge.
+    \item \textbf{Systemd Quadlets:} Cómo Systemd integra de forma nativa la gestión del ciclo de vida de los contenedores.
+    \item \textbf{Kubernetes (K3s):} Distribuciones ligeras de Kubernetes para IoT/Edge. Arquitectura del plano de control y el CNI (Container Network Interface).
+\end{itemize}
+
+\section{Protocolos de Comunicación y Serialización}
+Explica la teoría y diferencias de los que has comparado:
+\begin{itemize}
+    \item \textbf{REST / HTTP(s) y JSON:} Estándar web, basado en texto. Cuellos de botella en el parseo.
+    \item \textbf{gRPC y Protocol Buffers:} Llamadas a procedimientos remotos sobre HTTP/2. Serialización binaria estructurada y fuertemente tipada.
+    \item \textbf{ZeroMQ:} Sockets TCP crudos sin \textit{broker} (Brokerless P2P). Alta velocidad.
+    \item \textbf{MQTT:} Patrón Pub/Sub con \textit{broker} intermediario.
+    \item \textbf{MessagePack:} Serialización binaria sin esquema (\textit{schema-less}), flexible y rápida.
+\end{itemize}
+
+\section{Machine Learning Distribuido}
+Breve introducción a PyTorch, inferencia de modelos, y el dataset MNIST.
+
+\chapter{Diseño del Sistema y Entorno de Pruebas}
+
+\section{Infraestructura Física y Virtual}
+Detalla el hardware:
+\begin{itemize}
+    \item Nodo Master (Padre): Ubuntu 22.04.5 bajo WSL en Windows 11. Rol: Orquestador (Ansible), entrenamiento de IA, y despachador de tareas.
+    \item Nodos Workers (Hijos): 2 Máquinas Virtuales Ubuntu 24.04.4 en VMware. Rol: Inferencia, cálculo, retorno de métricas.
+\end{itemize}
+
+\section{Aprovisionamiento y Despliegue Agnóstico}
+Explica la separación estricta entre \textit{Build} (construcción en el máster) y \textit{Run} (ejecución en el worker). Detalla cómo Ansible transporta los artefactos locales (`.tar`) usando `podman load` (estrategia \textit{side-loading}) para ahorrar ancho de banda y CPU, evitando repositorios externos (Docker Hub).
+
+\section{Arquitectura Lógica de la Solución}
+Aquí debes poner el esquema de la arquitectura Master-Worker, mostrando cómo fluyen los datos (Fase 2, Fase 3, Fase 4).
+
+\begin{figure}[htbp]
+  \centering
+  \framebox{\parbox{0.8\textwidth}{\centering
+    \vspace{3cm}
+    \textbf{Esquema de Arquitectura Master-Worker} \\
+    \small\textit{Aquí se insertará tu diagrama (flow.png) mostrando el nodo Padre, los hijos y el flujo de red.}
+    \vspace{3cm}
+  }}
+  \caption{Topología del sistema y flujos de comunicación.}
+  \label{fig:arquitectura}
+\end{figure}
+
+\chapter{Fase 1: Transmisión de Datos en Systemd (Conteo de Imágenes)}
+
+En este capítulo desarrollas todo lo que me has pasado sobre el conteo de imágenes y la comparativa de red.
+
+\section{Definición de la Tarea}
+El Master descarga el dataset MNIST (60,000 imágenes), lo carga en memoria, lo divide en $N$ particiones ($tamaño\_particion = total\_imagenes / N\_nodos$) y envía los lotes. El Worker cuenta las imágenes recibidas y devuelve el total al Master.
+
+\section{Diseño del Experimento (Comparativa)}
+Explica la justificación de cada prueba:
+\begin{itemize}
+    \item \textbf{Línea Base:} HTTP/1.1 + JSON (Demostrar ineficiencia del texto plano).
+    \item \textbf{Estándar Microservicios:} gRPC + Protobuf (HTTP/2 binario).
+    \item \textbf{Rendimiento Crudo:} ZeroMQ + Protobuf (Límite físico P2P).
+    \item \textbf{IoT Broker:} MQTT + Protobuf (Penalización por doble salto).
+    \item \textbf{Flexibilidad:} ZeroMQ + MessagePack (Esquema estático vs dinámico).
+\end{itemize}
+
+\section{Resultados y Análisis de Rendimiento}
+Inserta aquí las tablas y gráficas de la Fase 1. Comenta el consumo extremo de RAM del JSON frente al paradigma binario (\textit{Zero-Copy} con `np.frombuffer`).
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{llccc}
+        \toprule
+        \textbf{Protocolo} & \textbf{Formato} & \textbf{Tiempo RTT (ms)} & \textbf{Throughput (img/s)} & \textbf{RAM Pico (MB)} \\
+        \midrule
+        HTTP/REST & JSON & $\approx 16500$ & 3,636 & 2600 \\
+        gRPC & Protobuf & $\approx 1037$ & 57,850 & 384 \\
+        ZeroMQ & Protobuf & $\approx 672$ & 89,285 & 250 \\
+        ZeroMQ & MsgPack & $\approx 540$ & 111,087 & 209 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Resumen de resultados de transmisión para 60,000 imágenes.}
+    \label{tab:resultados_red}
+\end{table}
+
+\section{Conclusiones de la Fase 1}
+Explica cómo "La tríada ZeroMQ + MessagePack + Zero-Copy se establece como la arquitectura ganadora" dentro de Systemd.
+
+\chapter{Fase 2: Despliegue e Inferencia de Modelos de IA}
+
+Este capítulo evoluciona el envío tonto de imágenes a una tarea computacional real.
+
+\section{Entrenamiento del Modelo en el Master}
+Explica cómo el nodo Master utiliza PyTorch para entrenar un modelo clasificador convolucional (CNN) sencillo sobre el dataset MNIST. Detalla las métricas del entrenamiento (Epochs, Loss, Accuracy final).
+
+\section{Distribución del Modelo y Datos}
+Explica cómo se envía el modelo entrenado (ej. serializado con `torch.save` en formato `.pt` o `.pth`) hacia los workers utilizando la arquitectura de red ganadora de la Fase 1 (ZeroMQ). Seguidamente, se envían las particiones de imágenes.
+
+\section{Ejecución de Inferencia en el Edge (Workers)}
+Los nodos hijos reciben el modelo, lo cargan en memoria (`torch.load`), y para cada imagen recibida realizan una inferencia (predicción del número escrito a mano). 
+
+\section{Métricas de Procesamiento ($T_{proc}$)}
+\begin{itemize}
+    \item Tiempo medio de inferencia por lote.
+    \item Consumo de CPU de los workers durante la carga computacional (Tensores IA).
+    \item Fiabilidad: Exactitud de los números predichos y devueltos al máster.
+\end{itemize}
+
+\chapter{Fase 3: Migración a Kubernetes (K3s) y Análisis de Trade-offs}
+
+Aquí culmina el propósito del TFG: la comparación directa de orquestadores.
+
+\section{Migración de la Infraestructura a K3s}
+Explica la configuración del cluster Kubernetes. 
+\begin{itemize}
+    \item Master asume el rol de Control Plane.
+    \item Workers asumen roles de Kubelets.
+    \item Traducción de los servicios `Systemd Quadlets` a manifiestos de Kubernetes (`Deployments`, `Services`, `Pods`).
+\end{itemize}
+
+\section{Ejecución de Cargas de Trabajo (Fase 1 y 2 en K8s)}
+Se repite el envío masivo de imágenes y la inferencia de IA, pero ahora a través de la red virtual de Kubernetes (ej. Flannel o Calico CNI) y Kube-proxy.
+
+\section{Comparativa Directa: Systemd vs Kubernetes}
+Aquí comparas los resultados de Systemd frente a K8s usando las métricas definidas:
+\begin{itemize}
+    \item \textbf{Plano de Gestión (Reposo):} Consumo de RAM y CPU de Systemd+Podman inactivo frente al Kubelet+Kube-proxy+Etcd inactivos en el Edge.
+    \item \textbf{Plano de Datos (Red):} Cuánta latencia extra añade el CNI de K8s a gRPC y ZeroMQ frente a la comunicación nativa P2P de Podman.
+    \item \textbf{Complejidad Operativa:} Facilidad de despliegue usando Ansible estático vs. mantenimiento del estado en K8s.
+\end{itemize}
+
+\chapter{Conclusiones y Trabajo Futuro}
+
+\section{Conclusiones Finales}
+Resumen general. Responde a la pregunta del TFG: ¿Vale la pena el peso de Kubernetes en el Edge, o es Systemd una alternativa viable? 
+Destaca los números clave: 
+1) La inviabilidad de REST/JSON. 
+2) La eficiencia extrema de ZeroMQ+MsgPack en Podman. 
+3) El *overhead* demostrado por Kubernetes frente al despliegue desnudo.
+
+\section{Trabajo Futuro}
+Sugerencias para ampliar el trabajo: 
+\begin{itemize}
+    \item Probar aceleradores hardware en los Workers (GPU/NPU).
+    \item Usar un framework de IA específico para Edge como TensorFlow Lite o ONNX Runtime.
+    \item Implementar mecanismos de tolerancia a fallos automáticos en el lado de Systemd.
+\end{itemize}
+
+\vspace{1cm}
+
+\begin{thebibliography}{99}
+\bibitem{podman_docs} Red Hat, \textit{Podman Documentation}, [Online]. Disponible en: \url{https://podman.io/docs/}
+\bibitem{systemd_quadlets} Freedesktop.org, \textit{systemd.service — Service unit configuration}, [Online].
+\bibitem{grpc_protocol} Cloud Native Computing Foundation (CNCF), \textit{gRPC: A high performance, open source universal RPC framework}, [Online].
+\bibitem{zeromq_guide} P. Hintjens, \textit{ZeroMQ: Messaging for Many Applications}, O'Reilly Media, 2013.
+\bibitem{k3s_arch} Rancher Labs (SUSE), \textit{K3s Lightweight Kubernetes}, [Online]. Disponible en: \url{https://k3s.io/}
+\bibitem{pytorch_edge} Paszke, A. et al., \textit{PyTorch: An Imperative Style, High-Performance Deep Learning Library}, NeurIPS 2019.
+\end{thebibliography}
+
+\end{document}
