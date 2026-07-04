@@ -1,0 +1,251 @@
+=== BENCHMARK COMPLETO | INICIO: 04/07/2026 20:19:44 ===
+
+--- MÉTRICAS DE INFRAESTRUCTURA ---
+  [OK] T_deploy total: 69.83 segundos
+  [OK] Nodo node-a - CPU Reposo (Global): 1% | RAM Reposo (Global): 823 MB
+  [OK] Nodo node-a - Tiempo Real Arranque: 2048.53 ms
+  [OK] Nodo node-b - CPU Reposo (Global): 3% | RAM Reposo (Global): 808 MB
+  [OK] Nodo node-b - Tiempo Real Arranque: 1263.5 ms
+
+
+==================================================
+ TEST RUN 1 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Descargando y preparando dataset MNIST (80% Train / 20% Val)...
+Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz to ./data/MNIST/raw/train-images-idx3-ubyte.gz
+  0%|          | 0/9912422 [00:00<?, ?it/s]  0%|          | 32768/9912422 [00:00<00:32, 306966.32it/s]  1%|          | 98304/9912422 [00:00<00:20, 483950.01it/s]  2%|▏         | 163840/9912422 [00:00<00:17, 547931.51it/s]  4%|▎         | 360448/9912422 [00:00<00:08, 1062967.38it/s]  7%|▋         | 720896/9912422 [00:00<00:04, 1909747.55it/s] 15%|█▌        | 1507328/9912422 [00:00<00:02, 3638442.64it/s] 20%|██        | 2031616/9912422 [00:00<00:02, 3207005.25it/s] 52%|█████▏    | 5111808/9912422 [00:00<00:00, 10183545.02it/s] 64%|██████▍   | 6356992/9912422 [00:01<00:00, 10690692.80it/s] 76%|███████▋  | 7569408/9912422 [00:01<00:00, 11025508.26it/s] 89%|████████▊ | 8781824/9912422 [00:01<00:00, 11276055.26it/s]100%|██████████| 9912422/9912422 [00:01<00:00, 7361090.45it/s] 
+Extracting ./data/MNIST/raw/train-images-idx3-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
+  0%|          | 0/28881 [00:00<?, ?it/s]100%|██████████| 28881/28881 [00:00<00:00, 264852.73it/s]100%|██████████| 28881/28881 [00:00<00:00, 264125.10it/s]
+Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw/t10k-images-idx3-ubyte.gz
+  0%|          | 0/1648877 [00:00<?, ?it/s]  2%|▏         | 32768/1648877 [00:00<00:05, 313725.25it/s]  6%|▌         | 98304/1648877 [00:00<00:03, 507877.44it/s] 12%|█▏        | 196608/1648877 [00:00<00:02, 714279.52it/s] 24%|██▍       | 393216/1648877 [00:00<00:01, 1201286.42it/s] 50%|████▉     | 819200/1648877 [00:00<00:00, 2280977.27it/s] 99%|█████████▉| 1638400/1648877 [00:00<00:00, 4264978.93it/s]100%|██████████| 1648877/1648877 [00:00<00:00, 2701243.62it/s]
+Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
+  0%|          | 0/4542 [00:00<?, ?it/s]100%|██████████| 4542/4542 [00:00<00:00, 17429578.01it/s]
+Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
+
+-> Entrenando modelo (1 Época)...
+-> Evaluando modelo con datos de validación...
+
+--- MÉTRICAS DEL MODELO (IA) ---
+Precisión (Validation Accuracy): 97.78%
+Tiempo de entrenamiento:         8.40 s
+Peso del artefacto (.pth):       1.61 MB
+-> Gráficas generadas y guardadas en la carpeta 'assets/'.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              1.28 s
+Throughput (img/s):            1558.52
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    706.04 ms
+Tiempo T_proc Promedio (ms):   687.63 ms
+Pico Máx. RAM Worker (MB):     352.80 MB
+CPU Promedio (%):              135.20 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 2 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.91 s
+Throughput (img/s):            2193.61
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    491.69 ms
+Tiempo T_proc Promedio (ms):   477.16 ms
+Pico Máx. RAM Worker (MB):     335.68 MB
+CPU Promedio (%):              123.85 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 3 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.91 s
+Throughput (img/s):            2204.40
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    460.88 ms
+Tiempo T_proc Promedio (ms):   447.07 ms
+Pico Máx. RAM Worker (MB):     381.74 MB
+CPU Promedio (%):              138.70 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 4 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.83 s
+Throughput (img/s):            2397.88
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    422.24 ms
+Tiempo T_proc Promedio (ms):   415.92 ms
+Pico Máx. RAM Worker (MB):     376.79 MB
+CPU Promedio (%):              142.10 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 5 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.95 s
+Throughput (img/s):            2105.10
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    464.44 ms
+Tiempo T_proc Promedio (ms):   451.52 ms
+Pico Máx. RAM Worker (MB):     334.01 MB
+CPU Promedio (%):              147.35 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
