@@ -1,222 +1,0 @@
-=== BENCHMARK COMPLETO | INICIO: 29/06/2026 17:38:17 ===
-
---- MÉTRICAS DE INFRAESTRUCTURA ---
-  [OK] T_deploy total: 312.95 segundos
-  [OK] Nodo 192.168.98.143 - CPU Reposo: 31.12% | RAM Reposo: 152.8MB / 4.056GB
-  [OK] Nodo 192.168.98.143 - Tiempo Real Arranque: 1033.5 ms
-  [OK] Nodo 192.168.98.144 - CPU Reposo: 20.25% | RAM Reposo: 152.8MB / 4.056GB
-  [OK] Nodo 192.168.98.144 - Tiempo Real Arranque: 910.54 ms
-
-
-==================================================
- TEST RUN 1 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
-Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz to ./data/MNIST/raw/train-images-idx3-ubyte.gz
-  0%|          | 0/9912422 [00:00<?, ?it/s]  0%|          | 32768/9912422 [00:00<00:32, 299506.96it/s]  1%|          | 98304/9912422 [00:00<00:19, 491767.47it/s]  2%|▏         | 229376/9912422 [00:00<00:11, 847859.58it/s]  4%|▍         | 393216/9912422 [00:00<00:08, 1151596.40it/s]  8%|▊         | 819200/9912422 [00:00<00:04, 2245478.83it/s] 16%|█▌        | 1540096/9912422 [00:00<00:02, 3897637.38it/s] 28%|██▊       | 2752512/9912422 [00:00<00:01, 6546957.38it/s] 38%|███▊      | 3768320/9912422 [00:00<00:00, 7664488.59it/s] 49%|████▉     | 4882432/9912422 [00:00<00:00, 8648829.57it/s] 58%|█████▊    | 5767168/9912422 [00:01<00:00, 4572978.29it/s] 94%|█████████▎| 9273344/9912422 [00:01<00:00, 10231338.87it/s]100%|██████████| 9912422/9912422 [00:01<00:00, 5710814.42it/s] 
-Extracting ./data/MNIST/raw/train-images-idx3-ubyte.gz to ./data/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
-  0%|          | 0/28881 [00:00<?, ?it/s]100%|██████████| 28881/28881 [00:00<00:00, 304464.31it/s]
-Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz to ./data/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw/t10k-images-idx3-ubyte.gz
-  0%|          | 0/1648877 [00:00<?, ?it/s]  2%|▏         | 32768/1648877 [00:00<00:05, 311443.91it/s]  6%|▌         | 98304/1648877 [00:00<00:03, 489465.16it/s] 12%|█▏        | 196608/1648877 [00:00<00:02, 682969.20it/s] 24%|██▍       | 393216/1648877 [00:00<00:01, 1144629.53it/s] 48%|████▊     | 786432/1648877 [00:00<00:00, 2084677.52it/s] 97%|█████████▋| 1605632/1648877 [00:00<00:00, 4002364.74it/s]100%|██████████| 1648877/1648877 [00:00<00:00, 2576541.70it/s]
-Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
-  0%|          | 0/4542 [00:00<?, ?it/s]100%|██████████| 4542/4542 [00:00<00:00, 18549687.21it/s]
-Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
-
--> Entrenando modelo...
--> Evaluando modelo...
-
---- MÉTRICAS DEL MODELO (IA) ---
-Precisión Validación:           97.83%
-Tiempo de entrenamiento:        7.39 s
-Peso del artefacto (.pth):      1.61 MB
--> Gráficas generadas y guardadas en la carpeta 'assets/'.
-
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
-==================================================
-Worker [tcp://192.168.98.143:8000] respondió: Modelo cargado
-Worker [tcp://192.168.98.144:8000] respondió: Modelo cargado
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
-==================================================
-Protocolo de Comunicación:     ZeroMQ (MessagePack)
-Tiempo Total (s):              0.66 s
-Throughput (img/s):            3049.95
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    653.05 ms
-Tiempo T_proc Promedio (ms):   618.02 ms
-Pico Máx. RAM Worker (MB):     284.55 MB
-CPU Promedio (%):              190.10 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 2 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
-==================================================
-Worker [tcp://192.168.98.143:8000] respondió: Modelo cargado
-Worker [tcp://192.168.98.144:8000] respondió: Modelo cargado
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
-==================================================
-Protocolo de Comunicación:     ZeroMQ (MessagePack)
-Tiempo Total (s):              0.61 s
-Throughput (img/s):            3264.29
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    593.43 ms
-Tiempo T_proc Promedio (ms):   572.76 ms
-Pico Máx. RAM Worker (MB):     265.15 MB
-CPU Promedio (%):              191.20 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 3 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
-==================================================
-Worker [tcp://192.168.98.143:8000] respondió: Modelo cargado
-Worker [tcp://192.168.98.144:8000] respondió: Modelo cargado
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
-==================================================
-Protocolo de Comunicación:     ZeroMQ (MessagePack)
-Tiempo Total (s):              0.63 s
-Throughput (img/s):            3189.33
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    610.95 ms
-Tiempo T_proc Promedio (ms):   586.00 ms
-Pico Máx. RAM Worker (MB):     265.15 MB
-CPU Promedio (%):              193.75 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 4 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
-==================================================
-Worker [tcp://192.168.98.143:8000] respondió: Modelo cargado
-Worker [tcp://192.168.98.144:8000] respondió: Modelo cargado
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
-==================================================
-Protocolo de Comunicación:     ZeroMQ (MessagePack)
-Tiempo Total (s):              0.63 s
-Throughput (img/s):            3191.97
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    620.87 ms
-Tiempo T_proc Promedio (ms):   593.26 ms
-Pico Máx. RAM Worker (MB):     265.16 MB
-CPU Promedio (%):              192.95 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 5 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
-==================================================
-Worker [tcp://192.168.98.143:8000] respondió: Modelo cargado
-Worker [tcp://192.168.98.144:8000] respondió: Modelo cargado
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
-==================================================
-Protocolo de Comunicación:     ZeroMQ (MessagePack)
-Tiempo Total (s):              0.63 s
-Throughput (img/s):            3170.81
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    625.77 ms
-Tiempo T_proc Promedio (ms):   606.09 ms
-Pico Máx. RAM Worker (MB):     267.56 MB
-CPU Promedio (%):              195.55 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================

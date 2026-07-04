@@ -1,223 +1,0 @@
-=== BENCHMARK COMPLETO | INICIO: 01/07/2026 01:09:08 ===
-
---- MÉTRICAS DE INFRAESTRUCTURA ---
-  [OK] T_deploy total: 171.25 segundos
-  [OK] Nodo 192.168.98.143 - CPU Reposo: 22.55% | RAM Reposo: 156.5MB / 4.056GB
-  [OK] Nodo 192.168.98.143 - Tiempo Real Arranque: 538.18 ms
-  [OK] Nodo 192.168.98.144 - CPU Reposo: 12.77% | RAM Reposo: 156.5MB / 4.056GB
-  [OK] Nodo 192.168.98.144 - Tiempo Real Arranque: 592.79 ms
-
-
-==================================================
- TEST RUN 1 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Descargando y preparando dataset MNIST (80% Train / 20% Val)...
-Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz to ./data/MNIST/raw/train-images-idx3-ubyte.gz
-  0%|          | 0/9912422 [00:00<?, ?it/s]  0%|          | 32768/9912422 [00:00<00:31, 310916.20it/s]  1%|          | 98304/9912422 [00:00<00:19, 493760.12it/s]  2%|▏         | 196608/9912422 [00:00<00:13, 701952.53it/s]  4%|▍         | 393216/9912422 [00:00<00:08, 1182535.80it/s]  8%|▊         | 786432/9912422 [00:00<00:04, 2123060.41it/s] 16%|█▌        | 1605632/9912422 [00:00<00:02, 4105896.64it/s] 28%|██▊       | 2785280/9912422 [00:00<00:01, 6060272.70it/s] 34%|███▍      | 3375104/9912422 [00:00<00:01, 5886008.63it/s] 40%|████      | 3997696/9912422 [00:01<00:01, 4414317.08it/s] 74%|███████▎  | 7307264/9912422 [00:01<00:00, 10509022.01it/s] 85%|████████▌ | 8454144/9912422 [00:01<00:00, 8856400.29it/s] 100%|██████████| 9912422/9912422 [00:01<00:00, 6896991.20it/s]
-Extracting ./data/MNIST/raw/train-images-idx3-ubyte.gz to ./data/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
-  0%|          | 0/28881 [00:00<?, ?it/s]100%|██████████| 28881/28881 [00:00<00:00, 282062.51it/s]100%|██████████| 28881/28881 [00:00<00:00, 281238.70it/s]
-Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz to ./data/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw/t10k-images-idx3-ubyte.gz
-  0%|          | 0/1648877 [00:00<?, ?it/s]  4%|▍         | 65536/1648877 [00:00<00:04, 333246.34it/s] 14%|█▍        | 229376/1648877 [00:00<00:01, 874586.29it/s] 24%|██▍       | 393216/1648877 [00:00<00:01, 1154083.40it/s] 50%|████▉     | 819200/1648877 [00:00<00:00, 2213253.33it/s] 85%|████████▌ | 1409024/1648877 [00:00<00:00, 2955714.88it/s]100%|██████████| 1648877/1648877 [00:00<00:00, 2529253.23it/s]
-Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw
-
-Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-Failed to download (trying next):
-HTTP Error 404: Not Found
-
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
-Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
-  0%|          | 0/4542 [00:00<?, ?it/s]100%|██████████| 4542/4542 [00:00<00:00, 15012237.01it/s]
-Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
-
--> Entrenando modelo...
--> Evaluando modelo con datos de validación...
-
---- MÉTRICAS DEL MODELO (IA) ---
-Precisión (Validation Accuracy): 97.78%
-Tiempo de entrenamiento:         7.31 s
-Peso del artefacto (.pth):       1.61 MB
--> Gráficas generadas y guardadas en la carpeta 'assets/'.
-
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA gRPC
-==================================================
-Worker [192.168.98.143:8000] respondió: OK
-Worker [192.168.98.144:8000] respondió: OK
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED gRPC)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (gRPC) 
-==================================================
-Protocolo de Comunicación:     gRPC (Protobuf)
-Tiempo Total (s):              0.24 s
-Throughput (img/s):            8381.31
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    228.65 ms
-Tiempo T_proc Promedio (ms):   202.46 ms
-Pico Máx. RAM Worker (MB):     296.02 MB
-CPU Promedio (%):              197.60 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 2 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA gRPC
-==================================================
-Worker [192.168.98.143:8000] respondió: OK
-Worker [192.168.98.144:8000] respondió: OK
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED gRPC)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (gRPC) 
-==================================================
-Protocolo de Comunicación:     gRPC (Protobuf)
-Tiempo Total (s):              0.22 s
-Throughput (img/s):            8914.84
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    216.02 ms
-Tiempo T_proc Promedio (ms):   193.67 ms
-Pico Máx. RAM Worker (MB):     315.42 MB
-CPU Promedio (%):              198.75 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 3 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA gRPC
-==================================================
-Worker [192.168.98.143:8000] respondió: OK
-Worker [192.168.98.144:8000] respondió: OK
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED gRPC)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (gRPC) 
-==================================================
-Protocolo de Comunicación:     gRPC (Protobuf)
-Tiempo Total (s):              0.32 s
-Throughput (img/s):            6217.90
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    273.86 ms
-Tiempo T_proc Promedio (ms):   239.90 ms
-Pico Máx. RAM Worker (MB):     315.69 MB
-CPU Promedio (%):              171.90 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 4 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA gRPC
-==================================================
-Worker [192.168.98.143:8000] respondió: OK
-Worker [192.168.98.144:8000] respondió: OK
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED gRPC)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (gRPC) 
-==================================================
-Protocolo de Comunicación:     gRPC (Protobuf)
-Tiempo Total (s):              0.24 s
-Throughput (img/s):            8460.48
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    222.87 ms
-Tiempo T_proc Promedio (ms):   194.36 ms
-Pico Máx. RAM Worker (MB):     315.87 MB
-CPU Promedio (%):              198.15 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
-
-
-==================================================
- TEST RUN 5 (Prueba de Estrés)
-==================================================
-
-==================================================
-1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
-==================================================
--> Archivo 'best_model.pth' encontrado en caché.
-
-==================================================
-2. DISTRIBUYENDO EL MODELO VÍA gRPC
-==================================================
-Worker [192.168.98.143:8000] respondió: OK
-Worker [192.168.98.144:8000] respondió: OK
-
-==================================================
-3. INICIANDO BENCHMARK DE INFERENCIA (RED gRPC)
-==================================================
-
-==================================================
- RESULTADOS DE LA COMPARATIVA TÉCNICA (gRPC) 
-==================================================
-Protocolo de Comunicación:     gRPC (Protobuf)
-Tiempo Total (s):              0.24 s
-Throughput (img/s):            8504.20
-Tasa de Éxito (%):             100.0 %
-Latencia RTT Promedio (ms):    217.53 ms
-Tiempo T_proc Promedio (ms):   188.14 ms
-Pico Máx. RAM Worker (MB):     316.11 MB
-CPU Promedio (%):              196.60 %
-Payload Promedio por Nodo (MB): 2.99 MB
-==================================================
