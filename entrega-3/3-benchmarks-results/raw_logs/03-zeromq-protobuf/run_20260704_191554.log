@@ -1,0 +1,223 @@
+=== BENCHMARK COMPLETO | INICIO: 04/07/2026 19:15:54 ===
+
+--- MÉTRICAS DE INFRAESTRUCTURA ---
+  [OK] T_deploy total: 83.64 segundos
+  [OK] Nodo 192.168.98.143 - CPU Reposo (Global): 0% | RAM Reposo (Global): 714 MB
+  [OK] Nodo 192.168.98.143 - Tiempo Real Arranque: 406.98 ms
+  [OK] Nodo 192.168.98.144 - CPU Reposo (Global): 0% | RAM Reposo (Global): 731 MB
+  [OK] Nodo 192.168.98.144 - Tiempo Real Arranque: 505.67 ms
+
+
+==================================================
+ TEST RUN 1 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Descargando y preparando dataset MNIST (80% Train / 20% Val)...
+Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz to ./data/MNIST/raw/train-images-idx3-ubyte.gz
+  0%|          | 0/9912422 [00:00<?, ?it/s]  1%|          | 65536/9912422 [00:00<00:30, 323590.97it/s]  1%|▏         | 131072/9912422 [00:00<00:21, 452170.20it/s]  3%|▎         | 327680/9912422 [00:00<00:09, 995968.39it/s]  6%|▋         | 622592/9912422 [00:00<00:05, 1657727.03it/s] 13%|█▎        | 1277952/9912422 [00:00<00:02, 3236215.55it/s] 25%|██▍       | 2457600/9912422 [00:00<00:01, 5932195.69it/s] 36%|███▋      | 3604480/9912422 [00:00<00:00, 7642732.66it/s] 48%|████▊     | 4784128/9912422 [00:00<00:00, 8770379.71it/s] 58%|█████▊    | 5701632/9912422 [00:01<00:00, 6739585.35it/s] 78%|███████▊  | 7766016/9912422 [00:01<00:00, 10059202.44it/s] 97%|█████████▋| 9568256/9912422 [00:01<00:00, 9610436.63it/s] 100%|██████████| 9912422/9912422 [00:01<00:00, 6819910.89it/s]
+Extracting ./data/MNIST/raw/train-images-idx3-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
+  0%|          | 0/28881 [00:00<?, ?it/s]100%|██████████| 28881/28881 [00:00<00:00, 298107.52it/s]
+Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw/t10k-images-idx3-ubyte.gz
+  0%|          | 0/1648877 [00:00<?, ?it/s]  2%|▏         | 32768/1648877 [00:00<00:05, 281420.37it/s]  4%|▍         | 65536/1648877 [00:00<00:05, 283194.08it/s] 10%|▉         | 163840/1648877 [00:00<00:02, 540253.32it/s] 20%|█▉        | 327680/1648877 [00:00<00:01, 871120.50it/s] 42%|████▏     | 688128/1648877 [00:00<00:00, 1648614.80it/s] 81%|████████▏ | 1343488/1648877 [00:00<00:00, 3042609.87it/s]100%|██████████| 1648877/1648877 [00:00<00:00, 2266561.59it/s]
+Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
+  0%|          | 0/4542 [00:00<?, ?it/s]100%|██████████| 4542/4542 [00:00<00:00, 8819689.24it/s]
+Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
+
+-> Entrenando modelo...
+-> Evaluando modelo con datos de validación...
+
+--- MÉTRICAS DEL MODELO (IA) ---
+Precisión (Validation Accuracy): 97.93%
+Tiempo de entrenamiento:         8.30 s
+Peso del artefacto (.pth):       1.61 MB
+-> Gráficas generadas y guardadas en la carpeta 'assets/'.
+
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:8000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:8000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.23 s
+Throughput (img/s):            8690.83
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    226.98 ms
+Tiempo T_proc Promedio (ms):   212.43 ms
+Pico Máx. RAM Worker (MB):     289.29 MB
+CPU Promedio (%):              190.60 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 2 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:8000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:8000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.21 s
+Throughput (img/s):            9371.77
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    211.82 ms
+Tiempo T_proc Promedio (ms):   196.57 ms
+Pico Máx. RAM Worker (MB):     269.89 MB
+CPU Promedio (%):              198.40 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 3 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:8000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:8000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.21 s
+Throughput (img/s):            9321.01
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    208.99 ms
+Tiempo T_proc Promedio (ms):   195.24 ms
+Pico Máx. RAM Worker (MB):     269.89 MB
+CPU Promedio (%):              197.20 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 4 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:8000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:8000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.22 s
+Throughput (img/s):            9028.56
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    219.34 ms
+Tiempo T_proc Promedio (ms):   208.83 ms
+Pico Máx. RAM Worker (MB):     272.88 MB
+CPU Promedio (%):              196.30 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 5 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:8000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:8000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.21 s
+Throughput (img/s):            9325.01
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    212.47 ms
+Tiempo T_proc Promedio (ms):   198.89 ms
+Pico Máx. RAM Worker (MB):     272.88 MB
+CPU Promedio (%):              198.55 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
