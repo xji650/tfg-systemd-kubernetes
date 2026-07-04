@@ -58,7 +58,16 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     for IP in "${WORKER_IPS[@]}"; do
         CONTAINER_ID=$(ssh $WORKER_USER@$IP "podman ps -q --filter name=worker-mnist")
         if [ -n "$CONTAINER_ID" ]; then
-            ssh $WORKER_USER@$IP "podman stats --no-stream --format '  [OK] Nodo $IP - CPU Reposo: {{.CPUPerc}} | RAM Reposo: {{.MemUsage}}' $CONTAINER_ID" | tee -a "$LOG_FILE"
+            # --- NUEVA MEDICIÓN (Global del Sistema Operativo) ---
+            RAM_MB=$(ssh $WORKER_USER@$IP "free -m | awk '/^Mem:/{print \$3}'" 2>/dev/null)
+            CPU_PERCENT=$(ssh $WORKER_USER@$IP "vmstat 1 2 | tail -1 | awk '{print 100 - \$15}'" 2>/dev/null)
+            
+            RAM_MB=${RAM_MB:-0}
+            CPU_PERCENT=${CPU_PERCENT:-0}
+
+            echo "  [OK] Nodo $IP - CPU Reposo (Global): $CPU_PERCENT% | RAM Reposo (Global): $RAM_MB MB" | tee -a "$LOG_FILE"
+            
+            # --- CHAOS TESTING (Medir recuperación de Systemd) ---
             ssh $WORKER_USER@$IP "
                 START_REC=\$(date +%s.%N)
                 podman kill $CONTAINER_ID > /dev/null
@@ -108,9 +117,9 @@ def get_avg(filepath, pattern):
 
 # Extracción de Infraestructura
 t_deploy = get_avg(log_file, r"T_deploy total:\s*([0-9\.]+)")
-cpu_reposo = get_avg(log_file, r"CPU Reposo:\s*([0-9\.]+)%")
+cpu_reposo = get_avg(log_file, r"CPU Reposo \(Global\):\s*([0-9\.]+)%")
 # Podman suele devolver '15.2MB' o '15.2MiB', el regex coge el 15.2 perfecto
-ram_reposo = get_avg(log_file, r"RAM Reposo:\s*([0-9\.]+)")
+ram_reposo = get_avg(log_file, r"RAM Reposo \(Global\):\s*([0-9\.]+)")
 mttr = get_avg(log_file, r"Tiempo Real Arranque:\s*([0-9\.]+)")
 
 # Extracción de Red (Añadida la Tasa de Éxito)
