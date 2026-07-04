@@ -1,0 +1,178 @@
+=== BENCHMARK COMPLETO | INICIO: 04/07/2026 23:06:36 ===
+
+--- MÉTRICAS DE INFRAESTRUCTURA ---
+  [OK] T_deploy total: 96.44 segundos
+  [OK] Nodo node-b - CPU Reposo (Global): 0% | RAM Reposo (Global): 859 MB
+  [OK] Nodo node-b - Tiempo Real Arranque: 1242.04 ms
+  [OK] Nodo node-a - CPU Reposo (Global): 1% | RAM Reposo (Global): 863 MB
+  [OK] Nodo node-a - Tiempo Real Arranque: 1497.31 ms
+
+
+==================================================
+ TEST RUN 1 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.28 s
+Throughput (img/s):            7103.79
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    258.63 ms
+Tiempo T_proc Promedio (ms):   228.01 ms
+Pico Máx. RAM Worker (MB):     283.92 MB
+CPU Promedio (%):              189.75 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 2 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.39 s
+Throughput (img/s):            5093.04
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    296.39 ms
+Tiempo T_proc Promedio (ms):   184.42 ms
+Pico Máx. RAM Worker (MB):     268.92 MB
+CPU Promedio (%):              200.65 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 3 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.41 s
+Throughput (img/s):            4929.36
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    312.15 ms
+Tiempo T_proc Promedio (ms):   189.19 ms
+Pico Máx. RAM Worker (MB):     268.95 MB
+CPU Promedio (%):              200.80 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 4 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.42 s
+Throughput (img/s):            4707.53
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    329.09 ms
+Tiempo T_proc Promedio (ms):   199.94 ms
+Pico Máx. RAM Worker (MB):     265.66 MB
+CPU Promedio (%):              200.05 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 5 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ + MSGPACK
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ + MSGPACK)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ + MessagePack) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (MessagePack)
+Tiempo Total (s):              0.23 s
+Throughput (img/s):            8596.43
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    228.28 ms
+Tiempo T_proc Promedio (ms):   209.22 ms
+Pico Máx. RAM Worker (MB):     268.65 MB
+CPU Promedio (%):              196.00 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================

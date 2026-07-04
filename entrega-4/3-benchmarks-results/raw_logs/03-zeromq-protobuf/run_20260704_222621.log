@@ -1,0 +1,178 @@
+=== BENCHMARK COMPLETO | INICIO: 04/07/2026 22:26:21 ===
+
+--- MÉTRICAS DE INFRAESTRUCTURA ---
+  [OK] T_deploy total: 106.08 segundos
+  [OK] Nodo node-a - CPU Reposo (Global): 4% | RAM Reposo (Global): 848 MB
+  [OK] Nodo node-a - Tiempo Real Arranque: 1818.3 ms
+  [OK] Nodo node-b - CPU Reposo (Global): 1% | RAM Reposo (Global): 824 MB
+  [OK] Nodo node-b - Tiempo Real Arranque: 1192.63 ms
+
+
+==================================================
+ TEST RUN 1 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.42 s
+Throughput (img/s):            4732.33
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    329.63 ms
+Tiempo T_proc Promedio (ms):   202.42 ms
+Pico Máx. RAM Worker (MB):     286.75 MB
+CPU Promedio (%):              195.50 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 2 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.44 s
+Throughput (img/s):            4512.47
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    355.38 ms
+Tiempo T_proc Promedio (ms):   211.92 ms
+Pico Máx. RAM Worker (MB):     290.98 MB
+CPU Promedio (%):              181.10 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 3 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.23 s
+Throughput (img/s):            8522.32
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    222.68 ms
+Tiempo T_proc Promedio (ms):   198.53 ms
+Pico Máx. RAM Worker (MB):     267.02 MB
+CPU Promedio (%):              198.90 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 4 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.22 s
+Throughput (img/s):            9020.67
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    220.33 ms
+Tiempo T_proc Promedio (ms):   193.87 ms
+Pico Máx. RAM Worker (MB):     267.02 MB
+CPU Promedio (%):              201.10 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 5 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA ZEROMQ
+==================================================
+Worker [tcp://192.168.98.143:30000] respondió: OK - Modelo cargado
+Worker [tcp://192.168.98.144:30000] respondió: OK - Modelo cargado
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED ZEROMQ)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (ZeroMQ) 
+==================================================
+Protocolo de Comunicación:     ZeroMQ (Protobuf)
+Tiempo Total (s):              0.23 s
+Throughput (img/s):            8538.63
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    226.72 ms
+Tiempo T_proc Promedio (ms):   196.40 ms
+Pico Máx. RAM Worker (MB):     267.52 MB
+CPU Promedio (%):              196.00 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
