@@ -64,21 +64,20 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
         # Descubrimos en qué nodo está corriendo este pod
         NODE_NAME=$(kubectl get pod $POD_NAME -o jsonpath='{.spec.nodeName}')
         
-        # A) Extraer RAM y CPU (Sustituye a podman stats)
-        # K3s devuelve RAM en Mi y CPU en milicores (ej. 5m). Lo pasamos a % para tu CSV.
-        METRICS=$(kubectl top pod $POD_NAME --no-headers 2>/dev/null)
-        if [ -n "$METRICS" ]; then
-            CPU_M=$(echo $METRICS | awk '{print $2}' | sed 's/m//')
-            RAM_MI=$(echo $METRICS | awk '{print $3}' | sed 's/Mi//')
-            CPU_M=${CPU_M:-0}
-            RAM_MI=${RAM_MI:-0}
-            CPU_PERCENT=$(python3 -c "print(round($CPU_M / 10.0, 2))")
-            
-            echo "  [OK] Nodo $NODE_NAME - CPU Reposo: $CPU_PERCENT% | RAM Reposo: $RAM_MI" | tee -a "$LOG_FILE"
-        else
-            echo "  [WARN] Métricas no disponibles para $POD_NAME." | tee -a "$LOG_FILE"
-            echo "  [OK] Nodo $NODE_NAME - CPU Reposo: 0.0% | RAM Reposo: 0.0" | tee -a "$LOG_FILE"
-        fi
+        # A) Extraer RAM y CPU del NODO COMPLETO (Sustituye a kubectl top / podman stats)
+        # Hacemos la consulta directa al sistema operativo por SSH
+        
+        # NOTA: Asegúrate de que NODE_NAME se resuelve en tu red (ej. 'node-a' o la IP)
+        # Si NODE_NAME es solo el nombre, puedes mapearlo a la IP si tu SSH lo necesita.
+        
+        RAM_MB=$(ssh littledragon@$NODE_NAME "free -m | awk '/^Mem:/{print \$3}'" 2>/dev/null)
+        CPU_PERCENT=$(ssh littledragon@$NODE_NAME "vmstat 1 2 | tail -1 | awk '{print 100 - \$15}'" 2>/dev/null)
+        
+        # Validaciones de seguridad por si falla el SSH
+        RAM_MB=${RAM_MB:-0}
+        CPU_PERCENT=${CPU_PERCENT:-0}
+
+        echo "  [OK] Nodo $NODE_NAME - CPU Reposo (Global): $CPU_PERCENT% | RAM Reposo (Global): $RAM_MB MB" | tee -a "$LOG_FILE"
 
         # B) Chaos Testing: Medir el MTTR (Sustituye a podman kill + systemctl)
         START_REC=$(date +%s.%N)
@@ -143,8 +142,8 @@ def get_avg(filepath, pattern):
 
 # Extracción de Infraestructura
 t_deploy = get_avg(log_file, r"T_deploy total:\s*([0-9\.]+)")
-cpu_reposo = get_avg(log_file, r"CPU Reposo:\s*([0-9\.]+)%")
-ram_reposo = get_avg(log_file, r"RAM Reposo:\s*([0-9\.]+)")
+cpu_reposo = get_avg(log_file, r"CPU Reposo \(Global\):\s*([0-9\.]+)%")
+ram_reposo = get_avg(log_file, r"RAM Reposo \(Global\):\s*([0-9\.]+)")
 mttr = get_avg(log_file, r"Tiempo Real Arranque:\s*([0-9\.]+)")
 
 # Extracción de Red
