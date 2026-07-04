@@ -1,0 +1,208 @@
+=== BENCHMARK COMPLETO | INICIO: 04/07/2026 21:35:37 ===
+
+--- MÉTRICAS DE INFRAESTRUCTURA ---
+  [OK] T_deploy total: 192.54 segundos
+  [OK] Nodo 192.168.98.143 - CPU Reposo (Global): 0% | RAM Reposo (Global): 742 MB
+  [OK] Nodo 192.168.98.143 - Tiempo Real Arranque: 476.16 ms
+  [OK] Nodo 192.168.98.144 - CPU Reposo (Global): 0% | RAM Reposo (Global): 738 MB
+  [OK] Nodo 192.168.98.144 - Tiempo Real Arranque: 529.11 ms
+
+
+==================================================
+ TEST RUN 1 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.81 s
+Throughput (img/s):            2460.39
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    425.75 ms
+Tiempo T_proc Promedio (ms):   411.14 ms
+Pico Máx. RAM Worker (MB):     337.57 MB
+CPU Promedio (%):              143.70 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 2 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.80 s
+Throughput (img/s):            2498.87
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    424.69 ms
+Tiempo T_proc Promedio (ms):   407.51 ms
+Pico Máx. RAM Worker (MB):     378.53 MB
+CPU Promedio (%):              142.35 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 3 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.76 s
+Throughput (img/s):            2643.53
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    386.94 ms
+Tiempo T_proc Promedio (ms):   376.12 ms
+Pico Máx. RAM Worker (MB):     318.89 MB
+CPU Promedio (%):              144.90 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 4 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.79 s
+Throughput (img/s):            2527.47
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    393.52 ms
+Tiempo T_proc Promedio (ms):   378.50 ms
+Pico Máx. RAM Worker (MB):     319.72 MB
+CPU Promedio (%):              146.60 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
+
+
+==================================================
+ TEST RUN 5 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+-> Saltando fase de entrenamiento para aislar métricas de red.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO A LOS WORKERS EDGE
+==================================================
+Worker [192.168.98.143] respondió: Modelo recibido y cargado con éxito
+Worker [192.168.98.144] respondió: Modelo recibido y cargado con éxito
+
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED HTTP)
+==================================================
+-> Cargando dataset MNIST de pruebas (vía PyTorch)...
+-> Lanzando inferencia distribuida en 2 nodos Edge...
+
+-> Mosaico '10_ejemplos_predicciones.png' generado con imágenes aleatorias.
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (RED/SYS) 
+==================================================
+Protocolo de Comunicación:     HTTP/REST (JSON)
+Tiempo Total (s):              0.81 s
+Throughput (img/s):            2484.05
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    417.57 ms
+Tiempo T_proc Promedio (ms):   406.77 ms
+Pico Máx. RAM Worker (MB):     319.96 MB
+CPU Promedio (%):              140.10 %
+Payload Promedio por Nodo (MB): 15.59 MB
+==================================================
