@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package mnist;
+
+// En ZeroMQ no usamos 'service', gestionamos el enrutamiento manualmente.
+// Solo definimos las estructuras de datos (mensajes).
+
+message ModelRequest {
+    bytes model_data = 1; 
+}
+
+message ModelResponse {
+    string message = 1;
+}
+
+message BatchRequest {
+    int32 batch_id = 1;
+    bytes image_data = 2; 
+}
+
+message BatchResponse {
+    int32 batch_id = 1;
+    repeated int32 predictions = 2; // Predicciones de la IA
+    string status = 3;
+    float ram_usage = 4;
+    float cpu_usage = 5;
+    float t_proc_ms = 6;
+}

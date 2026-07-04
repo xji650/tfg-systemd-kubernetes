@@ -1,0 +1,44 @@
+---
+
+# ---------------------------------------------------------
+# 1. CONSTRUCCIÓN CENTRALIZADA Y EMPAQUETADO (Nodo de Control)
+# ---------------------------------------------------------
+- name: Construir y empaquetar imagen (Ejecutado solo en el Maestro)
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Construir la imagen del Worker localmente
+    command: "podman build --cgroup-manager=cgroupfs -t localhost/worker-mnist:v1 {{ experimento_path }}/"
+
+  - name: Eliminar artefacto .tar previo
+    file:
+      path: /tmp/worker-mnist.tar
+      state: absent
+
+  - name: Guardar la imagen en un artefacto .tar
+    command: "podman save -o /tmp/worker-mnist.tar localhost/worker-mnist:v1"
+
+# ---------------------------------------------------------
+# 2. DISTRIBUCIÓN EDGE (Workers)
+# ---------------------------------------------------------
+- name: Distribución edge a K3s
+  hosts: workers
+  tasks:
+  - name: Transferir la imagen empaquetada a los nodos perimetrales
+    copy:
+      src: "/tmp/worker-mnist.tar"
+      dest: "/tmp/worker-mnist.tar"
+
+  - name: Cargar la imagen en el motor de contenedores de K3s
+    become: yes
+    command: "k3s ctr images import /tmp/worker-mnist.tar"
+
+# ---------------------------------------------------------
+# 3. DESPLIEGUE DEL WORKER MNIST EN K3S
+# ---------------------------------------------------------
+- name: Desplegar Worker MNIST en el clúster
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Aplicar manifiesto de Kubernetes
+    command: "kubectl apply -f k8s-manifests/worker-app.yaml"

@@ -1,0 +1,33 @@
+---
+# ==========================================================
+# JUGADA 1: Tareas que solo debe hacer tu ordenador
+# ==========================================================
+- name: Limpieza de la Orquestación (Localhost)
+  hosts: localhost    # <--- Solo afecta a tu PC
+  tasks:
+    - name: Eliminar DaemonSet y Service de K3s
+      command: "kubectl delete -f k8s-manifests/worker-app.yaml"
+      ignore_errors: yes
+
+    - name: Eliminar artefacto .tar en el master
+      file:
+        path: "/tmp/worker-mnist.tar"
+        state: absent
+      ignore_errors: yes
+
+# ==========================================================
+# JUGADA 2: Tareas que solo deben hacer las Raspberrys/VMs
+# ==========================================================
+- name: Limpieza profunda en los Nodos Edge
+  hosts: workers      # <--- Solo afecta a node-a y node-b
+  become: yes         # <--- Todos usarán la contraseña automáticamente
+  tasks:
+    - name: Eliminar artefacto .tar en el worker
+      file:
+        path: "/tmp/worker-mnist.tar"
+        state: absent
+      ignore_errors: yes
+
+    - name: Forzar borrado de la imagen en containerd
+      command: "k3s ctr images rm localhost/worker-mnist:v1"
+      ignore_errors: yes

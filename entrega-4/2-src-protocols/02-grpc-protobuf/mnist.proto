@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package mnist;
+
+// En grpc SÍ usamos 'service', gestionamos el enrutamiento manualmente.
+
+service MnistService {
+    // Fase 1: Despliegue del modelo
+    rpc UploadModel (ModelRequest) returns (ModelResponse);
+    // Fase 2: Inferencia de imágenes
+    rpc Procesar (BatchRequest) returns (BatchResponse);
+}
+
+// Y tambien definimos las estructuras de datos (mensajes).
+
+message ModelRequest {
+    bytes model_data = 1; 
+}
+
+message ModelResponse {
+    string message = 1;
+}
+
+message BatchRequest {
+    int32 batch_id = 1;
+    bytes image_data = 2; 
+}
+
+message BatchResponse {
+    int32 batch_id = 1;
+    repeated int32 predictions = 2; // Ahora devolvemos las predicciones de la IA
+    string status = 3;
+    float ram_usage = 4;
+    float cpu_usage = 5;
+    float t_proc_ms = 6;
+}

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: DaemonSet # <-- Cambiado a DaemonSet
+metadata:
+  name: worker-mnist
+spec:
+  # replicas: 2 <-- ELIMINADO
+  selector:
+    matchLabels:
+      app: worker-mnist
+  template:
+    metadata:
+      labels:
+        app: worker-mnist
+    spec:
+      # Le dice que solo se instale en los nodos que NO son el master
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/master
+                operator: DoesNotExist
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+      containers:
+      - name: worker
+        image: localhost/worker-mnist:v1
+        imagePullPolicy: Never # IMPORTANTE: Le dice a K3s que no busque en internet
+        ports:
+        - containerPort: 8000 # Definido en tu variable web_port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicio-worker-mnist
+spec:
+  type: NodePort
+  selector:
+    app: worker-mnist
+  ports:
+  - port: 8000
+    targetPort: 8000
+    nodePort: 30000 # Mapea al exterior en todos los nodos
