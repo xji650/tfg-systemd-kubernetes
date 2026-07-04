@@ -61,17 +61,22 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     PODS=$(kubectl get pods -l app=worker-mnist -o custom-columns=":metadata.name" --no-headers)
 
     for POD_NAME in $PODS; do
-        # Descubrimos en qué nodo está corriendo este pod
+        # Obtenemos el nombre que K3s le da al nodo
         NODE_NAME=$(kubectl get pod $POD_NAME -o jsonpath='{.spec.nodeName}')
         
-        # A) Extraer RAM y CPU del NODO COMPLETO (Sustituye a kubectl top / podman stats)
-        # Hacemos la consulta directa al sistema operativo por SSH
-        
-        # NOTA: Asegúrate de que NODE_NAME se resuelve en tu red (ej. 'node-a' o la IP)
-        # Si NODE_NAME es solo el nombre, puedes mapearlo a la IP si tu SSH lo necesita.
-        
-        RAM_MB=$(ssh littledragon@$NODE_NAME "free -m | awk '/^Mem:/{print \$3}'" 2>/dev/null)
-        CPU_PERCENT=$(ssh littledragon@$NODE_NAME "vmstat 1 2 | tail -1 | awk '{print 100 - \$15}'" 2>/dev/null)
+        # --- TRADUCTOR DE NOMBRE A IP ---
+        TARGET_IP=""
+        if [[ "$NODE_NAME" == *"node-a"* ]]; then
+            TARGET_IP="192.168.98.143"
+        elif [[ "$NODE_NAME" == *"node-b"* ]]; then
+            TARGET_IP="192.168.98.144"
+        else
+            TARGET_IP="$NODE_NAME" # Por si acaso
+        fi
+
+        # A) Extraer RAM y CPU usando la IP REAL
+        RAM_MB=$(ssh littledragon@$TARGET_IP "free -m | awk '/^Mem:/{print \$3}'" 2>/dev/null)
+        CPU_PERCENT=$(ssh littledragon@$TARGET_IP "vmstat 1 2 | tail -1 | awk '{print 100 - \$15}'" 2>/dev/null)
         
         # Validaciones de seguridad por si falla el SSH
         RAM_MB=${RAM_MB:-0}
