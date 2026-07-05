@@ -3,7 +3,7 @@ import os
 from collections import defaultdict
 
 # Rutas de archivos
-CSV_PATH = "resultados-globales.csv"
+CSV_PATH = "resultados_globales.csv"
 MD_OUTPUT = "resultados-tablas.md"
 
 if not os.path.exists(CSV_PATH):
