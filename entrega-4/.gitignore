@@ -3,3 +3,5 @@ workers.yml
 data/
 *.pth
 *.eps
+
+notas.md
