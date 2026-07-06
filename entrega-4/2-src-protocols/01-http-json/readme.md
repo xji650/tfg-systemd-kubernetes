@@ -16,20 +16,23 @@ El nodo central (`master.py`) actúa con una doble responsabilidad (Científico 
 ![Train loss curve](assets/loss-curve.png)
 ![Matriz de confusión](assets/matriz-confusion.png)
 
-* **Fase 2: Distribución del Modelo (Upload):** Actúa como un servidor de despliegue, inyectando el modelo ya entrenado directamente en la memoria RAM de los nodos Workers mediante peticiones HTTP POST (envío de archivos binarios).
+* **Fase 2: Distribución del Modelo (Upload):** Actúa como un servidor de despliegue, inyectando el modelo ya entrenado directamente en la memoria RAM de los nodos Workers mediante peticiones HTTP POST dirigidas al puerto externo `30000` del clúster.
 
 * **Fase 3: Partición y Serialización:** Divide las imágenes de prueba en fragmentos (*chunks*). Antes de iniciar la transmisión, el Master transforma los tensores matemáticos a listas de texto estructurado (`json.dumps()`). Esta operación se ejecuta **fuera del cronómetro de latencia**, garantizando que el RTT mida estrictamente el tiempo de red y procesamiento.
 
 * **Fase 4: Concurrencia de Red y Validación visual:** Implementa un `ThreadPoolExecutor` para lanzar las inferencias en paralelo. Al finalizar, recolecta las métricas de los contenedores y genera un mosaico visual (`ejemplos-predicciones-http.png`) cruzando las predicciones devueltas por el Worker con las etiquetas reales.
 ![Ejemplo de predicción](assets/ejemplos-predicciones-http.png)
 
-### 2. Los Nodos Perimetrales (Workers)
+### 2. Los Nodos Perimetrales (Workers en K3s)
 
-Los dispositivos del clúster ejecutan contenedores *rootless* gestionados por Quadlets de Systemd, que actúan como motores de inferencia.
+Los dispositivos del clúster ejecutan Pods gestionados por Kubernetes (K3s), que actúan como motores de inferencia.
 
-* **Framework API Asíncrono:** Cada contenedor expone un servidor ASGI (`Uvicorn`) orquestado por `FastAPI`.
+* **Framework API Asíncrono:** Cada Pod expone un servidor ASGI (`Uvicorn`) orquestado por `FastAPI` que escucha internamente en el puerto `8000`. Kubernetes enruta el tráfico hacia estos Pods exponiendo el servicio al exterior a través de un `NodePort` en el puerto `30000`.
+
 * **Carga Dinámica del Modelo:** A través del endpoint `/upload_model`, el Worker recibe el archivo `.pth`, lo guarda físicamente y carga los "conocimientos" en la estructura de su propia CNN, poniéndola en modo evaluación (`model.eval()`).
+
 * **Inferencia y Deserialización (El Cuello de Botella Híbrido):** La ruta `/procesar` asume un doble castigo computacional. Primero, la enorme ineficiencia de reconstruir un objeto JSON a diccionarios de Python (`await request.json()`). Segundo, la conversión de esos datos a tensores para atravesar las capas ocultas de PyTorch (`model(imagenes_tensor)`). Esto genera un cambio de paradigma empírico: el sistema pasa de estar limitado por la red (*I/O Bound*) a estar limitado por el hardware Edge (*Compute Bound*).
+
 * **Telemetría de Alta Precisión In-situ:** Utilizando `psutil` con limpieza de buffer (`cpu_percent(interval=None)`), el Worker aísla la medición de CPU y RAM justo después del esfuerzo matemático (`torch.no_grad()`). Cronometra los milisegundos exactos invertidos ($T_{proc}$) y empaqueta las métricas en la respuesta JSON para el Master.
 
 ## Protocolo y Formato de Serialización
@@ -39,15 +42,15 @@ Esta iteración fuerza el uso de tecnologías web tradicionales en un entorno de
 * **Capa de Transporte (HTTP/1.1):** La comunicación se realiza mediante peticiones HTTP estándar (`requests`). Esto introduce latencia inherente debido a la negociación de cabeceras y conexiones individuales.
 * **Capa de Serialización (JSON):** El formato de intercambio es texto plano. Al no soportar transmisión binaria nativa (como Protobuf o MessagePack), el envío de matrices de píxeles exige convertirlas a inmensas cadenas de texto. Esta limitación del estándar web infla el tamaño del payload de red de forma drástica (penalización de ancho de banda) y ahoga la CPU de los Workers en el *parsing* asíncrono antes de que la IA pueda siquiera empezar a predecir.
 
-## Despliegue con Ansible
+## Despliegue con Ansible y Kubernetes
 
-La infraestructura se aprovisiona mediante Ansible, inyectando el código de los Workers en contenedores basados en `python:3.11-slim`. Para desplegar este protocolo específico, puedes configurar el inventario por defecto o inyectar la variable de ruta en tiempo de ejecución:
+La infraestructura se aprovisiona mediante Ansible, inyectando manifiestos YAML de Kubernetes que despliegan los Workers basados en `python:3.11-slim`. Para desplegar este protocolo específico, puedes inyectar la variable de ruta en tiempo de ejecución:
 
 ```bash
-# Por defecto configurado en inventario de Ansible
-ansible-playbook -i inventory.ini playbook.yml
+# Limpiar el clúster antes del despliegue (Recomendado)
+ansible-playbook -i inventory.ini clean.yml
 
-# O inyectando la variable dinámicamente
+# Desplegar inyectando la variable dinámicamente
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/01-http-json"
 ```
 
@@ -69,34 +72,29 @@ pip install torch torchvision numpy matplotlib seaborn scikit-learn requests
 Asegúrate de que la variable `experimento_path` apunta a la carpeta de HTTP (`../2-src-protocols/01-http-json`).
 
 ```bash
-# 1. Limpiar cualquier rastro previo de otros protocolos (Recomendado)
+# 1. Limpiar recursos previos del clúster K3s
 ansible-playbook -i inventory.ini clean.yml
 
-# 2. Desplegar y arrancar el clúster inyectando el código HTTP
+# 2. Compilar, distribuir e inyectar el código HTTP en Kubernetes
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/01-http-json"
 ```
 
-*(Nota: Al incluir dependencias pesadas como PyTorch en el Dockerfile, el `T_deploy` inicial será mayor de lo habitual mientras se compila la imagen en los nodos).*
+### 3. Verificación en el Clúster K3s
 
-### 3. Verificación en los Nodos (Workers)
-
-Si quieres comprobar que los contenedores están corriendo bajo Systemd (modo *rootless*) y que Uvicorn está escuchando correctamente:
+Para comprobar que los Pods de inferencia están corriendo correctamente en Kubernetes y están listos para recibir tráfico, usa los comandos nativos desde tu nodo Master:
 
 ```bash
-# Conectarse a uno de los nodos (ej. node-a)
-ssh littledragon@192.168.98.143
+# Ver el estado de los Pods (deberían estar en estado 'Running' y 'Ready')
+kubectl get pods -o wide
 
-# Ver el estado del servicio
-systemctl --user status worker.service
-
-# Ver logs en tiempo real (útil para ver las métricas de inferencia in-situ)
-journalctl --user -u worker.service -f
+# Ver los logs en tiempo real de todos los workers a la vez
+kubectl logs -l app=worker-mnist -f
 ```
 
 ### 4. Ejecución del Experimento (Master)
 
-Una vez que los Workers estén en ejecución, lanza el script principal desde el orquestador.
-El script entrenará el modelo (o usará la caché), lo enviará a los nodos, someterá el clúster a inferencia y creará las evidencias en la carpeta `/assets`.
+Una vez que los Workers estén listos, lanza el script principal desde el orquestador.
+El script entrenará el modelo (o usará la caché), lo enviará a los nodos a través del servicio NodePort, someterá el clúster a inferencia y creará las evidencias en la carpeta `/assets`.
 
 ```bash
 python master.py

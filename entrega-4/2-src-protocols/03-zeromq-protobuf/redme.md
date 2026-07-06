@@ -16,7 +16,7 @@ El script central actúa como cliente de red puro, inyectando los datos directam
 ![Train loss curve](assets/loss-curve.png)
 ![Matriz de confusión](assets/matriz-confusion.png)
 
-* **Fase 2: Distribución del Modelo (Upload ZMQ):** Instancia un `zmq.Context()` y utiliza sockets `zmq.REQ`. A diferencia de gRPC, aquí se utiliza un envío multiparte (`send_multipart`) empaquetando el identificador `b"UPLOAD"` junto con los bytes crudos del modelo para transferir el cerebro de la IA a los nodos.
+* **Fase 2: Distribución del Modelo (Upload ZMQ):** Instancia un `zmq.Context()` y utiliza sockets `zmq.REQ`. A diferencia de gRPC, aquí se utiliza un envío multiparte (`send_multipart`) empaquetando el identificador `b"UPLOAD"` junto con los bytes crudos del modelo para transferir el cerebro de la IA a los nodos a través del puerto externo `30000` del clúster K3s.
 
 * **Fase 3: Conversión Binaria Nativa (Zero-Copy):** Reutilizando el contrato Protobuf (`BatchRequest`), el Master transforma las matrices `float32` de NumPy en una cadena de bytes pura (`SerializeToString()`) antes de iniciar la transmisión.
 
@@ -28,19 +28,18 @@ El script central actúa como cliente de red puro, inyectando los datos directam
 El intercambio de datos sigue regido por `mnist.proto`. Sin embargo, dado que operamos en ZeroMQ, no se utilizan directivas `service`. Solo definimos las estructuras de datos (mensajes), aislando la estructura del transporte.
 
 * **Payload de Petición:** Transmisión pura mediante `bytes image_data`.
-
-
 * **Payload de Respuesta:** Incluye telemetría y el vector con las predicciones de la IA (`repeated int32 predictions`).
 
+### 3. Los Nodos Perimetrales (Workers en K3s)
 
+Los dispositivos del clúster ejecutan Pods gestionados por Kubernetes (K3s), que mantienen un bucle de escucha asíncrono gestionado nativamente por `pyzmq`.
 
-### 3. Los Nodos Perimetrales (Workers)
+* **Socket Bind (REP) y Enrutamiento:** El servidor mapea un socket `zmq.REP` internamente al puerto `8000`. Kubernetes enruta el tráfico hacia estos Pods exponiendo el servicio al exterior a través de un `NodePort` en el puerto `30000`. Al recibir mensajes, lee el primer *frame* (`b"UPLOAD"` o `b"INFER"`) para enrutar la lógica internamente, eliminando el *overhead* de los servidores web tradicionales.
 
-Los contenedores *rootless* ejecutan un bucle de escucha asíncrono gestionado nativamente por `pyzmq`.
-
-* **Socket Bind (REP) y Enrutamiento:** El servidor mapea un socket `zmq.REP` al puerto 8000. Al recibir mensajes, lee el primer *frame* (`b"UPLOAD"` o `b"INFER"`) para enrutar la lógica internamente, eliminando el *overhead* de los servidores web tradicionales.
 * **Carga Dinámica en RAM:** Si el comando es `UPLOAD`, el Worker reconstruye el objeto `ModelRequest`, guarda el binario `.pth` y lo inyecta en la estructura neuronal de PyTorch (`model.eval()`).
+
 * **Zero-Parsing y Cálculo Matemático:** Al recibir el comando `INFER`, el tensor se mapea instantáneamente en memoria utilizando `np.frombuffer(..., dtype=np.float32)`. Esto permite que la CPU dedique el 100% de sus ciclos al procesamiento de la IA (`torch.no_grad()`) sin sufrir cuellos de botella por deserialización de red.
+
 * **Telemetría Nativa:** Tras realizar la limpieza del buffer del procesador (`cpu_percent(interval=None)`), el Worker evalúa su consumo exacto de RAM y CPU y empaqueta la respuesta en la estructura `BatchResponse`.
 
 ## Protocolo: Desacoplamiento de Transporte y Serialización
@@ -48,11 +47,12 @@ Los contenedores *rootless* ejecutan un bucle de escucha asíncrono gestionado n
 Esta arquitectura demuestra un principio fundamental de ingeniería en sistemas distribuidos MLOps: **la separación de responsabilidades**.
 
 * **Capa de Transporte (TCP Crudo / ZeroMQ):** Se encarga exclusivamente de mover los bytes con la latencia más baja posible, sin cabeceras HTTP y sin negociación de rutas.
+
 * **Capa de Serialización (Protobuf):** Garantiza que ambos extremos hablen el mismo "idioma" binario, conservando el tipado fuerte sin requerir el pesado motor de red original de Google.
 
-## Despliegue con Ansible
+## Despliegue con Ansible y Kubernetes
 
-Para la construcción de la imagen, la inyección de código se optimiza. Al no requerir el motor de red de gRPC, el despliegue es más directo.
+Para la construcción de la imagen, la inyección de código se optimiza. Al no requerir el motor de red de gRPC, la imagen se compila, se distribuye y se inyecta dinámicamente en el clúster de K3s mediante manifiestos YAML.
 
 ```bash
 # Desplegar inyectando la ruta de ZeroMQ + Protobuf
@@ -80,31 +80,28 @@ python3 -m grpc_tools.protoc -I. --python_out=. mnist.proto
 Asegúrate de inyectar la variable de ruta para que Ansible tome los archivos de la carpeta correspondiente a esta implementación.
 
 ```bash
-# 1. Limpieza de contenedores previos
+# 1. Limpieza de recursos previos del clúster K3s
 ansible-playbook -i inventory.ini clean.yml
 
-# 2. Despliegue de la imagen de ZeroMQ
+# 2. Compilar, distribuir e inyectar el código de ZeroMQ en Kubernetes
 ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/03-zeromq-protobuf"
 ```
 
-### 3. Verificación en los Nodos (Workers)
+### 3. Verificación en el Clúster K3s
 
-Conéctate por SSH a los nodos Edge para validar que el servicio de Systemd está levantado y el socket de ZMQ está a la escucha de peticiones.
+Para comprobar que los Pods de inferencia ZeroMQ están corriendo correctamente en Kubernetes y el socket está a la escucha, usa los comandos nativos desde tu nodo Master:
 
 ```bash
-# Conectarse al nodo
-ssh littledragon@192.168.98.143
+# Ver el estado de los Pods (deberían estar en estado 'Running' y 'Ready')
+kubectl get pods -o wide
 
-# Ver el estado del servicio gestionado por Systemd
-systemctl --user status worker.service
-
-# Ver logs (debe indicar "Iniciando Worker Edge IA (ZeroMQ/Protobuf) en puerto 8000...")
-journalctl --user -u worker.service -f
+# Ver los logs en tiempo real de todos los workers a la vez
+kubectl logs -l app=worker-mnist -f
 ```
 
 ### 4. Ejecución del Experimento (Master)
 
-Con los Workers listos, ejecuta el archivo principal en la máquina de control para iniciar el entrenamiento, distribuir el modelo e inyectar los arrays a través del túnel TCP multiparte. 
+Con los Workers listos, ejecuta el archivo principal en la máquina de control para iniciar el entrenamiento, distribuir el modelo e inyectar los arrays a través del túnel TCP multiparte gestionado por el servicio NodePort.
 
 ```bash
 python master.py
