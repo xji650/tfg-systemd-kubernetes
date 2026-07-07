@@ -24,6 +24,7 @@ flowchart TD
     %% FASE 1: Aprovisionamiento
     Ansible -- "Fase 1 SSH: 
     Despliega Podman y Quadlets" --> Hijo1
+    
     Ansible -- "Fase 1 SSH: 
     Despliega Podman y Quadlets" --> Hijo2
 
