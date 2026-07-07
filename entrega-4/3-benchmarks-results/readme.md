@@ -1,24 +1,43 @@
-# Benchmarks Results
+# Resultados y Análisis de Benchmarking
 
-Esta carpeta contiene la infraestructura de datos y el análisis técnico consolidado de la comparativa de protocolos (HTTP, gRPC, ZeroMQ) realizada sobre el clúster Edge.
+Este directorio contiene los datos estructurados, los scripts de procesamiento y el análisis técnico de la comparativa de protocolos de red desplegados sobre el clúster Edge de **Kubernetes (K3s)**.
+
+Los datos almacenados recogen la evaluación de rendimiento bajo estrés de cuatro implementaciones arquitectónicas:
+1. HTTP/1.1 con JSON
+2. gRPC con Protocol Buffers
+3. ZeroMQ (TCP) con Protocol Buffers
+4. ZeroMQ (TCP) con MessagePack
 
 ## Estructura del Directorio
-* `raw_logs/`: Directorio raíz de los archivos `.log` crudos generados por el clúster durante los experimentos.
-* `visualizations/`: Gráficas comparativas resultantes del análisis de rendimiento generadas por `generate_graphs.py`.
-* `calculate_benchmarks_avg.py`: Script de procesamiento que calcula las medias históricas y genera el archivo de tablas `resultados_tablas.md`.
-* `generate_graphs.py`: Script que genera las gráficas de rendimiento y son guardados en `visualizations/`.
-* `resultados_globales.csv`: Dataset consolidado tras procesar los logs.
-* `resultados_tablas.md`: Reporte generado por `calculate_benchmarks_avg.py` con las tablas de métricas en formato Markdown.
-* `benchmarks-analisis.md`: Informe de analisis y comparativa de métricas de los diferentes protocolos con su correspondiente seriarización.
-* `readme.md`: Información general este directorio.
 
+* `raw_logs/`: Contiene los archivos `.log` crudos generados por los scripts de automatización durante las pruebas de carga.
 
+* `visualizations/`: Directorio de salida para las gráficas comparativas de rendimiento generadas a partir del histórico de datos.
+
+* `calculate_benchmarks_avg.py`: Script de procesamiento que lee el archivo CSV, calcula las medias históricas y genera el documento Markdown de resultados.
+
+* `generate_graphs.py`: Script de visualización que transforma el dataset en gráficas utilizando las librerías `pandas` y `seaborn`.
+
+* `resultados_globales.csv`: Dataset consolidado. Almacena las métricas de red y el consumo de infraestructura (CPU y RAM a nivel de Sistema Operativo).
+
+* `resultados-tablas.md`: Documento autogenerado con las tablas de métricas agregadas por protocolo.
+
+* `benchmarks-analisis.md`: Informe técnico que interpreta las métricas, justifica la metodología de medición y expone las conclusiones de la comparativa.
+
+* `README.md`: Este documento de referencia y guía de uso.
 
 ## Ejecución del Análisis
-Para regenerar los resultados a partir de los logs crudos, ejecuta:
+
+Para recalcular las medias y regenerar las visualizaciones tras registrar nuevos datos en el archivo `resultados_globales.csv`, se deben ejecutar los siguientes comandos:
+
 ```bash
+# 1. Instalar dependencias de procesamiento de datos (si no están presentes)
+pip install pandas matplotlib seaborn
+
+# 2. Generar el reporte de tablas actualizadas (resultados-tablas.md)
 python3 calculate_benchmarks_avg.py
+
+# 3. Renderizar las gráficas comparativas en el directorio /visualizations
 python3 generate_graphs.py
 ```
 ---
-
