@@ -1,163 +1,136 @@
-# Entrega 4
+# Guía Práctica de Despliegue y Demostración: Kubernetes (K3s)
 
-![Podman](https://img.shields.io/badge/Podman-Rootless-892CA0?style=flat-square&logo=podman)
-![Systemd](https://img.shields.io/badge/Systemd-Orchestration-darkgreen?style=flat-square&logo=linux)
-![Entrega](https://img.shields.io/badge/Entrega-2-blue?style=flat-square)
+El objetivo de este documento es detallar el procedimiento de despliegue automatizado del clúster MLOps en el Edge utilizando **K3s (Kubernetes ligero)**, así como proporcionar el guion de demostración técnica (Demo) para validar la orquestación, el particionamiento de datos y la resiliencia del sistema.
 
-El objetivo de esta entrega consiste en hacer la comparativa de diferentes protocolos de comunicaciones en Systemd + podman para una misma tarea y obtener las metricas y números.
+La tarea principal consiste en:
 
-La tarea consiste en:
+1. Desplegar un clúster Kubernetes mediante un patrón *Air-Gapped* usando Ansible.
+2. Entrenar un modelo fundacional IA (PyTorch) en el nodo Master.
+3. Distribuir el dataset MNIST en N partes hacia los Pods de inferencia (Workers) evaluando diferentes protocolos de red.
+4. Retornar las métricas y predicciones al Master de forma directa.
 
-    Amb el datset MNIST (https://www.tensorflow.org/datasets/catalog/mnist), has de fer:
-    1. Aquest datset s'ha de separar en N parts, que s'enviaran als N nodes fills
+---
 
-    2. Els nodes fills faran una tasca sobre aquest dataset. Comença fent que la tasca sigui comptar el nombre d'imatges que li arriben al fill
+## 1. Especificaciones de Infraestructura
 
-    3. Els nodes fills han de retornar al pare el resultat de la tasca. En aquest cas aquest nombre d'imatges
+* **Plano de Automatización:** Ansible 2.10+
+* **Plano de Control (Orquestador):** Kubernetes API (K3s Server)
+* **Gestor de Contenedores:** containerd (K3s Agent)
+* **Red Virtual:** Flannel CNI
+* **Dataset:** TensorFlow Datasets (MNIST - 60,000 imágenes)
 
-## 1. Descripción del Entorno
+## 2. Matriz de Conectividad y Puertos
 
+El sistema requiere la apertura de los siguientes puertos para garantizar la orquestación y el flujo de datos:
 
-## 2. Especificaciones de Infraestructura
-* **Orquestador de Despliegue:** Ansible 2.10+
-* **Gestor de Contenedores:** Podman 4.5+ (Modo Rootless)
-* **Supervisor de Servicios:** systemd (User Session)
-* **Dataset:** TensorFlow Datasets (MNIST - 60,000 imágenes de entrenamiento)
+| Componente | Puerto | Protocolo | Descripción |
+| --- | --- | --- | --- |
+| **SSH** | `22` | TCP | Aprovisionamiento con Ansible (Host) |
+| **K3s API** | `6443` | TCP | Plano de control de Kubernetes (Master) |
+| **Kubelet** | `10250` | TCP | Métricas y logs de los nodos (Workers) |
+| **NodePort** | `30000` | TCP | Balanceador de carga para ingesta de datos IA |
 
-## 3. Matriz de Conectividad y Puertos
-El sistema requiere la apertura de los siguientes puertos en los nodos para garantizar la comunicación entre el Nodo Pare y los Nodos Fill:
+---
 
-| Componente | Servicio | Puerto (Host) | Protocolo | Descripción |
-| :--- | :--- | :--- | :--- | :--- |
-| **SSH** | OpenSSH Server | `22` | TCP | Gestión y despliegue con Ansible |
-
-
-## 4. Procedimiento de Instalación y Despliegue
+## 3. Procedimiento de Aprovisionamiento (Ansible)
 
 ### Paso 1: Configuración de Claves SSH
-Se requiere intercambio de claves RSA para permitir la ejecución desatendida de Ansible:
+
+Intercambio de claves para permitir la ejecución desatendida:
+
 ```bash
 ssh-keygen -t rsa -b 4096
 ssh-copy-id -i ~/.ssh/id_rsa.pub user@<ip-nodo>
 ```
 
-### Paso 2: Aprovisionamiento (Ansible)
-El despliegue automatiza la habilitación de **Linger**, la creación de la red virtual Quadlet y el build local de la imagen de aplicación. 
+### Paso 2: Despliegue Air-Gapped y Orquestación
 
-#### Opción A: Despliegue Estándar
-Para levantar el clúster de forma normal sin extraer métricas de infraestructura:
+El playbook automatiza la copia de la imagen `.tar`, la carga en el motor `containerd` y la aplicación de los manifiestos YAML contra la API del clúster.
 
-##### **1. desplegar protocolo (http-json por defecto)**
+Para desplegar un protocolo de comunicación específico inyectando la variable:
+
 ```bash
-ansible-playbook -i inventory.ini playbook.yml
+ansible-playbook -i inventory.ini playbook-k8s.yml -e "experimento_path=../2-src-protocols/01-http-json"
+ansible-playbook -i inventory.ini playbook-k8s.yml -e "experimento_path=../2-src-protocols/02-grpc-protobuf"
+ansible-playbook -i inventory.ini playbook-k8s.yml -e "experimento_path=../2-src-protocols/03-zeromq-protobuf"
+ansible-playbook -i inventory.ini playbook-k8s.yml -e "experimento_path=../2-src-protocols/04-zeromq-messagepack"
 ```
 
-##### **2. desplegar un protocolo inyectando la variable**
-```bash
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/01-http-json"
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/02-grpc-protobuf"
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/03-zeromq-protobuf"
-ansible-playbook -i inventory.ini playbook.yml -e "experimento_path=../2-src-protocols/04-zeromq-messagepack"
-```
+### Paso 3: Ejecución del Reparto de Carga (MLOps)
 
-#### Opción B: Despliegue con Benchmark (Extracción de Métricas)
-Para extraer los datos del Plano de Gestión ($T_{deploy}$, Consumo en Reposo, $T_{recovery}$), se ejecutará el script de automatización. Este script envuelve la ejecución de Ansible y aplica pruebas de Chaos Engineering sobre los nodos perimetrales:
-```bash
-chmod +x benchmark_infra.sh
-./benchmark_infra.sh
-```
+Desde la máquina Master, se inicia el entrenamiento y el envío de datos a través del `Service NodePort`:
 
-### Paso 3: Ejecución del Reparto de Carga
-Desde la máquina de control, se inicia la partición y envío de datos:
 ```bash
 python3 master.py
 ```
 
-### Opcional: Monitorización de logs
-Monitorización de Logs:
-```Bash
-journalctl --user -u worker.service -f
-```
+## 4. Arquitectura de Resiliencia (Kubernetes)
 
-## 5. Limpieza del Entorno
-Para revertir todos los cambios, eliminar imágenes construidas y redes virtuales:
+La robustez del sistema ahora está gestionada globalmente por el plano de control:
 
-```Bash
-ansible-playbook -i inventory.ini clean.yml -K
-```
-
-## 6. Arquitectura de Resiliencia (systemd)
-La robustez del sistema se basa en la integración nativa de Podman con systemd a través de **Quadlets** (`.container` files).
-
-* **Restart Policy:** `always` con un `RestartSec=3`. Si el proceso de cálculo satura la memoria o el contenedor falla, systemd garantiza el reinicio sin intervención manual.
-* **Network Isolation:** Cada worker se integra en una red aislada (`red.network`) definida de forma declarativa, evitando colisiones con otros servicios del host.
-* **Persistence:** El estado de los servicios se mantiene activo tras reinicios del hardware mediante la persistencia del gestor de servicios de usuario (`loginctl enable-linger`).
-
-## 7. Monitorización y Telemetría
-Para auditoría técnica de los nodos en tiempo real, se utilizan las herramientas estándar de Linux:
-
-* **Estado del Servicio:** `systemctl --user status worker.service`
-* **Logs de Aplicación:** `journalctl --user -u worker.service -f --since "1 hour ago"`
-* **Consumo de Recursos:** `podman stats`
-
-## 8. Enlaces y Referencias
-* **Dataset Source:** [TensorFlow Datasets - MNIST](https://www.tensorflow.org/datasets/catalog/mnist)
-* **Documentación Quadlet:** [Podman Quadlet Guide](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html)
-* **Ansible Systemd Module:** [Community.General.Systemd](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html)
-
----
-## 9. Demo
-
-### Paso 1: Mostrar que es "Declarativo" (El Blueprint)
-Antes de ejecutar nada, demuestra que estás usando systemd como un orquestador real y no lanzando contenedores a mano.
-* **En el Nodo A:**
-  ```bash
-  cat ~/.config/containers/systemd/worker.container
-  ```
-* **Qué decirle al tutor:** *"Como ves, no ejecuto comandos de Podman. Defino el estado deseado en este Quadlet, incluyendo la red virtual y las políticas de reinicio, y systemd se encarga de todo el ciclo de vida del contenedor en espacio de usuario (rootless)."*
-
-### Paso 2: Ejecutar el Sistema Distribuido (El flujo feliz)
-Aquí es donde demuestras el particionamiento del dataset.
-* **En el Nodo A (Terminal derecha):** Deja los logs del trabajador monitorizándose en tiempo real.
-  ```bash
-  journalctl --user -u worker.service -f
-  ```
-* **En el WSL (Terminal izquierda):** Ejecuta tu orquestador de datos.
-  ```bash
-  python master.py
-  ```
-* **Qué decirle al tutor:** *"Al ejecutar el maestro, vemos cómo descarga las 60.000 imágenes, calcula matemáticamente la división entre los nodos activos y despacha los paquetes. Si miramos la terminal de la derecha, vemos en tiempo real cómo el contenedor del Nodo A recibe y cuenta exactamente sus 30.000 imágenes, devolviendo un HTTP 200 OK."*
-
-### Paso 3: Demostrar la eficiencia energética (El argumento contra Kubernetes)
-Tu informe habla de un consumo de ~215 MB. Esto es una ventaja brutal frente a Kubernetes (que consume gigabytes solo para existir). Hay que mostrarlo.
-* **En el Nodo A:**
-  ```bash
-  podman stats --no-stream
-  ```
-  *(También puedes usar `systemd-cgtop` si lo prefieres).*
-* **Qué decirle al tutor:** *"Este es uno de los trade-offs principales del estudio. Al delegar la orquestación a systemd en lugar de instalar un agente pesado de Kubernetes (como Kubelet), el contenedor procesa miles de imágenes consumiendo apenas 200 MB de RAM. Casi el 100% del hardware del Edge se dedica a la carga útil, no a la gestión."*
-
-### Paso 4: La prueba del Caos (Demostrar la Resiliencia)
-Tu informe dice: *"Verificación de la auto-recuperación... ante fallos"*. Los tutores aman ver las cosas romperse y arreglarse solas. Vamos a "asesinar" a tu worker.
-* **En el Nodo A:**
-  1. Primero, mira el estado del servicio:
-     ```bash
-     systemctl --user status worker.service
-     ```
-  2. Ahora, mata el contenedor a lo bruto (simulando un fallo crítico de software o de memoria):
-     ```bash
-     podman stop worker-mnist-node-a -t 0
-     ```
-  3. Rápidamente, vuelve a mirar el estado y los logs:
-     ```bash
-     systemctl --user status worker.service
-     journalctl --user -u worker.service -n 10
-     ```
-
+* **Reconciliation Loop:** El estado deseado se define mediante un `Deployment`. Si un Pod falla o es eliminado, el *ReplicaSet* solicita inmediatamente al *Scheduler* la creación de uno nuevo.
+* **Network Abstraction:** Los pods se comunican a través de un `Service` abstracto, haciendo que el script Master sea agnóstico a las caídas o cambios de IP de los contenedores físicos.
 ---
 
->TODO: Optimizar el Dockerfile usando multi-stage build para reducir el tamaño de la imagen al máximo; así el archivo .tar será mucho más ligero y se transferirá más rápido a los workers.
+## 5. Guion de Demostración Técnica (Defensa del TFG)
+
+Este apartado detalla los pasos para demostrar en directo al tribunal las capacidades arquitectónicas del sistema.
+
+### Paso 1: Mostrar el Paradigma Declarativo (El Blueprint)
+
+Antes de ejecutar la inferencia, demuestra cómo se orquesta la aplicación.
+
+* **En el Nodo Master:**
+```bash
+cat worker-deployment.yaml
+```
 
 
-Entrenamiento de un modelo IA con framework PyTorch en nodo Master y distribuir el model i el codigo de inferencia y hacerlo en cada Worker, para que worker pueda identificar contenidos de  la imagen y obtener las métricas
-https://pythonguides.com/pytorch-mnist/
+* **Qué decirle al tribunal:** *"A diferencia de la gestión imperativa inicial, aquí no ejecutamos contenedores directamente. Hemos declarado el estado deseado en este manifiesto (X réplicas, imagen, puertos). Ansible simplemente inyectó este manifiesto, y es la API de Kubernetes la que ha asumido el control de desplegarlos."*
+
+### Paso 2: Ejecutar el Sistema Distribuido (Flujo MLOps)
+
+Demuestra el balanceo de carga y el procesamiento de la IA.
+
+* **En el Master (Terminal 1 - Logs):**
+```bash
+kubectl logs -l app=worker-mnist -f
+```
+
+
+* **En el Master (Terminal 2 - Ejecución):**
+```bash
+python master.py
+```
+
+
+* **Qué decirle al tribunal:** *"Al lanzar el script Master, la red neuronal fundacional se empaqueta junto con el dataset. El tráfico no va a las IPs físicas, sino al 'Service NodePort' de Kubernetes. En los logs (Terminal 1) podemos observar cómo el clúster balancea la carga de inferencia dinámicamente entre los diferentes Pods perimetrales."*
+
+### Paso 3: Evidenciar el "Impuesto Arquitectónico" (El Trade-off)
+
+Demuestra empíricamente el coste de usar Kubernetes frente a Systemd.
+
+* **En el Master:**
+```bash
+kubectl top nodes
+```
+
+
+*(O ejecuta `free -m` en un Worker)*
+* **Qué decirle al tribunal:** *"Este es el núcleo de la investigación. Mientras que Systemd gestionaba esta misma tarea consumiendo apenas 200 MB, aquí podemos ver que los nodos presentan una huella de memoria superior a los 850 MB. Este 'impuesto arquitectónico' es el coste de mantener el plano de control y la red virtual (Flannel) de Kubernetes activos en el Edge. Por esto mismo, el uso de serialización binaria ultraligera (MessagePack) fue vital para evitar el colapso del nodo."*
+
+### Paso 4: Pruebas de Caos / Chaos Engineering (La Resiliencia)
+
+Demuestra la principal ventaja de Kubernetes: la auto-recuperación global.
+
+* **En el Master (Terminal 1 - Monitorización continua):**
+```bash
+kubectl get pods -w
+```
+
+* **En el Master (Terminal 2 - Inyección del fallo):** Simulamos una caída crítica borrando un pod a la fuerza.
+```bash
+kubectl delete pod <nombre-del-pod>
+```
+
+* **Qué decirle al tribunal:** *"Si simulamos un fallo fatal destruyendo un proceso, observamos en el monitor que Kubernetes no requiere intervención de Ansible. El bucle de reconciliación detecta la anomalía en el estado declarado y levanta una nueva réplica instantáneamente para garantizar la alta disponibilidad del servicio."*

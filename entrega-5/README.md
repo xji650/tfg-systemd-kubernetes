@@ -28,3 +28,4 @@ pip install pandas matplotlib seaborn
 
 # 2. Ejecutar la fusión de datos y renderizado de gráficas
 python3 generar_comparativa.py
+```
