@@ -72,7 +72,7 @@
 | Métrica | Valor Promedio |
 |---|---|
 | **T_deploy** | 137.91 s |
-| **Recuperación (MTTR)** | 1472.56 ms |
+| **Recuperación (MTTR)** | 53468.16 ms |
 | **CPU Reposo** | 0.80 % |
 | **RAM Reposo** | 852.00 MB |
 
