@@ -17,26 +17,20 @@ Los entornos edge presentan desafíos específicos: recursos computacionales lim
 
 ```
 Project-TFG/
-├── index.html                    # Punto de entrada de Docsify
-├── _sidebar.md                   # Navegación lateral
-├── Setmana0_setup-mv/           # Configuración inicial de nodos (máquinas virtuales)
-├── Setmana1_podman/             # Instalación y gestión con Podman
-├── Setmana2_systemd-legacy/     # Orquestación con systemd tradicional
-├── Setmana3.1_systemd-quadlets/ # Systemd con Quadlets (nativo para contenedores)
-├── Setmana5_kubernetes/         # Despliegue con K3s/Kubernetes
-├── entrega-1/                   # Setup Ansible + Systemd + Podman
-└── entrega-2/                   # Análisis comparativo Systemd + Podman
+├── index.html                   # Punto de entrada de Docsify
+├── _sidebar.md                  # Navegación lateral
+├── systemd/                     # Comparativo protocolos Systemd + Podman
+├── kubernetes/                  # Comparativa protocolos Kubernetes
+└── comparative/                 # Análisis comparativo Systemd y Kubernetes
 ```
 
 ## Navegación
 
 | Sección | Contenido |
 |---------|-----------|
-| Setup | Preparación del entorno: máquinas virtuales, configuración de red y herramientas base |
-| Podman | Instalación, configuración y gestión de contenedores sin daemon |
 | Systemd | Orquestación con unidades .service y .pod (Quadlets) |
 | Kubernetes | Despliegue de clúster ligero con K3s y manifiestos YAML |
-| Entregas | Resultados de experimentos: HTTP, gRPC, ZeroMQ y análisis comparativo |
+| Entregas | Resultados de experimentos: HTTP, gRPC, ZeroMQ y análisis comparativo Systemd y Kubernetes |
 
 ## Visualización de la documentación
 
