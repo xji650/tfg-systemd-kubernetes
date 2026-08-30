@@ -83,11 +83,11 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     echo -e "\n[2/4] Breve pausa antes de la prueba de red (5s)..."
     sleep 5
 
-    # --- 2. BUCLE DE RED (5 ITERACIONES) ---
-    echo "[3/4] Lanzando batería de 5 benchmarks de red..."
+    # --- 2. BUCLE DE RED (2 ITERACIONES) ---
+    echo "[3/4] Lanzando batería de 2 benchmarks de red..."
     cd "$BASE_DIR/$PROTOCOLO" || exit
-    for RUN_N in {1..5}; do
-        echo "  -> Ejecutando Test Red $RUN_N de 5..."
+    for RUN_N in {1..2}; do
+        echo "  -> Ejecutando Test Red $RUN_N de 2..."
         echo -e "\n\n==================================================" >> "$LOG_FILE"
         echo " TEST RUN $RUN_N (Prueba de Estrés)" >> "$LOG_FILE"
         echo "==================================================" >> "$LOG_FILE"

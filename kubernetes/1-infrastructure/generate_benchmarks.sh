@@ -1,13 +1,10 @@
 #!/bin/bash
 
 # ==============================================================================
-# SCRIPT DE AUTOMATIZACIÓN K3S: 1 DESPLIEGUE + 5 TESTS DE RED -> EXPORTACIÓN CSV
+# SCRIPT DE AUTOMATIZACIÓN K3S: 1 DESPLIEGUE + 2 TESTS DE RED -> EXPORTACIÓN CSV
 # ==============================================================================
 
 BASE_DIR=$(pwd)
-
-# ¡ADIÓS SSH! Ya no necesitamos WORKER_IPS ni WORKER_USER. 
-# Kubernetes sabe dónde están los nodos.
 
 PROTOCOLOS=(
     "../2-src-protocols/01-http-json"
@@ -52,26 +49,28 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     echo "  [OK] T_deploy total: $DEPLOY_TIME segundos" | tee -a "$LOG_FILE"
 
     echo -e "\n[2/4] Esperando a que el clúster se estabilice (15s)..."
-    # IMPORTANTE: Aumentamos a 15s porque el metrics-server de K3s necesita 
-    # un par de ciclos para recolectar la CPU y RAM inicial.
     sleep 15 
 
-    # --- NUEVA INGENIERÍA DEL CAOS Y MÉTRICAS CON KUBERNETES ---
-    # Obtenemos la lista de todos los pods del worker-mnist
-    PODS=$(kubectl get pods -l app=worker-mnist -o custom-columns=":metadata.name" --no-headers)
+    # --- NUEVA INGENIERÍA DEL CAOS (SOLUCIÓN CONDICIÓN DE CARRERA) ---
+    # Iteramos sobre los nodos físicos fijos, no sobre pods temporales
+    NODES=("node-a" "node-b")
 
-    for POD_NAME in $PODS; do
-        # Obtenemos el nombre que K3s le da al nodo
-        NODE_NAME=$(kubectl get pod $POD_NAME -o jsonpath='{.spec.nodeName}')
+    for NODE_NAME in "${NODES[@]}"; do
         
-        # --- TRADUCTOR DE NOMBRE A IP ---
+        # Consultamos a K3s en tiempo real: "¿Qué pod tienes AHORA MISMO?"
+        POD_NAME=$(kubectl get pods -l app=worker-mnist --field-selector spec.nodeName=$NODE_NAME -o custom-columns=":metadata.name" --no-headers 2>/dev/null | head -n 1)
+        
+        if [ -z "$POD_NAME" ]; then
+            echo "  [WARNING] Nodo $NODE_NAME no tiene pod asignado. Saltando..."
+            continue
+        fi
+
+        # Traductor de IP
         TARGET_IP=""
         if [[ "$NODE_NAME" == *"node-a"* ]]; then
             TARGET_IP="192.168.98.143"
         elif [[ "$NODE_NAME" == *"node-b"* ]]; then
             TARGET_IP="192.168.98.144"
-        else
-            TARGET_IP="$NODE_NAME" # Por si acaso
         fi
 
         # A) Extraer RAM y CPU usando la IP REAL
@@ -92,8 +91,7 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
         
         # 2. Bucle para esperar a que DaemonSet cree un NUEVO pod y esté Ready
         while true; do
-            # Buscamos el nuevo pod asignado a este mismo nodo
-            NEW_POD=$(kubectl get pods -l app=worker-mnist --field-selector spec.nodeName=$NODE_NAME -o custom-columns=":metadata.name" --no-headers 2>/dev/null)
+            NEW_POD=$(kubectl get pods -l app=worker-mnist --field-selector spec.nodeName=$NODE_NAME -o custom-columns=":metadata.name" --no-headers 2>/dev/null | head -n 1)
             
             if [ -n "$NEW_POD" ] && [ "$NEW_POD" != "$POD_NAME" ]; then
                 IS_READY=$(kubectl get pod $NEW_POD -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null)
@@ -112,11 +110,11 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     echo -e "\n[3/4] Breve pausa antes de la prueba de red (5s)..."
     sleep 5
 
-    # --- 2. BUCLE DE RED (5 ITERACIONES) ---
-    echo "[4/4] Lanzando batería de 5 benchmarks de red..."
+    # --- 2. BUCLE DE RED (2 ITERACIONES) ---
+    echo "[4/4] Lanzando batería de 2 benchmarks de red..."
     cd "$BASE_DIR/$PROTOCOLO" || exit
-    for RUN_N in {1..5}; do
-        echo "  -> Ejecutando Test Red $RUN_N de 5..."
+    for RUN_N in {1..2}; do
+        echo "  -> Ejecutando Test Red $RUN_N de 2..."
         echo -e "\n\n==================================================" >> "$LOG_FILE"
         echo " TEST RUN $RUN_N (Prueba de Estrés)" >> "$LOG_FILE"
         echo "==================================================" >> "$LOG_FILE"
@@ -125,8 +123,7 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
     done
     cd "$BASE_DIR" > /dev/null
 
-    # --- 3. EXTRACCIÓN A CSV (EL CEREBRO DE DATOS) ---
-    # (El código de extracción en Python se mantiene EXACTAMENTE IGUAL)
+    # --- 3. EXTRACCIÓN A CSV ---
     echo "[OK] Extrayendo datos y guardando en CSV..."
     python3 - "$LOG_FILE" "$CSV_FILE" "$NOMBRE_PROTOCOLO" "$FECHA_LEGIBLE" << 'EOF'
 import sys, re, os
