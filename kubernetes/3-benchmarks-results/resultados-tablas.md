@@ -1,90 +1,90 @@
 # Resultados Consolidados del Proyecto
 > **Nota:** Estas tablas representan la **media histórica total** de todas las ejecuciones almacenadas en el Data Lake (`resultados-globales.csv`).
 
-## Protocolo: 01-http-json (Basado en 5 tests históricos)
+## Protocolo: 01-http-json (Basado en 6 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 104.84 s |
-| **Recuperación (MTTR)** | 1672.64 ms |
-| **CPU Reposo** | 1.10 % |
-| **RAM Reposo** | 851.10 MB |
+| **T_deploy** | 121.34 s |
+| **Recuperación (MTTR)** | 1602.39 ms |
+| **CPU Reposo** | 1.08 % |
+| **RAM Reposo** | 845.42 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.99 s |
-| **Throughput** | 2086.61 img/s |
-| **Latencia RTT** | 516.90 ms |
-| **T_Proc Worker** | 503.45 ms |
-| **RAM Máxima** | 337.30 MB |
-| **CPU Máxima** | 138.94 % |
+| **T_Total** | 1.00 s |
+| **Throughput** | 2069.86 img/s |
+| **Latencia RTT** | 523.17 ms |
+| **T_Proc Worker** | 509.95 ms |
+| **RAM Máxima** | 342.80 MB |
+| **CPU Máxima** | 138.17 % |
 | **Payload Red** | 15.59 MB |
 
 ---
 
-## Protocolo: 02-grpc-protobuf (Basado en 5 tests históricos)
+## Protocolo: 02-grpc-protobuf (Basado en 6 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 131.58 s |
-| **Recuperación (MTTR)** | 1571.98 ms |
-| **CPU Reposo** | 1.00 % |
-| **RAM Reposo** | 849.00 MB |
+| **T_deploy** | 143.68 s |
+| **Recuperación (MTTR)** | 43529.97 ms |
+| **CPU Reposo** | 0.92 % |
+| **RAM Reposo** | 829.33 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
 | **T_Total** | 0.33 s |
-| **Throughput** | 6358.87 img/s |
-| **Latencia RTT** | 319.32 ms |
-| **T_Proc Worker** | 281.93 ms |
-| **RAM Máxima** | 392.79 MB |
-| **CPU Máxima** | 186.82 % |
+| **Throughput** | 6375.82 img/s |
+| **Latencia RTT** | 318.36 ms |
+| **T_Proc Worker** | 282.04 ms |
+| **RAM Máxima** | 387.57 MB |
+| **CPU Máxima** | 189.11 % |
 | **Payload Red** | 2.99 MB |
 
 ---
 
-## Protocolo: 03-zeromq-protobuf (Basado en 5 tests históricos)
+## Protocolo: 03-zeromq-protobuf (Basado en 6 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 96.06 s |
-| **Recuperación (MTTR)** | 1643.34 ms |
-| **CPU Reposo** | 1.30 % |
-| **RAM Reposo** | 852.50 MB |
+| **T_deploy** | 93.31 s |
+| **Recuperación (MTTR)** | 1548.16 ms |
+| **CPU Reposo** | 1.17 % |
+| **RAM Reposo** | 850.67 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
 | **T_Total** | 0.31 s |
-| **Throughput** | 7033.38 img/s |
-| **Latencia RTT** | 263.85 ms |
-| **T_Proc Worker** | 201.72 ms |
-| **RAM Máxima** | 282.18 MB |
-| **CPU Máxima** | 194.28 % |
+| **Throughput** | 6940.48 img/s |
+| **Latencia RTT** | 265.65 ms |
+| **T_Proc Worker** | 202.92 ms |
+| **RAM Máxima** | 281.59 MB |
+| **CPU Máxima** | 193.86 % |
 | **Payload Red** | 2.99 MB |
 
 ---
 
-## Protocolo: 04-zeromq-messagepack (Basado en 5 tests históricos)
+## Protocolo: 04-zeromq-messagepack (Basado en 6 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 137.91 s |
-| **Recuperación (MTTR)** | 1472.56 ms |
-| **CPU Reposo** | 0.80 % |
-| **RAM Reposo** | 852.00 MB |
+| **T_deploy** | 152.02 s |
+| **Recuperación (MTTR)** | 1561.26 ms |
+| **CPU Reposo** | 0.75 % |
+| **RAM Reposo** | 846.00 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.33 s |
-| **Throughput** | 6555.69 img/s |
-| **Latencia RTT** | 277.54 ms |
-| **T_Proc Worker** | 203.35 ms |
-| **RAM Máxima** | 275.12 MB |
-| **CPU Máxima** | 196.35 % |
+| **T_Total** | 0.34 s |
+| **Throughput** | 6435.78 img/s |
+| **Latencia RTT** | 280.00 ms |
+| **T_Proc Worker** | 204.46 ms |
+| **RAM Máxima** | 276.63 MB |
+| **CPU Máxima** | 195.38 % |
 | **Payload Red** | 2.99 MB |
 
 ---
