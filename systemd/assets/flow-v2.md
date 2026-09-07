@@ -2,51 +2,51 @@
 flowchart TD
     Internet((Internet))
 
-    subgraph Maquina1 ["Máquina 1: Orquestador (Master)"]
+    subgraph Maquina1 ["Màquina 1: Orquestrador (Màster)"]
         direction TB
-        Ansible["Plano Control:<br>Ansible (Gestión Imperativa)"]
+        Ansible["Pla de Control:<br>Ansible (Gestió Imperativa)"]
         
-        Padre["Plano de Datos: 
-        Script Master (PyTorch) 
+        Padre["Pla de Dades: 
+        Script Màster (PyTorch) 
         + 
-        Fase 2b: Entrena CNN localmente"]
+        Fase 2b: Entrena la CNN localment"]
     end
 
     Padre ~~~ NodeA
     Padre ~~~ NodeB
 
-    subgraph NodeB ["Nodo Worker 2: 192.168.98.144"]
+    subgraph NodeB ["Node Worker 2: 192.168.98.144"]
         Sys1(("Systemd<br>(Gestor Local)"))
-        Hijo2["Contenedor Podman"]
-        Sys1 -- "Ciclo de vida<br>(Local)" --> Hijo2
+        Hijo2["Contenidor Podman"]
+        Sys1 -- "Cicle de vida<br>(Local)" --> Hijo2
     end
     
-    subgraph NodeA ["Nodo Worker 1: 192.168.98.143"]
+    subgraph NodeA ["Node Worker 1: 192.168.98.143"]
         Sys2(("Systemd<br>(Gestor Local)"))
-        Hijo1["Contenedor Podman"]
-        Sys2 -- "Ciclo de vida<br>(Local)" --> Hijo1
+        Hijo1["Contenidor Podman"]
+        Sys2 -- "Cicle de vida<br>(Local)" --> Hijo1
     end
 
 
-    %% FASE 1: Aprovisionamiento
-    Ansible -. "Fase 1a: Configura entorno" .-> Padre
-    Ansible -. "Fase 1b SSH:<br> Despliega Podman y Quadlets" .-> NodeB
-    Ansible -. "Fase 1b SSH:<br> Despliega Podman y Quadlets" .-> NodeA
+    %% FASE 1: Aprovisionament
+    Ansible -. "Fase 1a: Configura l'entorn" .-> Padre
+    Ansible -. "Fase 1b SSH:<br> Desplega Podman i Quadlets" .-> NodeB
+    Ansible -. "Fase 1b SSH:<br> Desplega Podman i Quadlets" .-> NodeA
 
-    %% FASE 2: Modelo IA
-    Internet -- "Fase 2a: Descarga MNIST" --> Padre
+    %% FASE 2: Model d'IA
+    Internet -- "Fase 2a: Descarrega MNIST" --> Padre
 
-    %% FASES 3: Establecer protocolos
-    Padre -- "Fase 3: Establecer protocolos<br>(HTTP/gRPC/ZMQ)" --> Hijo2
-    Padre -- "Fase 3: Establecer protocolos<br>(HTTP/gRPC/ZMQ)" --> Hijo1
+    %% FASES 3: Establiment de protocols
+    Padre -- "Fase 3: Estableix protocols<br>(HTTP/gRPC/ZMQ)" --> Hijo2
+    Padre -- "Fase 3: Estableix protocols<br>(HTTP/gRPC/ZMQ)" --> Hijo1
 
-    %% FASES 4: Fujo de ida
-    Padre -- "Fase 4: Envía Datos<br>y Modelo (.pth)" --> Hijo2
-    Padre -- "Fase 4: Envía Datos<br>y Modelo (.pth)" --> Hijo1
+    %% FASES 4: Flux d'anada
+    Padre -- "Fase 4: Envia dades<br>i model (.pth)" --> Hijo2
+    Padre -- "Fase 4: Envia dades<br>i model (.pth)" --> Hijo1
 
-    %% FASES 5: Fujo de vuelta
-    Hijo2 -- "Fase 5: Devuelve<br>Predicción y Métricas" --> Padre
-    Hijo1 -- "Fase 5: Devuelve<br>Predicción y Métricas" --> Padre
+    %% FASES 5: Flux de tornada
+    Hijo2 -- "Fase 5: Retorna<br>predicció i mètriques" --> Padre
+    Hijo1 -- "Fase 5: Retorna<br>predicció i mètriques" --> Padre
 
     classDef control fill:#f3e5f5,stroke:#8e24aa,color:#000;
     classDef datos fill:#e1f5fe,stroke:#039be5,color:#000;

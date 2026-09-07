@@ -2,55 +2,55 @@
 flowchart TD
     Internet((Internet))
 
-    subgraph Maquina1 ["Máquina 1: Orquestador (Master + K3s Server)"]
+    subgraph Maquina1 ["Màquina 1: Orquestrador (Màster + K3s Server)"]
         direction TB
-        Ansible["Plano Control:<br>Ansible (Gestión Declarativa)"]
-        KubeAPI["Plano de Orquestación:<br>Kubernetes API (K3s)"]
-        Padre["Plano de Datos:<br>Script Master (PyTorch)<br>+<br>Fase 2b: Entrena CNN localmente"]
+        Ansible["Pla de Control:<br>Ansible (Gestió Declarativa)"]
+        KubeAPI["Pla d'Orquestració:<br>Kubernetes API (K3s)"]
+        Padre["Pla de Dades:<br>Script Màster (PyTorch)<br>+<br>Fase 2b: Entrena la CNN localment"]
     end
 
     Ansible ~~~ Padre
     Padre ~~~ KubeAPI
     
 
-    subgraph Worker2 ["Nodo: Worker 2 (192.168.98.144)"]
+    subgraph Worker2 ["Node: Worker 2 (192.168.98.144)"]
         K3sB["K3s Agent (containerd + Kubelet)"]
-        Hijo2["Pod de Inferencia"]
-        K3sB -- "Ciclo de vida" --> Hijo2
+        Hijo2["Pod d'Inferència"]
+        K3sB -- "Cicle de vida" --> Hijo2
     end
 
-    subgraph Worker1 ["Nodo: Worker 1 (192.168.98.143)"]
+    subgraph Worker1 ["Node: Worker 1 (192.168.98.143)"]
         K3sA["K3s Agent (containerd + Kubelet)"]
-        Hijo1["Pod de Inferencia"]
-        K3sA -- "Ciclo de vida" --> Hijo1
+        Hijo1["Pod d'Inferència"]
+        K3sA -- "Cicle de vida" --> Hijo1
     end
 
-    %% FASE 1: Aprovisionamiento (Ansible SIEMPRE discontinua)
-    Ansible -. "Fase 1a: Configura entorno" .-> Padre
-    Ansible -. "Fase 1b: SSH, inyecta .tar<br>(Air-Gapped)" .-> Worker1
-    Ansible -. "Fase 1b: SSH, inyecta .tar<br>(Air-Gapped)" .-> Worker2
-    Ansible -. "Fase 1c: Aplica manifiesto YAML" .-> KubeAPI
+    %% FASE 1: Aprovisionament (Ansible SEMPRE discontínua)
+    Ansible -. "Fase 1a: Configura l'entorn" .-> Padre
+    Ansible -. "Fase 1b: SSH, injecta .tar<br>(Air-Gapped)" .-> Worker1
+    Ansible -. "Fase 1b: SSH, injecta .tar<br>(Air-Gapped)" .-> Worker2
+    Ansible -. "Fase 1c: Aplica el manifest YAML" .-> KubeAPI
 
-    %% FASE DE ORQUESTACIÓN (Kubernetes activo)
-    KubeAPI <==>|Gestión continua: Heartbeat, <br>Reconciliación y Estado| K3sA
-    KubeAPI <==>|Gestión continua: Heartbeat, <br>Reconciliación y Estado| K3sB
+    %% FASE D'ORQUESTRACIÓ (Kubernetes actiu)
+    KubeAPI <==>|Gestió contínua: Heartbeat, <br>Reconciliació i Estat| K3sA
+    KubeAPI <==>|Gestió contínua: Heartbeat, <br>Reconciliació i Estat| K3sB
 
     %% FASE 2: Dataset
-    Internet -- "Fase 2a: Descarga MNIST" --> Padre
+    Internet -- "Fase 2a: Descarrega MNIST" --> Padre
 
-    %% FASES 3: Establecer protocolos
-    Padre -- "Fase 3: Establecer protocolos<br>(HTTP/gRPC/ZMQ)" --> Hijo1
-    Padre -- "Fase 3: Establecer protocolos<br>(HTTP/gRPC/ZMQ)" --> Hijo2
+    %% FASES 3: Establiment de protocols
+    Padre -- "Fase 3: Estableix protocols<br>(HTTP/gRPC/ZMQ)" --> Hijo1
+    Padre -- "Fase 3: Estableix protocols<br>(HTTP/gRPC/ZMQ)" --> Hijo2
 
-    %% FASES 4: Fujo de ida
-    Padre -- "Fase 4: Envía Datos<br>y Modelo (.pth)<br>(Service NodePort)" --> Hijo1
-    Padre -- "Fase 4: Envía Datos<br>y Modelo (.pth)<br>(Service NodePort)" --> Hijo2
+    %% FASES 4: Flux d'anada
+    Padre -- "Fase 4: Envia dades<br>i model (.pth)<br>(Servei NodePort)" --> Hijo1
+    Padre -- "Fase 4: Envia dades<br>i model (.pth)<br>(Servei NodePort)" --> Hijo2
 
-    %% FASES 5: Fujo de vuelta
-    Hijo1 -- "Fase 5: Devuelve<br>Predicción y Métricas" --> Padre
-    Hijo2 -- "Fase 5: Devuelve<br>Predicción y Métricas" --> Padre
+    %% FASES 5: Flux de tornada
+    Hijo1 -- "Fase 5: Retorna<br>predicció i mètriques" --> Padre
+    Hijo2 -- "Fase 5: Retorna<br>predicció i mètriques" --> Padre
 
-    %% Estilos
+    %% Estils
     classDef control fill:#f3e5f5,stroke:#8e24aa,color:#000;
     classDef datos fill:#e1f5fe,stroke:#039be5,color:#000;
     classDef worker fill:#f1f8e9,stroke:#689f38,color:#000;
