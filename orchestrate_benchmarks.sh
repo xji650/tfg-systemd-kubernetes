@@ -11,7 +11,7 @@ set -e
 WORKER_IPS=("192.168.98.143" "192.168.98.144")
 WORKER_USER="littledragon"
 BASE_DIR=$(pwd)
-ITERACIONES_MAESTRAS=1
+ITERACIONES_MAESTRAS=3
 
 # Función para reiniciar nodos y esperar enfriamiento
 reboot_and_wait() {

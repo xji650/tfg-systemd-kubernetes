@@ -1,91 +1,91 @@
 # Resultados Consolidados del Proyecto
 > **Nota:** Estas tablas representan la **media histórica total** de todas las ejecuciones almacenadas en el Data Lake (`resultados-globales.csv`).
 
-## Protocolo: 01-http-json (Basado en 6 tests históricos)
+## Protocolo: 01-http-json (Basado en 9 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 175.26 s |
-| **Recuperación (MTTR)** | 491.53 ms |
-| **CPU Reposo** | 0.08 % |
-| **RAM Reposo** | 729.92 MB |
+| **T_deploy** | 181.06 s |
+| **Recuperación (MTTR)** | 476.02 ms |
+| **CPU Reposo** | 0.06 % |
+| **RAM Reposo** | 730.61 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.80 s |
-| **Throughput** | 2492.71 img/s |
-| **Latencia RTT** | 416.45 ms |
-| **T_Proc Worker** | 402.00 ms |
-| **RAM Máxima** | 329.12 MB |
-| **CPU Máxima** | 141.84 % |
-| **Payload Red** | 15.59 MB |
+| **T_Total** | 0.54 s |
+| **Throughput** | 1661.81 img/s |
+| **Latencia RTT** | 277.63 ms |
+| **T_Proc Worker** | 268.00 ms |
+| **RAM Máxima** | 219.41 MB |
+| **CPU Máxima** | 94.56 % |
+| **Payload Red** | 10.39 MB |
 
 ---
 
-## Protocolo: 02-grpc-protobuf (Basado en 6 tests históricos)
+## Protocolo: 02-grpc-protobuf (Basado en 9 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 173.77 s |
-| **Recuperación (MTTR)** | 494.71 ms |
-| **CPU Reposo** | 0.42 % |
-| **RAM Reposo** | 736.92 MB |
+| **T_deploy** | 179.62 s |
+| **Recuperación (MTTR)** | 475.08 ms |
+| **CPU Reposo** | 0.33 % |
+| **RAM Reposo** | 729.33 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.23 s |
-| **Throughput** | 8621.28 img/s |
-| **Latencia RTT** | 223.62 ms |
-| **T_Proc Worker** | 198.63 ms |
-| **RAM Máxima** | 311.62 MB |
-| **CPU Máxima** | 197.20 % |
-| **Payload Red** | 2.99 MB |
+| **T_Total** | 0.16 s |
+| **Throughput** | 5747.52 img/s |
+| **Latencia RTT** | 149.08 ms |
+| **T_Proc Worker** | 132.42 ms |
+| **RAM Máxima** | 207.74 MB |
+| **CPU Máxima** | 131.47 % |
+| **Payload Red** | 1.99 MB |
 
 ---
 
-## Protocolo: 03-zeromq-protobuf (Basado en 6 tests históricos)
+## Protocolo: 03-zeromq-protobuf (Basado en 9 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 111.93 s |
-| **Recuperación (MTTR)** | 491.86 ms |
-| **CPU Reposo** | 0.08 % |
-| **RAM Reposo** | 721.08 MB |
+| **T_deploy** | 124.54 s |
+| **Recuperación (MTTR)** | 479.03 ms |
+| **CPU Reposo** | 0.06 % |
+| **RAM Reposo** | 720.39 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.22 s |
-| **Throughput** | 9299.01 img/s |
-| **Latencia RTT** | 212.55 ms |
-| **T_Proc Worker** | 197.79 ms |
-| **RAM Máxima** | 275.61 MB |
-| **CPU Máxima** | 197.11 % |
-| **Payload Red** | 2.99 MB |
+| **T_Total** | 0.14 s |
+| **Throughput** | 6199.34 img/s |
+| **Latencia RTT** | 141.70 ms |
+| **T_Proc Worker** | 131.86 ms |
+| **RAM Máxima** | 183.74 MB |
+| **CPU Máxima** | 131.40 % |
+| **Payload Red** | 1.99 MB |
 
 ---
 
-## Protocolo: 04-zeromq-messagepack (Basado en 6 tests históricos)
+## Protocolo: 04-zeromq-messagepack (Basado en 9 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 199.40 s |
-| **Recuperación (MTTR)** | 483.44 ms |
+| **T_deploy** | 198.19 s |
+| **Recuperación (MTTR)** | 468.27 ms |
 | **CPU Reposo** | 0.00 % |
-| **RAM Reposo** | 729.50 MB |
+| **RAM Reposo** | 722.72 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.22 s |
-| **Throughput** | 9079.08 img/s |
-| **Latencia RTT** | 214.71 ms |
-| **T_Proc Worker** | 198.58 ms |
-| **RAM Máxima** | 280.28 MB |
-| **CPU Máxima** | 196.38 % |
-| **Payload Red** | 2.99 MB |
+| **T_Total** | 0.15 s |
+| **Throughput** | 6052.72 img/s |
+| **Latencia RTT** | 143.14 ms |
+| **T_Proc Worker** | 132.39 ms |
+| **RAM Máxima** | 186.86 MB |
+| **CPU Máxima** | 130.92 % |
+| **Payload Red** | 1.99 MB |
 
 ---
 

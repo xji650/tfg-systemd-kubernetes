@@ -1,6 +1,6 @@
 ``` mermaid
     flowchart TD
-        Start([Inici de l'Orquestrador Mestre]) --> F1_Init
+        Start([Inici de l'Orquestrador Màster]) --> F1_Init
 
         subgraph Fase 1: Entorn Natiu - Systemd
             F1_Init[Apagar i bloquejar agent K3s als Workers] --> F1_Loop
