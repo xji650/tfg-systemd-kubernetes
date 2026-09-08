@@ -5,21 +5,21 @@
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 181.06 s |
-| **Recuperación (MTTR)** | 476.02 ms |
+| **T_deploy** | 177.16 s |
+| **Recuperación (MTTR)** | 327.68 ms |
 | **CPU Reposo** | 0.06 % |
-| **RAM Reposo** | 730.61 MB |
+| **RAM Reposo** | 731.44 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.54 s |
-| **Throughput** | 1661.81 img/s |
-| **Latencia RTT** | 277.63 ms |
-| **T_Proc Worker** | 268.00 ms |
-| **RAM Máxima** | 219.41 MB |
-| **CPU Máxima** | 94.56 % |
-| **Payload Red** | 10.39 MB |
+| **T_Total** | 0.83 s |
+| **Throughput** | 2435.74 img/s |
+| **Latencia RTT** | 433.50 ms |
+| **T_Proc Worker** | 419.04 ms |
+| **RAM Máxima** | 329.14 MB |
+| **CPU Máxima** | 141.47 % |
+| **Payload Red** | 15.59 MB |
 
 ---
 
@@ -27,21 +27,21 @@
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 179.62 s |
-| **Recuperación (MTTR)** | 475.08 ms |
-| **CPU Reposo** | 0.33 % |
-| **RAM Reposo** | 729.33 MB |
+| **T_deploy** | 182.99 s |
+| **Recuperación (MTTR)** | 329.81 ms |
+| **CPU Reposo** | 0.28 % |
+| **RAM Reposo** | 731.44 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.16 s |
-| **Throughput** | 5747.52 img/s |
-| **Latencia RTT** | 149.08 ms |
-| **T_Proc Worker** | 132.42 ms |
-| **RAM Máxima** | 207.74 MB |
-| **CPU Máxima** | 131.47 % |
-| **Payload Red** | 1.99 MB |
+| **T_Total** | 0.23 s |
+| **Throughput** | 8545.63 img/s |
+| **Latencia RTT** | 225.34 ms |
+| **T_Proc Worker** | 201.79 ms |
+| **RAM Máxima** | 309.77 MB |
+| **CPU Máxima** | 196.38 % |
+| **Payload Red** | 2.99 MB |
 
 ---
 
@@ -49,21 +49,21 @@
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 124.54 s |
-| **Recuperación (MTTR)** | 479.03 ms |
+| **T_deploy** | 122.87 s |
+| **Recuperación (MTTR)** | 327.91 ms |
 | **CPU Reposo** | 0.06 % |
-| **RAM Reposo** | 720.39 MB |
+| **RAM Reposo** | 721.06 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.14 s |
-| **Throughput** | 6199.34 img/s |
-| **Latencia RTT** | 141.70 ms |
-| **T_Proc Worker** | 131.86 ms |
-| **RAM Máxima** | 183.74 MB |
-| **CPU Máxima** | 131.40 % |
-| **Payload Red** | 1.99 MB |
+| **T_Total** | 0.22 s |
+| **Throughput** | 9001.31 img/s |
+| **Latencia RTT** | 220.29 ms |
+| **T_Proc Worker** | 205.81 ms |
+| **RAM Máxima** | 283.57 MB |
+| **CPU Máxima** | 195.41 % |
+| **Payload Red** | 2.99 MB |
 
 ---
 
@@ -71,21 +71,21 @@
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 198.19 s |
-| **Recuperación (MTTR)** | 468.27 ms |
+| **T_deploy** | 211.35 s |
+| **Recuperación (MTTR)** | 322.29 ms |
 | **CPU Reposo** | 0.00 % |
-| **RAM Reposo** | 722.72 MB |
+| **RAM Reposo** | 724.56 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.15 s |
-| **Throughput** | 6052.72 img/s |
-| **Latencia RTT** | 143.14 ms |
-| **T_Proc Worker** | 132.39 ms |
-| **RAM Máxima** | 186.86 MB |
-| **CPU Máxima** | 130.92 % |
-| **Payload Red** | 1.99 MB |
+| **T_Total** | 0.22 s |
+| **Throughput** | 8977.72 img/s |
+| **Latencia RTT** | 217.33 ms |
+| **T_Proc Worker** | 201.94 ms |
+| **RAM Máxima** | 278.67 MB |
+| **CPU Máxima** | 196.41 % |
+| **Payload Red** | 2.99 MB |
 
 ---
 

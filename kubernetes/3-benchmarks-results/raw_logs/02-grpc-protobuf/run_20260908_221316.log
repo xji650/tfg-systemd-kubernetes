@@ -1,0 +1,76 @@
+=== BENCHMARK COMPLETO | INICIO: 08/09/2026 22:13:16 ===
+
+--- MÉTRICAS DE INFRAESTRUCTURA ---
+  [OK] T_deploy total: 86.29 segundos
+  [OK] Nodo node-a - CPU Reposo (Global): 1% | RAM Reposo (Global): 797 MB
+  [OK] Nodo node-a - Tiempo Real Arranque: 946.53 ms
+  [OK] Nodo node-b - CPU Reposo (Global): 0% | RAM Reposo (Global): 768 MB
+  [OK] Nodo node-b - Tiempo Real Arranque: 1723.42 ms
+
+
+==================================================
+ TEST RUN 1 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA gRPC
+==================================================
+Worker [192.168.98.143:30000] respondió: OK
+Worker [192.168.98.144:30000] respondió: OK
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED gRPC)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (gRPC) 
+==================================================
+Protocolo de Comunicación:     gRPC (Protobuf)
+Tiempo Total (s):              0.29 s
+Throughput (img/s):            6962.08
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    279.81 ms
+Tiempo T_proc Promedio (ms):   251.08 ms
+Pico Máx. RAM Worker (MB):     293.64 MB
+CPU Promedio (%):              179.15 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
+
+
+==================================================
+ TEST RUN 2 (Prueba de Estrés)
+==================================================
+
+==================================================
+1. EVALUACIÓN Y ENTRENAMIENTO DEL MODELO IA
+==================================================
+-> Archivo 'best_model.pth' encontrado en caché.
+
+==================================================
+2. DISTRIBUYENDO EL MODELO VÍA gRPC
+==================================================
+Worker [192.168.98.143:30000] respondió: OK
+Worker [192.168.98.144:30000] respondió: OK
+
+==================================================
+3. INICIANDO BENCHMARK DE INFERENCIA (RED gRPC)
+==================================================
+
+==================================================
+ RESULTADOS DE LA COMPARATIVA TÉCNICA (gRPC) 
+==================================================
+Protocolo de Comunicación:     gRPC (Protobuf)
+Tiempo Total (s):              0.40 s
+Throughput (img/s):            5019.51
+Tasa de Éxito (%):             100.0 %
+Latencia RTT Promedio (ms):    391.78 ms
+Tiempo T_proc Promedio (ms):   365.34 ms
+Pico Máx. RAM Worker (MB):     403.87 MB
+CPU Promedio (%):              161.50 %
+Payload Promedio por Nodo (MB): 2.99 MB
+==================================================
