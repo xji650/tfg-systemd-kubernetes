@@ -74,7 +74,7 @@ for PROTOCOLO in "${PROTOCOLOS[@]}"; do
                 while systemctl --user is-active --quiet $SERVICE_NAME; do sleep 0.05; done
                 while ! systemctl --user is-active --quiet $SERVICE_NAME; do sleep 0.05; done
                 END_REC=\$(date +%s.%N)
-                REC_TIME_REAL=\$(python3 -c \"print(round(max(0, ((\$END_REC - \$START_REC) * 1000) - 3000), 2))\")
+                REC_TIME_REAL=\$(python3 -c \"print(round(max(0, (\$END_REC - \$START_REC) * 1000), 2))\")
                 echo '  [OK] Nodo $IP - Tiempo Real Arranque: '\$REC_TIME_REAL' ms'
             " | tee -a "$LOG_FILE"
         fi
