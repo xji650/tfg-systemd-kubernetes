@@ -11,7 +11,7 @@ set -e
 WORKER_IPS=("192.168.98.143" "192.168.98.144")
 WORKER_USER="littledragon"
 BASE_DIR=$(pwd)
-ITERACIONES_MAESTRAS=1
+ITERACIONES_MAESTRAS=2
 
 # Función para reiniciar nodos y esperar enfriamiento
 reboot_and_wait() {
@@ -44,6 +44,21 @@ for IP in "${WORKER_IPS[@]}"; do
     ssh "${WORKER_USER}@${IP}" 'sudo systemctl stop k3s-agent && sudo systemctl disable k3s-agent'
     ssh "${WORKER_USER}@${IP}" 'if [ -f /usr/local/bin/k3s-killall.sh ]; then sudo /usr/local/bin/k3s-killall.sh; fi'
 done
+
+# echo "Apagando y bloqueando Kubernetes (K3s) en nodos workers..."
+# for IP in "${WORKER_IPS[@]}"; do
+#     # Añadimos -n para evitar que SSH lea el stdin (evita otros cuelgues)
+#     ssh -n "${WORKER_USER}@${IP}" 'sudo systemctl stop k3s-agent && sudo systemctl disable k3s-agent'
+    
+#     # Ejecutamos k3s-killall.sh de forma asíncrona (en background con nohup) 
+#     # para que el corte de iptables no congele nuestro orquestador maestro.
+#     ssh -n "${WORKER_USER}@${IP}" 'if [ -f /usr/local/bin/k3s-killall.sh ]; then sudo nohup /usr/local/bin/k3s-killall.sh > /dev/null 2>&1 & fi'
+# done
+
+# # Damos 5 segundos para que el script de limpieza k3s-killall acabe en los nodos 
+# # antes de mandar el reboot general
+# echo "  -> Esperando a que k3s-killall limpie la red..."
+# sleep 5
 
 for (( i=1; i<=ITERACIONES_MAESTRAS; i++ )); do
     echo -e "\n---> INICIANDO CICLO SYSTEMD: ITERACIÓN $i DE $ITERACIONES_MAESTRAS <---"

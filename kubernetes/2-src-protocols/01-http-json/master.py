@@ -117,9 +117,9 @@ def entrenar_y_evaluar_modelo():
     # --- ARTEFACTOS VISUALES IA ---
     plt.figure(figsize=(8, 5))
     plt.plot(train_losses, color='blue', label='Train Loss')
-    plt.title('Curva de Aprendizaje (1 Época)')
-    plt.xlabel('Batches')
-    plt.ylabel('Pérdida (Cross Entropy)')
+    plt.title('Corba d\'Aprenentatge (1 Època)')
+    plt.xlabel('Nombre de lots')
+    plt.ylabel('Pèrdua (Cross Entropy)')
     plt.legend()
     plt.savefig(os.path.join(ASSETS_DIR, 'loss-curve.png')) # Guardado en assets/
     plt.close()
@@ -127,8 +127,8 @@ def entrenar_y_evaluar_modelo():
     cm = confusion_matrix(all_labels, all_preds)
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
-    plt.title('Matriz de Confusión - Validación')
-    plt.xlabel('Predicción de la IA')
+    plt.title('Matriu de Confusió - Validació')
+    plt.xlabel('Predicció de l\' IA')
     plt.ylabel('Valor Real')
     plt.savefig(os.path.join(ASSETS_DIR, 'matriz-confusion.png')) # Guardado en assets/
     plt.close()
@@ -250,12 +250,12 @@ if __name__ == "__main__":
             etiq_azar = [etiquetas_worker_0[i] for i in indices_azar]
             
             fig, axes = plt.subplots(2, 5, figsize=(12, 5))
-            fig.suptitle(f"10 Ejemplos Aleatorios de Inferencia - Worker [{exitos[0]['ip_nodo']}]", fontsize=16)
+            fig.suptitle(f"10 Exemples aleatoris d'infèrencia - Worker [{exitos[0]['ip_nodo']}]", fontsize=16)
             
             for i, ax in enumerate(axes.flat):
                 img_array = np.array(img_azar[i]).reshape(28, 28)
                 ax.imshow(img_array, cmap='gray')
-                ax.set_title(f"Predicción: {pred_azar[i]}\nReal: {etiq_azar[i]}", 
+                ax.set_title(f"Predicció: {pred_azar[i]}\nReal: {etiq_azar[i]}", 
                              color="green" if pred_azar[i] == etiq_azar[i] else "red")
                 ax.axis('off')
                 

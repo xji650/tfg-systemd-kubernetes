@@ -9,7 +9,7 @@ sns.set_theme(style="whitegrid")
 
 # Cargar ambos CSVs y añadirles la etiqueta de arquitectura
 df_sys = pd.read_csv("resultados_systemd.csv")
-df_sys['Arquitectura'] = 'Systemd (Nativo)'
+df_sys['Arquitectura'] = 'Systemd (Nadiu)'
 
 df_k3s = pd.read_csv("resultados_k3s.csv")
 df_k3s['Arquitectura'] = 'Kubernetes (K3s)'
@@ -29,7 +29,7 @@ df_ganador = df_avg[df_avg['Protocolo'] == '04-zeromq-messagepack']
 # ==============================================================================
 plt.figure(figsize=(7, 5))
 sns.barplot(data=df_ganador, x='Arquitectura', y='RAM_Reposo', palette=['#2c3e50', '#3498db'])
-plt.title('El "Impuesto Arquitectónico" en el Edge\nConsumo de RAM en Reposo (Overhead)', fontweight='bold')
+plt.title("L'\"Impost Arquitectònic\" a l'Edge\nConsum de RAM en Repòs (Overhead)", fontweight='bold')
 plt.ylabel('RAM Consumida (MB)')
 plt.xlabel('')
 
@@ -46,8 +46,8 @@ plt.close()
 # ==============================================================================
 plt.figure(figsize=(7, 5))
 sns.barplot(data=df_ganador, x='Arquitectura', y='MTTR', palette=['#e74c3c', '#e67e22'])
-plt.title('Ingeniería del Caos (Resiliencia)\nTiempo Medio de Recuperación (MTTR)', fontweight='bold')
-plt.ylabel('Milisegundos (ms) - MENOS ES MEJOR')
+plt.title('Enginyeria del Caos (Resiliència)\nTemps Mitjà de Recuperació (MTTR)', fontweight='bold')
+plt.ylabel('Mil·lisegons (ms) per recuperar-se')
 plt.xlabel('')
 
 for i, val in enumerate(df_ganador['MTTR']):
@@ -62,8 +62,8 @@ plt.close()
 # ==============================================================================
 plt.figure(figsize=(7, 5))
 sns.barplot(data=df_ganador, x='Arquitectura', y='Throughput', palette=['#27ae60', '#2ecc71'])
-plt.title('Penalización de Red Virtual (SDN)\nThroughput (ZMQ + MessagePack)', fontweight='bold')
-plt.ylabel('Imágenes procesadas / segundo')
+plt.title('Penalització de Xarxa Virtual (SDN)\nThroughput (ZMQ + MessagePack)', fontweight='bold')
+plt.ylabel('Imatges processades / segon')
 plt.xlabel('')
 
 for i, val in enumerate(df_ganador['Throughput']):
@@ -73,4 +73,4 @@ plt.tight_layout()
 plt.savefig("visualizations_final/3_throughput_comparativa.png", dpi=300)
 plt.close()
 
-print("¡Gráficas de la batalla final generadas en la carpeta 'visualizations_final'!")
+print("¡Gráficas final generadas en la carpeta 'visualizations_final'!")

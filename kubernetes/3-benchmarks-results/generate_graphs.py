@@ -50,7 +50,7 @@ print(f"[OK] Datos consolidados históricamente para {len(df_avg)} protocolos.")
 
 
 # ==============================================================================
-# 2. GRÁFICO 1: EL TITULAR - Rendimiento Global (Throughput)
+# 2. GRÁFICO 1: EL TITULAR - Rendiment Global (Throughput)
 # ==============================================================================
 print("Generando Gráfico 1: Throughput Comparativo...")
 
@@ -67,9 +67,9 @@ ax1 = sns.barplot(
 )
 
 # Estética Profesional
-plt.title('Rendimiento Global del Sistema (Image Throughput)', fontsize=16, pad=20, fontweight='bold')
-plt.xlabel('Protocolo de Comunicación (Edge-to-Edge)', fontsize=12, labelpad=15)
-plt.ylabel('Rendimiento Promedio (imágenes/segundo)', fontsize=12, labelpad=15)
+plt.title('Rendiment Global del Sistema (IThroughput d\'Imatges)', fontsize=16, pad=20, fontweight='bold')
+plt.xlabel('Protocol de Comunicació (Edge-to-Edge)', fontsize=12, labelpad=15)
+plt.ylabel('Rendiment Mitjà (imatges/segons)', fontsize=12, labelpad=15)
 
 # Formatear el eje Y para mostrar 'K' en lugar de miles (Ej: 80.000 -> 80K)
 ax1.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f'{x/1000:.0f}K'))
@@ -94,7 +94,7 @@ df_ram_long = df_avg.melt(
 )
 
 # Limpiar nombres de estado (RAM_Reposo -> Estado: Reposo)
-df_ram_long['Estado_RAM'] = df_ram_long['Estado_RAM'].map({'RAM_Reposo': 'Reposo', 'RAM_Max': 'Pico de Carga (Estrés)'})
+df_ram_long['Estado_RAM'] = df_ram_long['Estado_RAM'].map({'RAM_Reposo': 'En repòs / Inactiu', 'RAM_Max': 'Càrrega màxima (Estrès)'})
 
 # Crear figura
 plt.figure(figsize=(11, 6))
@@ -110,15 +110,15 @@ ax2 = sns.barplot(
 )
 
 # Estética Profesional
-plt.title('Huella de Memoria RAM por Protocolo (Edge Node Context)', fontsize=16, pad=20, fontweight='bold')
-plt.xlabel('Protocolo', fontsize=12, labelpad=15)
-plt.ylabel('Consumo de RAM Promedio (MB)', fontsize=12, labelpad=15)
+plt.title('Consum de memòria RAM per Protocol (Context Edge Node)', fontsize=16, pad=20, fontweight='bold')
+plt.xlabel('Protocol', fontsize=12, labelpad=15)
+plt.ylabel('Consum mitjà de RAM (MB)', fontsize=12, labelpad=15)
 
 # Ajustar leyenda profesional
-plt.legend(title='Estado del Contenedor', title_fontsize='11', fontsize='10', frameon=True)
+plt.legend(title='Estat del Contenidor', title_fontsize='11', fontsize='10', frameon=True)
 
 # Añadir una línea roja discontinua que represente el límite crítico para tu TFG (Ej: 1GB)
-plt.axhline(y=1000, color='r', linestyle='--', alpha=0.6, label='Límite Crítico Propuesto (1GB)')
+plt.axhline(y=1000, color='r', linestyle='--', alpha=0.6, label='Límit Crític Proposat (1GB)')
 
 plt.tight_layout()
 plt.savefig(f"{OUTPUT_DIR}/graph_2_ram_footprint.png", dpi=300)
@@ -165,9 +165,9 @@ for i in range(df_avg.shape[0]):
     )
 
 # Estética Profesional
-plt.title('Matriz de Trade-off: Latencia RTT vs Rendimiento Global', fontsize=16, pad=20, fontweight='bold')
-plt.xlabel('Latencia RTT Promedio (ms) - MENOS ES MEJOR', fontsize=12, labelpad=15)
-plt.ylabel('Rendimiento Promedio (img/s) - MÁS ES MEJOR', fontsize=12, labelpad=15)
+plt.title('Matriu de Compensació: Latència RTT vs. Rendiment Global', fontsize=16, pad=20, fontweight='bold')
+plt.xlabel('Latència RTT Mitjana (ms) - MENYS ÉS MILLOR', fontsize=12, labelpad=15)
+plt.ylabel('Rendiment Mitjà (img/s) - MÉS ÉS MILLOR', fontsize=12, labelpad=15)
 
 # Formatear eje Y con 'K'
 ax3.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: f'{x/1000:.0f}K'))
