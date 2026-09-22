@@ -28,7 +28,7 @@
 | Métrica | Valor Promedio |
 |---|---|
 | **T_deploy** | 135.09 s |
-| **Recuperación (MTTR)** | 26688.57 ms |
+| **Recuperación (MTTR)** | 1507.31 ms |
 | **CPU Reposo** | 0.80 % |
 | **RAM Reposo** | 819.65 MB |
 
@@ -67,24 +67,24 @@
 
 ---
 
-## Protocolo: 04-zeromq-messagepack (Basado en 9 tests históricos)
+## Protocolo: 04-zeromq-messagepack (Basado en 10 tests históricos)
 ### Infraestructura
 | Métrica | Valor Promedio |
 |---|---|
-| **T_deploy** | 141.18 s |
+| **T_deploy** | 145.16 s |
 | **Recuperación (MTTR)** | 1487.28 ms |
-| **CPU Reposo** | 0.78 % |
-| **RAM Reposo** | 834.50 MB |
+| **CPU Reposo** | 0.80 % |
+| **RAM Reposo** | 834.40 MB |
 
 ### Rendimiento de Red (Estrés)
 | Métrica | Valor Promedio |
 |---|---|
-| **T_Total** | 0.35 s |
-| **Throughput** | 6035.84 img/s |
-| **Latencia RTT** | 290.69 ms |
-| **T_Proc Worker** | 205.31 ms |
-| **RAM Máxima** | 282.27 MB |
-| **CPU Máxima** | 193.51 % |
+| **T_Total** | 0.34 s |
+| **Throughput** | 6269.21 img/s |
+| **Latencia RTT** | 284.99 ms |
+| **T_Proc Worker** | 205.62 ms |
+| **RAM Máxima** | 280.90 MB |
+| **CPU Máxima** | 193.83 % |
 | **Payload Red** | 2.99 MB |
 
 ---

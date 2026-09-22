@@ -27,8 +27,19 @@ md_content = "# Resultados Consolidados del Proyecto\n"
 md_content += "> **Nota:** Estas tablas representan la **media histórica total** de todas las ejecuciones almacenadas en el Data Lake (`resultados-globales.csv`).\n\n"
 
 for proto, metricas in datos_por_protocolo.items():
-    # Calcular medias
-    medias = {k: sum(v)/len(v) for k, v in metricas.items()}
+    # ====================================================================
+    # CÁLCULO DE MEDIAS CON FILTRO DE OUTLIERS
+    # ====================================================================
+    medias = {}
+    for k, v in metricas.items():
+        if k == 'MTTR':
+            # Filtramos cualquier caída superior a 10.000 ms (10 segundos)
+            valores_limpios = [x for x in v if x <= 10000]
+            medias[k] = sum(valores_limpios) / len(valores_limpios) if len(valores_limpios) > 0 else 0
+        else:
+            # Para la RAM, Throughput, etc., usamos todos los valores (sin filtrar)
+            medias[k] = sum(v) / len(v)
+            
     ejecuciones = len(metricas['T_deploy']) # Cuántas veces hemos probado este protocolo
     
     md_content += f"## Protocolo: {proto} (Basado en {ejecuciones} tests históricos)\n"
