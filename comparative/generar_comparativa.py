@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
@@ -16,6 +17,13 @@ df_k3s['Arquitectura'] = 'Kubernetes (K3s)'
 
 # Unir ambos mundos
 df_total = pd.concat([df_sys, df_k3s])
+
+# ==============================================================================
+# EL FILTRO DEL OUTLIER
+# Convertimos el outlier de Flannel a NaN SÓLO en la columna MTTR.
+# Así Pandas divide el MTTR entre 9, pero usa los 10 valores para RAM y Throughput.
+# ==============================================================================
+df_total.loc[df_total['MTTR'] > 10000, 'MTTR'] = np.nan
 
 # Sacar las medias por Protocolo y Arquitectura
 df_avg = df_total.groupby(['Protocolo', 'Arquitectura']).mean(numeric_only=True).reset_index()
