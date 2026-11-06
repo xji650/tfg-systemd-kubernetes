@@ -18,7 +18,7 @@
 | **Latencia RTT** | 429.27 ms |
 | **T_Proc Worker** | 415.03 ms |
 | **RAM Máxima** | 328.96 MB |
-| **CPU Máxima** | 141.17 % |
+| **CPU Promedio** | 141.17 % |
 | **Payload Red** | 15.59 MB |
 
 ---
@@ -40,7 +40,7 @@
 | **Latencia RTT** | 223.89 ms |
 | **T_Proc Worker** | 200.66 ms |
 | **RAM Máxima** | 309.52 MB |
-| **CPU Máxima** | 196.66 % |
+| **CPU Promedio** | 196.66 % |
 | **Payload Red** | 2.99 MB |
 
 ---
@@ -62,7 +62,7 @@
 | **Latencia RTT** | 216.63 ms |
 | **T_Proc Worker** | 202.14 ms |
 | **RAM Máxima** | 277.22 MB |
-| **CPU Máxima** | 195.47 % |
+| **CPU Promedio** | 195.47 % |
 | **Payload Red** | 2.99 MB |
 
 ---
@@ -84,7 +84,7 @@
 | **Latencia RTT** | 215.61 ms |
 | **T_Proc Worker** | 199.55 ms |
 | **RAM Máxima** | 284.26 MB |
-| **CPU Máxima** | 196.59 % |
+| **CPU Promedio** | 196.59 % |
 | **Payload Red** | 2.99 MB |
 
 ---

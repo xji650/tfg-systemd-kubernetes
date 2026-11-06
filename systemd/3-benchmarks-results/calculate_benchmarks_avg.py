@@ -46,7 +46,7 @@ for proto, metricas in datos_por_protocolo.items():
     md_content += f"| **Latencia RTT** | {medias['RTT']:.2f} ms |\n"
     md_content += f"| **T_Proc Worker** | {medias['T_Proc']:.2f} ms |\n"
     md_content += f"| **RAM Máxima** | {medias['RAM_Max']:.2f} MB |\n"
-    md_content += f"| **CPU Máxima** | {medias['CPU_Max']:.2f} % |\n"
+    md_content += f"| **CPU Promedio** | {medias['CPU_Promedio']:.2f} % |\n"
     md_content += f"| **Payload Red** | {medias['Payload_MB']:.2f} MB |\n\n"
     md_content += "---\n\n"
 

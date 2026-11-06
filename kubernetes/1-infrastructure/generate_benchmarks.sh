@@ -155,16 +155,16 @@ tasa_exito = get_avg(log_file, r"Tasa(?: de)? Éxito \(%\):\s*([0-9\.]+)")
 rtt = get_avg(log_file, r"Latencia RTT Promedio \(ms\):\s*([0-9\.]+)")
 t_proc = get_avg(log_file, r"Tiempo T_proc Promedio \(ms\):\s*([0-9\.]+)")
 ram_max = get_avg(log_file, r"Pico Máx\. RAM Worker \(MB\):\s*([0-9\.]+)")
-cpu_max = get_avg(log_file, r"CPU Promedio \(%\):\s*([0-9\.]+)")
+cpu_promedio = get_avg(log_file, r"CPU Promedio \(%\):\s*([0-9\.]+)")
 payload_nodo = get_avg(log_file, r"Payload Promedio por Nodo \(MB\):\s*([0-9\.]+)")
 
 # Escribir en CSV
 file_exists = os.path.isfile(csv_file)
 with open(csv_file, 'a', encoding='utf-8') as f:
     if not file_exists:
-        f.write("Fecha,Protocolo,T_deploy,CPU_Reposo,RAM_Reposo,MTTR,T_Total,Throughput,Exito_%,RTT,T_Proc,RAM_Max,CPU_Max,Payload_MB\n")
+        f.write("Fecha,Protocolo,T_deploy,CPU_Reposo,RAM_Reposo,MTTR,T_Total,Throughput,Exito_%,RTT,T_Proc,RAM_Max,CPU_Promedio,Payload_MB\n")
         
-    f.write(f"{fecha},{protocol_name},{t_deploy:.2f},{cpu_reposo:.2f},{ram_reposo:.2f},{mttr:.2f},{t_total:.2f},{throughput:.2f},{tasa_exito:.2f},{rtt:.2f},{t_proc:.2f},{ram_max:.2f},{cpu_max:.2f},{payload_nodo:.2f}\n")
+    f.write(f"{fecha},{protocol_name},{t_deploy:.2f},{cpu_reposo:.2f},{ram_reposo:.2f},{mttr:.2f},{t_total:.2f},{throughput:.2f},{tasa_exito:.2f},{rtt:.2f},{t_proc:.2f},{ram_max:.2f},{cpu_promedio:.2f},{payload_nodo:.2f}\n")
 EOF
     echo "[OK] Fila añadida a: $CSV_FILE"
 done
